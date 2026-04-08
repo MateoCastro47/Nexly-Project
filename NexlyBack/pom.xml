@@ -8,10 +8,10 @@
 		<version>3.4.0</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>edu.rico.rest</groupId>
-	<artifactId>Biblioteca</artifactId>
+	<groupId>edu.mcs.rest</groupId>
+	<artifactId>NexlyBack</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>Iquea</name>
+	<name>NexlyBack</name>
 	<description>Parte back de Nexly</description>
 	<url/>
 	<licenses>
