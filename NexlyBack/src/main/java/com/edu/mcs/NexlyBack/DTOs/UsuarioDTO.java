@@ -19,6 +19,10 @@ public class UsuarioDTO {
     private boolean estaBloqueado;   // tú lo bloqueaste
     private boolean teBloqueo;   // él te bloqueó
 
+    public UsuarioDTO() {
+    }
+
+
     public Long getId() {
         return id;
     }
