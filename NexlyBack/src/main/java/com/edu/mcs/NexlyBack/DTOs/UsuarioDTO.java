@@ -19,24 +19,6 @@ public class UsuarioDTO {
     private boolean estaBloqueado;   // tú lo bloqueaste
     private boolean teBloqueo;   // él te bloqueó
 
-    public UsuarioDTO(String biografia, String enlaceWeb, boolean estaBloqueado, String fotoPerfil, String fotoPortada, Long id, boolean loSigues, String nombreCompleto, String nombreUsuario, long publicaciones, long seguidores, long seguidos, boolean teBloqueo, boolean teSigue, String ubicacion) {
-        this.biografia = biografia;
-        this.enlaceWeb = enlaceWeb;
-        this.estaBloqueado = estaBloqueado;
-        this.fotoPerfil = fotoPerfil;
-        this.fotoPortada = fotoPortada;
-        this.id = id;
-        this.loSigues = loSigues;
-        this.nombreCompleto = nombreCompleto;
-        this.nombreUsuario = nombreUsuario;
-        this.publicaciones = publicaciones;
-        this.seguidores = seguidores;
-        this.seguidos = seguidos;
-        this.teBloqueo = teBloqueo;
-        this.teSigue = teSigue;
-        this.ubicacion = ubicacion;
-    }
-
     public Long getId() {
         return id;
     }
