@@ -30,8 +30,12 @@ public interface PublicacionRepository extends JpaRepository<Publicacion, Long> 
     @Query("SELECT COUNT(r) FROM Reaccion r WHERE r.publicacion.id = :id")
     long countReacciones(@Param("id") Long id);
 
-    //Conteo de comentario raíz (sin padre) para una publicación
+    //Conteo de comentarios raíz (sin padre) para una publicación
+    @Query("SELECT COUNT(c) FROM Comentario c WHERE c.publicacion.id = :id AND c.comentarioPadre IS NULL")
+    long countComentarios(@Param("id") Long id);
+
+    //Reacción del visor sobre una publicación (null si no ha reaccionado)
     @Query("SELECT r.tipo FROM Reaccion r WHERE r.publicacion.id = :publicacionId AND r.usuario.id = :usuarioId")
-    Optional<TipoReaccion> findReaccion(@Param("publicacionId") Long publicacionId, @Param("usuarioId") Long usuarioId);
-    
+    Optional<TipoReaccion> findReaccionDelVisor(@Param("publicacionId") Long publicacionId,
+                                                 @Param("usuarioId") Long usuarioId);
 }
