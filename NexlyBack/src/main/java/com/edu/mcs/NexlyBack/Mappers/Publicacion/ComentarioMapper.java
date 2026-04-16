@@ -20,7 +20,7 @@ public interface ComentarioMapper {
     @Mapping(target = "autor",            expression = "java(autor)")
     @Mapping(target = "conteoRespuestas", expression = "java(conteoRespuestas)")
     @Mapping(target = "conteoReacciones", expression = "java(conteoReacciones)")
-    @Mapping(target = "reaccion", expression = "java(reaccion)")
+    @Mapping(target = "reaccion", expression = "java(reaccionDelVisor)")
     ComentarioDTO toDTO(Comentario comentario, AutorResumenDTO autor,
                         long conteoRespuestas, long conteoReacciones, TipoReaccion reaccionDelVisor);
 }
