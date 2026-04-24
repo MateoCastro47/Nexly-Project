@@ -27,7 +27,7 @@ public class Usuario {
     @Column(length = 20)
     private String telefono;
 
-    @Column(name = "contrasena_hash", nullable = false)
+    @Column(name = "contrasena_hash")
     private String contrasenaHash;
 
     @Column(name = "foto_perfil")
@@ -45,7 +45,7 @@ public class Usuario {
     @Column(length = 100)
     private String ubicacion;
 
-    @Column(name = "fecha_nacimiento", nullable = false)
+    @Column(name = "fecha_nacimiento")
     private LocalDate fechaNacimiento;
 
     @Enumerated(EnumType.STRING)
@@ -60,6 +60,12 @@ public class Usuario {
 
     @Column(nullable = false)
     private Boolean activo = true;
+
+    @Column(name = "proveedor_oauth", length = 20)
+    private String proveedorOAuth;
+
+    @Column(name = "oauth_id")
+    private String oauthId;
 
     @OneToMany(mappedBy = "seguidor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
@@ -388,6 +394,23 @@ public class Usuario {
 
     public void setMensajesLeidos(List<MensajeLeido> mensajesLeidos) {
         this.mensajesLeidos = mensajesLeidos;
+    }
+
+    
+    public String getProveedorOAuth() {
+        return proveedorOAuth;
+    }
+
+    public void setProveedorOAuth(String proveedorOAuth) {
+        this.proveedorOAuth = proveedorOAuth;
+    }
+
+    public String getOauthId() {
+        return oauthId;
+    }
+
+    public void setOauthId(String oauthId) {
+        this.oauthId = oauthId;
     }
 
     @PrePersist
