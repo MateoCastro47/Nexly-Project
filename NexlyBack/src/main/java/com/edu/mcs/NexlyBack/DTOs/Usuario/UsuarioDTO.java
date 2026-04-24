@@ -1,4 +1,4 @@
-package com.edu.mcs.NexlyBack.DTOs;
+package com.edu.mcs.NexlyBack.DTOs.Usuario;
 
 public class UsuarioDTO {
     private Long id;

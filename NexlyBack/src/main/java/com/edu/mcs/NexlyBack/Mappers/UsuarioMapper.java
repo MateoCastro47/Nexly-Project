@@ -3,7 +3,7 @@ package com.edu.mcs.NexlyBack.Mappers;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import com.edu.mcs.NexlyBack.DTOs.UsuarioDTO;
+import com.edu.mcs.NexlyBack.DTOs.Usuario.UsuarioDTO;
 import com.edu.mcs.NexlyBack.models.Usuario;
 
 @Mapper(componentModel = "spring")
