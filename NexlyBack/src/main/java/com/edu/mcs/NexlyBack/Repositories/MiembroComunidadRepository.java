@@ -18,8 +18,15 @@ public interface MiembroComunidadRepository extends JpaRepository<MiembroComunid
     Optional<MiembroComunidad> findByUsuarioIdAndComunidadId(Long usuarioId, Long comunidadId);
 
     boolean existsByUsuarioIdAndComunidadIdAndEstado(Long usuarioId, Long comunidadId, EstadoMiembro estado);
+    
+    boolean existsByComunidadIdAndUsuarioId(Long comunidadId, Long usuarioId);
 
     List<MiembroComunidad> findByComunidadIdAndEstado(Long comunidadId, EstadoMiembro estado);
+
+    Optional<MiembroComunidad> findByComunidadIdAndUsuarioId(Long comunidadId, Long usuarioId);
+
+    @Query("SELECT m.usuario.id FROM MiembroComunidad m WHERE m.comunidad.id = :id AND m.estado = com.edu.mcs.NexlyBack.models.Enums.EstadoMiembro.ACEPTADO")
+    List<Long> findMiembrosIdsByComunidadId(@Param("id") Long comunidadId);
 
     @Query("SELECT m FROM MiembroComunidad m WHERE m.usuario.id = :usuarioId AND m.estado = :estado")
     List<MiembroComunidad> findComunidadesDeUsuario(@Param("usuarioId") Long usuarioId,
