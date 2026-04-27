@@ -3,6 +3,8 @@ package com.edu.mcs.NexlyBack.Services;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,12 +48,12 @@ public class ComunidadService {
         return buildDTO(c, viewerId);
     }
 
-    public List<ComunidadDTO> buscar(String q, Long viewerId){
-        return comunidadRepository.buscarPorNombre(q).stream().map(c -> buildDTO(c, viewerId)).toList();
+    public Page<ComunidadDTO> buscar(String q, Long viewerId, int page, int size){
+        return comunidadRepository.buscarPorNombre(q, PageRequest.of(page, size)).map(c -> buildDTO(c, viewerId));
     }
 
-    public List<ComunidadDTO> getPublicas(Long viewerId){
-        return comunidadRepository.findByEsPublicaTrueOrderByFechaCreacionDesc().stream().map(c -> buildDTO(c, viewerId)).toList();
+    public Page<ComunidadDTO> getPublicas(Long viewerId, int page, int size){
+        return comunidadRepository.findByEsPublicaTrueOrderByFechaCreacionDesc(PageRequest.of(page, size)).map(c -> buildDTO(c, viewerId));
     }
 
     @Transactional

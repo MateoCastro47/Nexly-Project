@@ -3,6 +3,8 @@ package com.edu.mcs.NexlyBack.Repositories;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,16 +16,15 @@ import com.edu.mcs.NexlyBack.models.Publicacion;
 
 @Repository
 public interface PublicacionRepository extends JpaRepository<Publicacion, Long> {
-    //Publicaciones de un usuario 
-    List<Publicacion> findByUsuarioIdOrderByFechaCreacionDesc(Long usuarioId);
 
-    //Feed: publicaciones públicas de una lista de usuarios seguidos.
+    Page<Publicacion> findByUsuarioIdOrderByFechaCreacionDesc(Long usuarioId, Pageable pageable);
+
     @Query("SELECT p FROM Publicacion p WHERE p.usuario.id IN :ids " +
-       "AND p.visibilidad = :visibilidad " +
-       "ORDER BY p.fechaCreacion DESC")
-    List<Publicacion> findPublicacionesDeSeguidos(
+           "AND p.visibilidad = :visibilidad ORDER BY p.fechaCreacion DESC")
+    Page<Publicacion> findPublicacionesDeSeguidos(
         @Param("ids") List<Long> ids,
-        @Param("visibilidad") Visibilidad visibilidad
+        @Param("visibilidad") Visibilidad visibilidad,
+        Pageable pageable
     );
 
     //Conteo de reacciones para una publicación

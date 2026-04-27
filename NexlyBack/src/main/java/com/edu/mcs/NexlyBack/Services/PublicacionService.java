@@ -6,6 +6,10 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -62,12 +66,17 @@ public class PublicacionService {
         return buildDTO(p, viewerId);
     }
 
-    public List<PublicacionDTO> getPublicacionesDeUsuario(Long userId, Long viewerId) {
-        return publicacionRepository.findByUsuarioIdOrderByFechaCreacionDesc(userId)
-                .stream()
-                .filter(p -> esVisible(p, viewerId))
-                .map(p -> buildDTO(p, viewerId))
-                .toList();
+    public Page<PublicacionDTO> getPublicacionesDeUsuario(Long userId, Long viewerId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Publicacion> paginaBD = publicacionRepository.findByUsuarioIdOrderByFechaCreacionDesc(userId, pageable);
+
+        List<PublicacionDTO> contenidoFiltrado = paginaBD.getContent()
+            .stream()
+            .filter(p -> esVisible(p, viewerId))
+            .map(p -> buildDTO(p, viewerId))
+            .toList();
+        
+        return new PageImpl<>(contenidoFiltrado, pageable, paginaBD.getTotalElements());
     }
 
     @Transactional
@@ -149,14 +158,15 @@ public class PublicacionService {
         reaccionRepository.deleteByUsuarioIdAndPublicacionId(userId, publicacionId);
     }
 
-    @Transactional
-    public List<PublicacionDTO> getFeed(Long userId){
-        List<Long> seguidosId = seguimientoRepository.findSeguidosIdsBySeguidorId(userId);
-        if (seguidosId.isEmpty()) {
-            return List.of();
-        }
-        return publicacionRepository.findPublicacionesDeSeguidos(seguidosId, Visibilidad.PUBLICA).stream().map(p-> buildDTO(p, userId)).toList();
+    public Page<PublicacionDTO> getFeed(Long userId, int page, int size){
+       List<Long> seguidosId = seguimientoRepository.findSeguidosIdsBySeguidorId(userId);
+       if (seguidosId.isEmpty()) {
+        return Page.empty();
+       } 
+       Pageable pageable = PageRequest.of(page, size);
+       return publicacionRepository.findPublicacionesDeSeguidos(seguidosId, Visibilidad.PUBLICA , pageable).map(p -> buildDTO(p, userId));
     }
+
 
     // --- privado: resuelve visibilidad y delega al mapper ---
 

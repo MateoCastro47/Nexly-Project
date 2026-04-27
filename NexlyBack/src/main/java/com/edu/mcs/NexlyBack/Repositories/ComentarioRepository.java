@@ -2,6 +2,9 @@ package com.edu.mcs.NexlyBack.Repositories;
 
 import com.edu.mcs.NexlyBack.models.Comentario;
 import com.edu.mcs.NexlyBack.models.Enums.TipoReaccion;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -29,8 +32,16 @@ public interface ComentarioRepository extends JpaRepository<Comentario, Long> {
     @Query("SELECT COUNT(r) FROM ReaccionComentario r WHERE r.comentario.id = :id")
     long countReacciones(@Param("id") Long id);
 
+    Page<Comentario> findByPublicacionIdAndComentarioPadreIsNullOrderByFechaCreacionAsc(
+    Long publicacionId, Pageable pageable);
+
+    Page<Comentario> findByComentarioPadreIdOrderByFechaCreacionAsc(
+    Long comentarioPadreId, Pageable pageable);
+
     // Reacción del visor sobre un comentario (null si no ha reaccionado)
     @Query("SELECT r.tipo FROM ReaccionComentario r WHERE r.comentario.id = :comentarioId AND r.usuario.id = :usuarioId")
     Optional<TipoReaccion> findReaccionDelVisor(@Param("comentarioId") Long comentarioId,
                                                  @Param("usuarioId") Long usuarioId);
+    
+
 }

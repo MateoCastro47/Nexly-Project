@@ -1,9 +1,10 @@
 package com.edu.mcs.NexlyBack.Services;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.NoSuchElementException;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,20 +47,16 @@ public class ComentarioService {
         this.autorResumenMapper = autorResumenMapper;
     }
 
-    public List<ComentarioDTO> getComentarios(Long publicacionId, Long viewerId) {
-        return comentarioRepository
-                .findByPublicacionIdAndComentarioPadreIsNullOrderByFechaCreacionAsc(publicacionId)
-                .stream()
-                .map(c -> buildDTO(c, viewerId))
-                .toList();
+    public Page<ComentarioDTO> getComentarios(Long publicacionId, Long viewerId, int page, int size) {
+        return comentarioRepository.findByPublicacionIdAndComentarioPadreIsNullOrderByFechaCreacionAsc(
+            publicacionId, PageRequest.of(page, size))
+            .map(c -> buildDTO(c, viewerId));
     }
 
-    public List<ComentarioDTO> getRespuestas(Long comentarioPadreId, Long viewerId) {
-        return comentarioRepository
-                .findByComentarioPadreIdOrderByFechaCreacionAsc(comentarioPadreId)
-                .stream()
-                .map(c -> buildDTO(c, viewerId))
-                .toList();
+    public Page<ComentarioDTO> getRespuestas(Long comentarioPadreId, Long viewerId, int page, int size) {
+        return comentarioRepository.findByComentarioPadreIdOrderByFechaCreacionAsc(
+            comentarioPadreId, PageRequest.of(page, size))
+            .map(c -> buildDTO(c, viewerId));
     }
 
     @Transactional

@@ -9,8 +9,7 @@ import com.edu.mcs.NexlyBack.models.Enums.TipoReaccion;
 
 import jakarta.validation.constraints.NotBlank;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -35,13 +34,13 @@ public class ComentarioController {
     }
 
     @GetMapping("/publicaciones/{pubId}/comentarios")
-    public ResponseEntity<List<ComentarioDTO>> getComentarios(@PathVariable Long pubId, Authentication auth){
-        return ResponseEntity.ok(comentarioService.getComentarios(pubId, userId(auth)));
+    public ResponseEntity<Page<ComentarioDTO>> getComentarios(@PathVariable Long pubId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size ,Authentication auth){
+        return ResponseEntity.ok(comentarioService.getComentarios(pubId, userId(auth), page, size));
     }
 
     @GetMapping("/comentarios/{id}/respuestas")
-    public ResponseEntity<List<ComentarioDTO>> getRespuestas(@PathVariable Long id, Authentication auth){
-        return ResponseEntity.ok(comentarioService.getRespuestas(id, userId(auth)));
+    public ResponseEntity<Page<ComentarioDTO>> getRespuestas(@PathVariable Long id, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size ,Authentication auth){
+        return ResponseEntity.ok(comentarioService.getRespuestas(id, userId(auth), page, size));
     }
     
     @PostMapping("/publicaciones/{pubId}/comentarios")

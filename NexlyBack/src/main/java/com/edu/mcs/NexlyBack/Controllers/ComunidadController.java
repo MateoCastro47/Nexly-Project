@@ -9,8 +9,7 @@ import com.edu.mcs.NexlyBack.Services.ComunidadService;
 
 import jakarta.validation.Valid;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -40,13 +39,13 @@ public class ComunidadController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ComunidadDTO>> getPublicas(Authentication auth){
-        return ResponseEntity.ok(comunidadService.getPublicas(userId(auth)));
+    public ResponseEntity<Page<ComunidadDTO>> getPublicas(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "12") int size ,Authentication auth){
+        return ResponseEntity.ok(comunidadService.getPublicas(userId(auth), page, size));
     }
 
     @GetMapping("/buscar")
-    public ResponseEntity<List<ComunidadDTO>> buscar(@RequestParam String q, Authentication auth){
-        return ResponseEntity.ok(comunidadService.buscar(q, userId(auth)));
+    public ResponseEntity<Page<ComunidadDTO>> buscar(@RequestParam String q, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "12") int size, Authentication auth){
+        return ResponseEntity.ok(comunidadService.buscar(q, userId(auth), page, size));
     }
 
     @PostMapping

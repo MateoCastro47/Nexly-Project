@@ -8,6 +8,8 @@ import com.edu.mcs.NexlyBack.models.Enums.TipoReaccion;
 import com.edu.mcs.NexlyBack.models.Enums.Visibilidad;
 import jakarta.validation.constraints.NotBlank;
 import java.util.List;
+
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -36,13 +38,13 @@ public class PublicacionController {
         return ResponseEntity.ok(publicacionService.getPublicacion(id, userId(auth)));
     }
     @GetMapping("/feed")
-    public ResponseEntity<List<PublicacionDTO>> getFeed(Authentication auth) {
-        return ResponseEntity.ok(publicacionService.getFeed(userId(auth)));
+    public ResponseEntity<Page<PublicacionDTO>> getFeed(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, Authentication auth) {
+        return ResponseEntity.ok(publicacionService.getFeed(userId(auth), page, size));
     }
     
     @GetMapping("/usuario/{userId}")
-    public ResponseEntity<List<PublicacionDTO>> getDeUsuario(@PathVariable Long userId, Authentication auth) {
-        return ResponseEntity.ok(publicacionService.getPublicacionesDeUsuario(userId, userId(auth)));
+    public ResponseEntity<Page<PublicacionDTO>> getDeUsuario(@PathVariable Long userId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, Authentication auth) {
+        return ResponseEntity.ok(publicacionService.getPublicacionesDeUsuario(userId, userId(auth), page, size));
     }
 
     @PostMapping
