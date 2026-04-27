@@ -17,6 +17,7 @@ import com.edu.mcs.NexlyBack.Repositories.ComentarioRepository;
 import com.edu.mcs.NexlyBack.Repositories.ComunidadRepository;
 import com.edu.mcs.NexlyBack.Repositories.PublicacionRepository;
 import com.edu.mcs.NexlyBack.Repositories.ReaccionRepository;
+import com.edu.mcs.NexlyBack.Repositories.SeguimientoRepository;
 import com.edu.mcs.NexlyBack.Repositories.UsuarioRepository;
 import com.edu.mcs.NexlyBack.models.Comunidad;
 import com.edu.mcs.NexlyBack.models.Enums.TipoReaccion;
@@ -31,6 +32,7 @@ import com.edu.mcs.NexlyBack.models.Usuario;
 public class PublicacionService {
 
     private final PublicacionRepository publicacionRepository;
+    private final SeguimientoRepository seguimientoRepository;
     private final ComentarioRepository comentarioRepository;
     private final ReaccionRepository reaccionRepository;
     private final UsuarioRepository usuarioRepository;
@@ -38,14 +40,14 @@ public class PublicacionService {
     private final PublicacionMapper publicacionMapper;
     private final AutorResumenMapper autorResumenMapper;
 
-    public PublicacionService(PublicacionRepository publicacionRepository,
-                              ComentarioRepository comentarioRepository,
-                              ReaccionRepository reaccionRepository,
-                              UsuarioRepository usuarioRepository,
-                              ComunidadRepository comunidadRepository,
-                              PublicacionMapper publicacionMapper,
-                              AutorResumenMapper autorResumenMapper) {
+    
+
+    public PublicacionService(PublicacionRepository publicacionRepository, SeguimientoRepository seguimientoRepository,
+            ComentarioRepository comentarioRepository, ReaccionRepository reaccionRepository,
+            UsuarioRepository usuarioRepository, ComunidadRepository comunidadRepository,
+            PublicacionMapper publicacionMapper, AutorResumenMapper autorResumenMapper) {
         this.publicacionRepository = publicacionRepository;
+        this.seguimientoRepository = seguimientoRepository;
         this.comentarioRepository = comentarioRepository;
         this.reaccionRepository = reaccionRepository;
         this.usuarioRepository = usuarioRepository;
@@ -145,6 +147,15 @@ public class PublicacionService {
             throw new NoSuchElementException("No existe reacción para eliminar");
 
         reaccionRepository.deleteByUsuarioIdAndPublicacionId(userId, publicacionId);
+    }
+
+    @Transactional
+    public List<PublicacionDTO> getFeed(Long userId){
+        List<Long> seguidosId = seguimientoRepository.findSeguidosIdsBySeguidorId(userId);
+        if (seguidosId.isEmpty()) {
+            return List.of();
+        }
+        return publicacionRepository.findPublicacionesDeSeguidos(seguidosId, Visibilidad.PUBLICA).stream().map(p-> buildDTO(p, userId)).toList();
     }
 
     // --- privado: resuelve visibilidad y delega al mapper ---
