@@ -13,7 +13,8 @@ import com.edu.mcs.NexlyBack.models.Conversacion;
 @Repository
 public interface ConversacionRepository extends JpaRepository<Conversacion, Long> {
     
-    @Query("SELEct c FROM Conversacon c JOIN ParticipanteConversacion p ON p.conversacion = c" + "WHERE p.usuario.id = :userId ORDER BY c.ultimoMensaje DESC NULLS LAST")
+    @Query("SELECT c FROM Conversacion c JOIN ParticipanteConversacion p ON p.conversacion = c " +
+           "WHERE p.usuario.id = :userId ORDER BY c.ultimoMensaje DESC NULLS LAST")
     List<Conversacion> findByParticipanteId(@Param("userId") Long userId);
 
     @Query("SELECT c FROM Conversacion c JOIN ParticipanteConversacion p1 ON p1.conversacion = c " +
