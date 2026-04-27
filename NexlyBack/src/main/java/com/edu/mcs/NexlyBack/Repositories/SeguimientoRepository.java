@@ -27,4 +27,7 @@ public interface SeguimientoRepository extends JpaRepository<Seguimiento, Seguim
     @Query("SELECT s.seguido.id FROM Seguimiento s WHERE s.seguidor.id = :seguidorId AND s.estado = :estado")
     List<Long> findSeguidosIds(@Param("seguidorId") Long seguidorId,
                                @Param("estado") EstadoSeguimiento estado);
+    
+    @Query("SELECT s.seguido.id FROM Seguimiento s WHERE s.seguidor.id = :id AND s.estado = com.edu.mcs.NexlyBack.models.Enums.EstadoSeguimiento.ACEPTADA")
+    List<Long> findSeguidosIdsBySeguidorId(@Param("id") Long seguidorId);
 }
