@@ -9,5 +9,7 @@ public record ConversacionDTO(
     String foto,
     Boolean esGrupal,
     LocalDateTime ultimoMensaje,
+    String ultimoMensajePreview,
+    Long noLeidos,
     List<ParticipanteDTO> participantes
 ) {}
