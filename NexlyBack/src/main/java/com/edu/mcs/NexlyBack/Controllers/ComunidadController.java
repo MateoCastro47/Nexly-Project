@@ -5,9 +5,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.edu.mcs.NexlyBack.DTOs.Comunidad.ComunidadDTO;
 import com.edu.mcs.NexlyBack.DTOs.Comunidad.CrearComunidadRequest;
+import com.edu.mcs.NexlyBack.DTOs.Comunidad.MiembroDTO;
 import com.edu.mcs.NexlyBack.Services.ComunidadService;
+import com.edu.mcs.NexlyBack.models.Enums.RolComunidad;
 
 import jakarta.validation.Valid;
+
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -46,6 +50,39 @@ public class ComunidadController {
     @GetMapping("/buscar")
     public ResponseEntity<Page<ComunidadDTO>> buscar(@RequestParam String q, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "12") int size, Authentication auth){
         return ResponseEntity.ok(comunidadService.buscar(q, userId(auth), page, size));
+    }
+
+    @GetMapping("/{id}/miembros")
+    public ResponseEntity<Page<MiembroDTO>> getMiembros(
+        @PathVariable Long id,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "20") int size,
+        Authentication auth){
+            return ResponseEntity.ok(comunidadService.getMiembros(id, userId(auth), page, size));
+    }
+
+    @GetMapping("/{id}/pendientes")
+    public ResponseEntity<List<MiembroDTO>> getPendientes(@PathVariable Long id, Authentication auth){
+        return ResponseEntity.ok(comunidadService.getPendientes(id, userId(auth)));
+    }
+    
+    @PostMapping("/{id}/miembros/{usuarioId}/aceptar")
+    public ResponseEntity<Void> aceptarMiembro(@PathVariable Long id, @PathVariable Long usuarioId, Authentication auth) {
+        comunidadService.aceptarMiembro(id, userId(auth), usuarioId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{id}/miembros/{usuarioId}/rechazar")
+    public ResponseEntity<Void> rechazarMiembro(@PathVariable Long id, @PathVariable Long usuarioId, Authentication auth) {
+        comunidadService.rechazarMiembro(id, userId(auth), usuarioId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}/miembros/{usuarioId}/rol")
+    public ResponseEntity<Void> cambiarRol(@PathVariable Long id, @PathVariable Long usuarioId,
+                                           @RequestParam RolComunidad rol, Authentication auth) {
+        comunidadService.cambiarRol(id, userId(auth), usuarioId, rol);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping

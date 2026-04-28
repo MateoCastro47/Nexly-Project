@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.edu.mcs.NexlyBack.DTOs.Comunidad.ComunidadDTO;
 import com.edu.mcs.NexlyBack.DTOs.Comunidad.CrearComunidadRequest;
+import com.edu.mcs.NexlyBack.DTOs.Comunidad.MiembroDTO;
 import com.edu.mcs.NexlyBack.DTOs.Publicacion.AutorResumenDTO;
 import com.edu.mcs.NexlyBack.Mappers.Comunidad.ComunidadMapper;
 import com.edu.mcs.NexlyBack.Mappers.Publicacion.AutorResumenMapper;
@@ -56,6 +57,21 @@ public class ComunidadService {
         return comunidadRepository.findByEsPublicaTrueOrderByFechaCreacionDesc(PageRequest.of(page, size)).map(c -> buildDTO(c, viewerId));
     }
 
+    public Page<MiembroDTO> getMiembros(Long comunidadId, Long viewerId, int page, int size) {
+        verificarAccesoModerador(comunidadId, viewerId);
+        return miembroComunidadRepository
+            .findByComunidadIdAndEstado(comunidadId, EstadoMiembro.ACEPTADO, PageRequest.of(page, size))
+            .map(this::toMiembroDTO);
+    }
+
+    public List<MiembroDTO> getPendientes(Long comunidadId, Long adminId) {
+        verificarAccesoModerador(comunidadId, adminId);
+        return miembroComunidadRepository
+            .findByComunidadIdAndEstado(comunidadId, EstadoMiembro.PENDIENTE)
+            .stream()
+            .map(this::toMiembroDTO)
+            .toList();
+    }
     @Transactional
     public ComunidadDTO crear(Long userId, CrearComunidadRequest req){
         if (comunidadRepository.existsByNombre(req.nombre())) {
@@ -102,6 +118,44 @@ public class ComunidadService {
     }
 
     @Transactional
+    public void aceptarMiembro(Long comunidadId, Long adminId, Long objetivoId){
+        verificarAccesoModerador(comunidadId, adminId);
+        MiembroComunidad m = miembroComunidadRepository.findByComunidadIdAndUsuarioId(comunidadId, objetivoId)
+            .orElseThrow(() -> new NoSuchElementException("Solicitud no encontrada"));
+        
+        if (m.getEstado() != EstadoMiembro.PENDIENTE) {
+            throw new IllegalStateException("La solicitud no está pendiente");
+        }
+        m.setEstado(EstadoMiembro.ACEPTADO);
+        miembroComunidadRepository.save(m);
+    }
+
+    @Transactional
+    public void rechazarMiembro(Long comunidadId, Long adminId, Long objetivoId){
+        verificarAccesoModerador(comunidadId, adminId);
+        MiembroComunidad m = miembroComunidadRepository
+            .findByComunidadIdAndUsuarioId(comunidadId, objetivoId)
+            .orElseThrow(() -> new NoSuchElementException("Solicitud no encontrada"));
+        miembroComunidadRepository.delete(m);
+    }
+
+    @Transactional
+    public void cambiarRol(Long comunidadId, Long adminId, Long objetivoId, RolComunidad nuevoRol){
+        MiembroComunidad admin = miembroComunidadRepository.findByComunidadIdAndUsuarioId(comunidadId, adminId).orElseThrow(() -> new NoSuchElementException("No eres miembro"));
+
+        if (admin.getRol() != RolComunidad.ADMIN) {
+            throw new IllegalStateException("Solo el admin puede cambiar roles");
+        }
+        if (nuevoRol == RolComunidad.ADMIN) {
+            throw new IllegalArgumentException("Usa transferir admin para ceder la administracion");
+        }
+
+        MiembroComunidad objetivo = miembroComunidadRepository.findByComunidadIdAndUsuarioId(comunidadId, objetivoId).orElseThrow(() -> new NoSuchElementException("Usuario no es miembro"));
+        objetivo.setRol(nuevoRol);
+        miembroComunidadRepository.save(objetivo); 
+    }
+
+    @Transactional
     public void setSilenciada(Long comunidadId, Long userId, boolean silenciada) {
         MiembroComunidad m = miembroComunidadRepository.findByComunidadIdAndUsuarioId(comunidadId, userId)
                 .orElseThrow(() -> new NoSuchElementException("No eres miembro de esta comunidad"));
@@ -132,5 +186,21 @@ public class ComunidadService {
         boolean esMiembro = viewerId != null && miembroComunidadRepository.existsByComunidadIdAndUsuarioId(c.getId(), viewerId);
         boolean esCreador = viewerId != null && c.getCreador().getId().equals(viewerId);
         return comunidadMapper.toDTO(c, creador, categoria, totalMiembros, esMiembro, esCreador);
+    }
+    
+    private MiembroDTO toMiembroDTO(MiembroComunidad m) {
+        return new MiembroDTO(
+            m.getUsuario().getId(),
+            m.getUsuario().getNombreUsuario(),
+            m.getUsuario().getFotoPerfil(),
+            m.getRol(),
+            m.getFechaUnion()
+        );
+    }
+
+    private void verificarAccesoModerador(Long comunidadId, Long userId) {
+    miembroComunidadRepository.findByUsuarioIdAndComunidadId(userId, comunidadId)
+        .filter(m -> m.getRol() == RolComunidad.ADMIN || m.getRol() == RolComunidad.MOD)
+        .orElseThrow(() -> new IllegalStateException("Sin permisos de moderación"));
     }
 }
