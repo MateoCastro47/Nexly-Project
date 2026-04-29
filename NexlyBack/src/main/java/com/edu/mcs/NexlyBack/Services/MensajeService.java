@@ -6,6 +6,7 @@ import java.util.NoSuchElementException;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,15 +33,20 @@ public class MensajeService {
     private final MensajeRepository mensajeRepository;
     private final ParticipanteConversacionRepository participanteRepository;
     private final UsuarioRepository usuarioRepository;
+    private final SimpMessagingTemplate messagingTemplate;
 
-    public MensajeService(ConversacionRepository conversacionRepository, MensajeLeidoRepository mensajeLeidoRepository,
-            MensajeRepository mensajeRepository, ParticipanteConversacionRepository participanteRepository,
-            UsuarioRepository usuarioRepository) {
+    public MensajeService(ConversacionRepository conversacionRepository,
+            MensajeLeidoRepository mensajeLeidoRepository,
+            MensajeRepository mensajeRepository,
+            ParticipanteConversacionRepository participanteRepository,
+            UsuarioRepository usuarioRepository,
+            SimpMessagingTemplate messagingTemplate) {
         this.conversacionRepository = conversacionRepository;
         this.mensajeLeidoRepository = mensajeLeidoRepository;
         this.mensajeRepository = mensajeRepository;
         this.participanteRepository = participanteRepository;
         this.usuarioRepository = usuarioRepository;
+        this.messagingTemplate = messagingTemplate;
     }
 
     public List<ConversacionDTO> getMisConversaciones(Long userId) {
@@ -96,12 +102,20 @@ public class MensajeService {
         m.setConversacion(c);
         m.setRemitente(usuarioRepository.getReferenceById(userId));
         m.setContenido(contenido);
-        Mensaje saved = mensajeRepository.save(m); // @PrePersist asigna fechaEnvio aquí
+        Mensaje saved = mensajeRepository.save(m);
 
         c.setUltimoMensaje(saved.getFechaEnvio());
         conversacionRepository.save(c);
 
-        return toMensajeDTO(saved);
+        MensajeDTO dto = toMensajeDTO(saved);
+
+        participanteRepository.findByConversacionId(conversacionId)
+                .forEach(p -> messagingTemplate.convertAndSendToUser(
+                        p.getUsuario().getId().toString(),
+                        "/queue/mensajes",
+                        dto));
+
+        return dto;
     }
 
     @Transactional
@@ -152,9 +166,13 @@ public class MensajeService {
     }
 
     private MensajeDTO toMensajeDTO(Mensaje m) {
-        return new MensajeDTO(m.getId(), m.getRemitente().getId(),
+        return new MensajeDTO(
+                m.getId(),
+                m.getConversacion().getId(),
+                m.getRemitente().getId(),
                 m.getRemitente().getNombreUsuario(),
                 m.getRemitente().getFotoPerfil(),
-                m.getContenido(), m.getFechaEnvio());
+                m.getContenido(),
+                m.getFechaEnvio());
     }
 }

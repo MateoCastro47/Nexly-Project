@@ -61,19 +61,18 @@ public class MensajeController {
     }
 
     @PostMapping("/conversaciones/{id}/leer")
-    public ResponseEntity<Void> marcarLeidos(@PathVariable Long id, Authentication auth){
+    public ResponseEntity<Void> marcarLeidos(@PathVariable Long id, Authentication auth) {
         mensajeService.marcarLeidos(id, userId(auth));
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/grupo")
     public ResponseEntity<ConversacionDTO> crearGrupo(
-        @RequestBody @Valid CrearGrupoRequest req,
-        Authentication auth
-    ){
-        return ResponseEntity.status(HttpStatus.CREATED).body(mensajeService.crearGrupo(userId(auth), req.nombre(), req.participanteIds()));
+            @RequestBody @Valid CrearGrupoRequest req,
+            Authentication auth) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(mensajeService.crearGrupo(userId(auth), req.nombre(), req.participanteIds()));
     }
-    
-    
+
     private Long userId(Authentication auth) { return (Long) auth.getPrincipal(); }
 }
