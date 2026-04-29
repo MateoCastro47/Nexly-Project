@@ -1,21 +1,19 @@
-{
-  "properties": [
-    {
-      "name": "jwt.secret",
-      "type": "java.lang.String",
-      "description": "Clave secreta Base64 para firmar los tokens JWT (mínimo 32 bytes)."
-    },
-    {
-      "name": "jwt.expiration-ms",
-      "type": "java.lang.Long",
-      "description": "Tiempo de expiración del token JWT en milisegundos. Por defecto 86400000 (24h).",
-      "defaultValue": 86400000
-    },
-    {
-      "name": "app.frontend-url",
-      "type": "java.lang.String",
-      "description": "URL base del frontend. Usada en el redirect de OAuth2.",
-      "defaultValue": "http://localhost:5173"
-    }
-  ]
-}
+{"properties": [
+  {
+    "name": "jwt.secret",
+    "type": "java.lang.String",
+    "description": "Clave secreta Base64 para firmar los tokens JWT (mínimo 32 bytes)."
+  },
+  {
+    "name": "jwt.expiration-ms",
+    "type": "java.lang.Long",
+    "description": "Tiempo de expiración del token JWT en milisegundos. Por defecto 86400000 (24h).",
+    "defaultValue": 86400000
+  },
+  {
+    "name": "app.frontend-url",
+    "type": "java.lang.String",
+    "description": "URL base del frontend. Usada en el redirect de OAuth2.",
+    "defaultValue": "http://localhost:5173"
+  }
+]}
