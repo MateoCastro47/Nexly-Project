@@ -34,6 +34,11 @@ public class UsuarioController {
         this.usuarioService = usuarioService;
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<UsuarioDTO> getMe(Authentication auth) {
+        return ResponseEntity.ok(usuarioService.getPerfil(userId(auth), userId(auth)));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<UsuarioDTO> getPerfil(@PathVariable Long id, Authentication auth) {
         return ResponseEntity.ok(usuarioService.getPerfil(id, userId(auth)));
