@@ -11,7 +11,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.stereotype.Controller;
 
 import com.edu.mcs.NexlyBack.DTOs.Mensaje.EnviarMensajeRequest;
-import com.edu.mcs.NexlyBack.Services.MensajeService;
+import com.edu.mcs.NexlyBack.Services.Mensaje.MensajeService;
 
 import jakarta.validation.Valid;
 

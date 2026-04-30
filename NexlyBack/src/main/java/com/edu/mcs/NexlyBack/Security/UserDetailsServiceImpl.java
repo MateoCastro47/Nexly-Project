@@ -1,6 +1,6 @@
 package com.edu.mcs.NexlyBack.Security;
 
-import com.edu.mcs.NexlyBack.Repositories.UsuarioRepository;
+import com.edu.mcs.NexlyBack.Repositories.Usuario.UsuarioRepository;
 import com.edu.mcs.NexlyBack.models.Usuario;
 
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
