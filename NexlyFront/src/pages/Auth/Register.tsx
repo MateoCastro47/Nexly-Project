@@ -1,0 +1,181 @@
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { useAuthStore } from '../../store/authStore'
+import { register } from '../../api/auth'
+
+const campos = [
+  { field: 'nombreCompleto', placeholder: 'Nombre completo',   type: 'text',     icon: (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+      <circle cx="12" cy="7" r="4" />
+    </svg>
+  )},
+  { field: 'nombreUsuario',  placeholder: 'Nombre de usuario', type: 'text',     icon: (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+      <circle cx="12" cy="7" r="4" />
+      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+    </svg>
+  )},
+  { field: 'email',          placeholder: 'Email',             type: 'email',    icon: (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+      <polyline points="22,6 12,13 2,6" />
+    </svg>
+  )},
+  { field: 'contrasenha',    placeholder: 'Contraseña',        type: 'password', icon: (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+    </svg>
+  )},
+]
+
+export default function Register() {
+  const navigate = useNavigate()
+  const setUsuario = useAuthStore((s) => s.setUsuario)
+  const [form, setForm] = useState({ nombreCompleto: '', nombreUsuario: '', email: '', contrasenha: '', confirmarContrasenha: '' })
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [focused, setFocused] = useState<string | null>(null)
+
+  const handleSubmit = async (e: { preventDefault(): void }) => {
+    e.preventDefault()
+    if(form.contrasenha !== form.confirmarContrasenha){
+        setError('Las contraseñas no coinciden')
+        return;
+    }
+    setError('')
+    setLoading(true)
+    try {
+      const { data } = await register(form)
+      setUsuario(data)
+      navigate('/')
+    } catch (err: any) {
+      setError(err.response?.data?.message ?? 'Error al registrarse')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const inputStyle = (name: string) => ({
+    border: `1px solid ${focused === name ? 'var(--color-brand)' : 'var(--color-border)'}`,
+    background: 'var(--color-bg)',
+    color: 'var(--color-text)',
+    outline: 'none',
+    transition: 'border-color 0.15s',
+  })
+
+  return (
+    <div className="h-screen flex overflow-hidden">
+
+      {/* ── Panel izquierdo (branding) ── */}
+      <div
+        className="hidden lg:flex lg:w-5/12 flex-col items-center justify-center p-14 relative overflow-hidden shrink-0"
+        style={{ background: 'linear-gradient(145deg, var(--color-brand-dark) 0%, var(--color-brand) 100%)' }}
+      >
+        <div className="absolute -top-24 -left-24 w-80 h-80 rounded-full opacity-[0.15]" style={{ background: 'white' }} />
+        <div className="absolute -bottom-36 -right-20 w-[420px] h-[420px] rounded-full opacity-[0.08]" style={{ background: 'white' }} />
+        <div className="absolute top-1/3 right-8 w-40 h-40 rounded-full opacity-[0.10]" style={{ background: 'white' }} />
+
+        <div className="relative z-10 text-center text-white select-none">
+          <p className="text-6xl font-bold tracking-tight mb-5">Nexly</p>
+          <p className="text-xl font-medium opacity-90 mb-3">Tu espacio, tu comunidad.</p>
+          <p className="text-sm opacity-65 max-w-[260px] leading-relaxed mx-auto">
+            Crea tu cuenta y empieza a compartir lo que te importa.
+          </p>
+        </div>
+      </div>
+
+      {/* ── Panel derecho ── */}
+      <div
+        className="flex-1 flex items-center justify-center p-6 overflow-y-auto"
+        style={{ background: 'var(--color-bg)' }}
+      >
+        {/* Card */}
+        <div
+          className="w-full max-w-sm rounded-2xl p-8 shadow-md"
+          style={{ background: 'var(--color-surface)' }}
+        >
+          {/* Logo solo en mobile */}
+          <p className="lg:hidden text-center text-3xl font-bold mb-6" style={{ color: 'var(--color-brand)' }}>
+            Nexly
+          </p>
+
+          <h2 className="text-2xl font-bold mb-1" style={{ color: 'var(--color-text)' }}>
+            Crea tu cuenta
+          </h2>
+          <p className="text-sm mb-7" style={{ color: 'var(--color-muted)' }}>
+            Es gratis y solo toma un momento
+          </p>
+
+          <form onSubmit={handleSubmit} className="flex flex-col gap-3.5">
+            {campos.map(({ field, placeholder, type, icon }) => (
+              <div key={field} className="relative">
+                <span
+                  className="absolute inset-y-0 left-3 flex items-center pointer-events-none"
+                  style={{ color: 'var(--color-muted)' }}
+                >
+                  {icon}
+                </span>
+                <input
+                  type={type}
+                  placeholder={placeholder}
+                  required
+                  value={form[field as keyof typeof form]}
+                  onChange={(e) => setForm({ ...form, [field]: e.target.value })}
+                  onFocus={() => setFocused(field)}
+                  onBlur={() => setFocused(null)}
+                  className="w-full rounded-xl pl-10 pr-4 py-3 text-sm"
+                  style={inputStyle(field)}
+                />
+              </div>
+            ))}
+            {/* Confirmar contraseña*/}
+            <div className='relative'>
+                <span
+                    className='absolute inset-y-0 left-3 flex items-center pointer-events-none'
+                    style={{ color: 'var(--color-muted)'}}
+                >
+                     <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                        <path d="M9 16l2 2 4-4" />   {/* checkmark visual */}
+                    </svg>
+                </span>
+                <input type="password"
+                    placeholder='Confirmar contraseña'
+                    required
+                    value={form.confirmarContrasenha}
+                    onChange={(e) => setForm({...form, confirmarContrasenha: e.target.value})}
+                    onFocus={() => setFocused('confirmarContrasenha')}
+                    onBlur={() => setFocused(null)}
+                    className='w-full rounded-xl pl-10 pr-4 py-3 text-sm'
+                    style={inputStyle('confirmarContrasenha')} 
+                />
+            </div>
+            {error && (
+              <p className="text-xs px-1" style={{ color: 'var(--color-error)' }}>{error}</p>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full rounded-xl py-3 text-sm font-semibold text-white disabled:opacity-50 mt-0.5"
+              style={{ background: 'var(--color-brand)', cursor: loading ? 'not-allowed' : 'pointer' }}
+            >
+              {loading ? 'Creando cuenta...' : 'Registrarse'}
+            </button>
+          </form>
+
+          <p className="text-center text-sm mt-7" style={{ color: 'var(--color-muted)' }}>
+            ¿Ya tienes cuenta?{' '}
+            <Link to="/login" className="font-semibold" style={{ color: 'var(--color-brand)' }}>
+              Inicia sesión
+            </Link>
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
