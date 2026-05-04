@@ -3,6 +3,8 @@ import { useAuthStore } from '../store/authStore'
 import Login from '../pages/Auth/Login'
 import Register from '../pages/Auth/Register'
 import OAuth2Callback from '../pages/Auth/OAuth2CallBack'
+import AppLayout from '../components/layout/AppLayout'
+import FeedPage from '../pages/Feed/FeedPage'
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const usuario = useAuthStore((s) => s.usuario)
@@ -15,7 +17,9 @@ export const router = createBrowserRouter([
   { path: '/oauth2/callback', element: <OAuth2Callback /> },
   {
     path: '/',
-    element: <PrivateRoute><div>Layout pendiente</div></PrivateRoute>,
-    children: [],
+    element: <PrivateRoute><AppLayout /></PrivateRoute>,
+    children: [
+      { index: true, element: <FeedPage /> },
+    ],
   },
 ])

@@ -8,7 +8,8 @@ export const register = (data: {
   nombreCompleto: string
   nombreUsuario: string
   email: string
-  contrasenha: string
+  contrasena: string
+  fechaNacimiento: string
 }) => client.post<Usuario>('/auth/register', data)
 
 export const logout = () => client.post('/auth/logout')

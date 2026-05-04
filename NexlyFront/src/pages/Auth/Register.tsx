@@ -23,7 +23,7 @@ const campos = [
       <polyline points="22,6 12,13 2,6" />
     </svg>
   )},
-  { field: 'contrasenha',    placeholder: 'Contraseña',        type: 'password', icon: (
+  { field: 'contrasena',     placeholder: 'Contraseña',        type: 'password', icon: (
     <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
       <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
       <path d="M7 11V7a5 5 0 0 1 10 0v4" />
@@ -34,21 +34,29 @@ const campos = [
 export default function Register() {
   const navigate = useNavigate()
   const setUsuario = useAuthStore((s) => s.setUsuario)
-  const [form, setForm] = useState({ nombreCompleto: '', nombreUsuario: '', email: '', contrasenha: '', confirmarContrasenha: '' })
+  const [form, setForm] = useState({
+    nombreCompleto: '',
+    nombreUsuario: '',
+    email: '',
+    contrasena: '',
+    confirmarContrasena: '',
+    fechaNacimiento: '',
+  })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [focused, setFocused] = useState<string | null>(null)
 
   const handleSubmit = async (e: { preventDefault(): void }) => {
     e.preventDefault()
-    if(form.contrasenha !== form.confirmarContrasenha){
-        setError('Las contraseñas no coinciden')
-        return;
+    if (form.contrasena !== form.confirmarContrasena) {
+      setError('Las contraseñas no coinciden')
+      return
     }
     setError('')
     setLoading(true)
     try {
-      const { data } = await register(form)
+      const { nombreCompleto, nombreUsuario, email, contrasena, fechaNacimiento } = form
+      const { data } = await register({ nombreCompleto, nombreUsuario, email, contrasena, fechaNacimiento })
       setUsuario(data)
       navigate('/')
     } catch (err: any) {
@@ -79,8 +87,8 @@ export default function Register() {
         <div className="absolute top-1/3 right-8 w-40 h-40 rounded-full opacity-[0.10]" style={{ background: 'white' }} />
 
         <div className="relative z-10 text-center text-white select-none">
-          <p className="text-6xl font-bold tracking-tight mb-5">Nexly</p>
-          <p className="text-xl font-medium opacity-90 mb-3">Tu espacio, tu comunidad.</p>
+          <p className="text-6xl font-bold tracking-tight mb-6">Nexly</p>
+          <p className="text-xl font-medium opacity-90 mb-4">Tu espacio, tu comunidad.</p>
           <p className="text-sm opacity-65 max-w-[260px] leading-relaxed mx-auto">
             Crea tu cuenta y empieza a compartir lo que te importa.
           </p>
@@ -92,12 +100,10 @@ export default function Register() {
         className="flex-1 flex items-center justify-center p-6 overflow-y-auto"
         style={{ background: 'var(--color-bg)' }}
       >
-        {/* Card */}
         <div
           className="w-full max-w-sm rounded-2xl p-8 shadow-md"
           style={{ background: 'var(--color-surface)' }}
         >
-          {/* Logo solo en mobile */}
           <p className="lg:hidden text-center text-3xl font-bold mb-6" style={{ color: 'var(--color-brand)' }}>
             Nexly
           </p>
@@ -109,13 +115,12 @@ export default function Register() {
             Es gratis y solo toma un momento
           </p>
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-3.5">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+
+            {/* Campos base */}
             {campos.map(({ field, placeholder, type, icon }) => (
               <div key={field} className="relative">
-                <span
-                  className="absolute inset-y-0 left-3 flex items-center pointer-events-none"
-                  style={{ color: 'var(--color-muted)' }}
-                >
+                <span className="absolute inset-y-0 left-3 flex items-center pointer-events-none" style={{ color: 'var(--color-muted)' }}>
                   {icon}
                 </span>
                 <input
@@ -131,29 +136,52 @@ export default function Register() {
                 />
               </div>
             ))}
-            {/* Confirmar contraseña*/}
-            <div className='relative'>
-                <span
-                    className='absolute inset-y-0 left-3 flex items-center pointer-events-none'
-                    style={{ color: 'var(--color-muted)'}}
-                >
-                     <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                        <path d="M9 16l2 2 4-4" />   {/* checkmark visual */}
-                    </svg>
-                </span>
-                <input type="password"
-                    placeholder='Confirmar contraseña'
-                    required
-                    value={form.confirmarContrasenha}
-                    onChange={(e) => setForm({...form, confirmarContrasenha: e.target.value})}
-                    onFocus={() => setFocused('confirmarContrasenha')}
-                    onBlur={() => setFocused(null)}
-                    className='w-full rounded-xl pl-10 pr-4 py-3 text-sm'
-                    style={inputStyle('confirmarContrasenha')} 
-                />
+
+            {/* Confirmar contraseña */}
+            <div className="relative">
+              <span className="absolute inset-y-0 left-3 flex items-center pointer-events-none" style={{ color: 'var(--color-muted)' }}>
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                  <path d="M9 16l2 2 4-4" />
+                </svg>
+              </span>
+              <input
+                type="password"
+                placeholder="Confirmar contraseña"
+                required
+                value={form.confirmarContrasena}
+                onChange={(e) => setForm({ ...form, confirmarContrasena: e.target.value })}
+                onFocus={() => setFocused('confirmarContrasena')}
+                onBlur={() => setFocused(null)}
+                className="w-full rounded-xl pl-10 pr-4 py-3 text-sm"
+                style={inputStyle('confirmarContrasena')}
+              />
             </div>
+
+            {/* Fecha de nacimiento */}
+            <div className="relative">
+              <span className="absolute inset-y-0 left-3 flex items-center pointer-events-none" style={{ color: 'var(--color-muted)' }}>
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                  <line x1="16" y1="2" x2="16" y2="6" />
+                  <line x1="8" y1="2" x2="8" y2="6" />
+                  <line x1="3" y1="10" x2="21" y2="10" />
+                </svg>
+              </span>
+              <input
+                type="date"
+                required
+                max={new Date().toISOString().split('T')[0]}
+                value={form.fechaNacimiento}
+                onChange={(e) => setForm({ ...form, fechaNacimiento: e.target.value })}
+                onFocus={() => setFocused('fechaNacimiento')}
+                onBlur={() => setFocused(null)}
+                className="w-full rounded-xl pl-10 pr-4 py-3 text-sm"
+                style={inputStyle('fechaNacimiento')}
+              />
+            </div>
+
             {error && (
               <p className="text-xs px-1" style={{ color: 'var(--color-error)' }}>{error}</p>
             )}
