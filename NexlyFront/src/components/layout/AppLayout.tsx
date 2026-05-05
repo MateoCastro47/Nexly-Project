@@ -1,9 +1,10 @@
 import { Outlet } from 'react-router-dom'
 import Sidebar from './Sidebar'
+import DiscoverPanel from './DiscoverPanel'
 
 export default function AppLayout() {
   return (
-    <div className="flex min-h-screen" style={{ background: 'var(--color-bg)' }}>
+    <div className="flex min-h-screen app-bg">
       <Sidebar />
 
       {/* Columna central */}
@@ -11,8 +12,8 @@ export default function AppLayout() {
         <Outlet />
       </main>
 
-      {/* Panel derecho — vacío hasta sugerencias de usuarios */}
-      <aside className="hidden xl:block w-72 shrink-0 px-4 py-6" />
+      {/* Panel derecho — Descubrimiento */}
+      <DiscoverPanel />
     </div>
   )
 }
