@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { useAuthStore } from '../store/authStore'
 
 const client = axios.create({
   baseURL: '/api',
@@ -8,7 +9,8 @@ const client = axios.create({
 client.interceptors.response.use(
   (res) => res,
   (error) => {
-    if (error.response?.status === 401) window.location.href = '/login'
+    const { initialized } = useAuthStore.getState()
+    if (error.response?.status === 401 && initialized) window.location.href = '/login'
     return Promise.reject(error)
   }
 )

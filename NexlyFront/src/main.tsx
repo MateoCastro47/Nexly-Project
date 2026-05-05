@@ -7,12 +7,16 @@ import client from './api/client'
 import type { Usuario } from './types'
 import './index.css'
 
-client.get<Usuario>('/usuario/me')
-  .then(({ data }) => useAuthStore.getState().setUsuario(data))
-  .catch(() => {})
+const { setUsuario, setInitialized } = useAuthStore.getState()
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <RouterProvider router={router} />
-  </StrictMode>
-)
+client.get<Usuario>('/usuario/me')
+  .then(({ data }) => setUsuario(data))
+  .catch(() => {})
+  .finally(() => {
+    setInitialized()
+    createRoot(document.getElementById('root')!).render(
+      <StrictMode>
+        <RouterProvider router={router} />
+      </StrictMode>
+    )
+  })

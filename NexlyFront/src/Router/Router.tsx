@@ -14,7 +14,7 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
 export const router = createBrowserRouter([
   { path: '/login', element: <Login /> },
   { path: '/register', element: <Register /> },
-  { path: '/oauth2/callback', element: <OAuth2Callback /> },
+  { path: '/auth/callback', element: <OAuth2Callback /> },
   {
     path: '/',
     element: <PrivateRoute><AppLayout /></PrivateRoute>,
