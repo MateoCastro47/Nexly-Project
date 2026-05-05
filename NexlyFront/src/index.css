@@ -1,50 +1,87 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@300;400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
 :root {
-  /* Primarios */
-  --color-brand:       oklch(0.58 0.22 270);
-  --color-brand-dark:  oklch(0.50 0.20 270);
-  --color-brand-hover: oklch(0.53 0.21 270);
-  --color-brand-tint:  oklch(0.96 0.03 270);
+  /* ── Tipografías ── */
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body:    'Manrope', sans-serif;
 
-  /* Neutros */
-  --color-bg:      oklch(0.97 0.003 264);
-  --color-surface: oklch(1 0 0);
-  --color-text:    oklch(0.16 0.04 270);
-  --color-muted:   oklch(0.52 0.015 264);
-  --color-border:  oklch(0.87 0.01 264);
-  --color-overlay: oklch(0.16 0.04 270 / 0.5);
+  /* ── Acento primario: Electric Violet ── */
+  --color-accent-1:       oklch(0.62 0.26 285);
+  --color-accent-1-dark:  oklch(0.52 0.26 285);
+  --color-accent-1-hover: oklch(0.58 0.27 285);
+  --color-accent-1-light: oklch(0.92 0.06 285);
+  --color-accent-1-tint:  oklch(0.97 0.02 285);
 
-  /* Semánticos */
-  --color-success: oklch(0.73 0.19 142);
-  --color-error:   oklch(0.63 0.22  29);
-  --color-warning: oklch(0.76 0.17  76);
+  /* ── Acento secundario: Hot Coral ── */
+  --color-accent-2:       oklch(0.68 0.22 25);
+  --color-accent-2-dark:  oklch(0.58 0.22 25);
+  --color-accent-2-hover: oklch(0.65 0.23 25);
+  --color-accent-2-light: oklch(0.93 0.05 25);
+  --color-accent-2-tint:  oklch(0.97 0.02 25);
 
-  /* Radios */
-  --radius-sm:   0.375rem;
-  --radius-md:   0.625rem;
-  --radius-lg:   0.875rem;
-  --radius-xl:   1rem;
-  --radius-2xl:  1.25rem;
+  /* ── Brand gradient (combinación de ambos acentos) ── */
+  --gradient-brand: linear-gradient(135deg, var(--color-accent-1), var(--color-accent-2));
+  --gradient-brand-soft: linear-gradient(135deg, var(--color-accent-1-light), var(--color-accent-2-light));
+  --gradient-brand-vivid: linear-gradient(135deg, oklch(0.58 0.28 285), oklch(0.65 0.24 25), oklch(0.72 0.20 50));
+
+  /* ── Neutros cálidos (papel, nunca blanco puro) ── */
+  --color-bg:        oklch(0.965 0.008 65);
+  --color-surface:   oklch(0.99 0.004 65);
+  --color-surface-2: oklch(0.985 0.006 65);
+  --color-surface-3: oklch(0.975 0.008 65);
+  --color-text:      oklch(0.16 0.02 50);
+  --color-text-2:    oklch(0.30 0.02 50);
+  --color-muted:     oklch(0.52 0.015 50);
+  --color-border:    oklch(0.90 0.012 65);
+  --color-border-strong: oklch(0.84 0.02 65);
+  --color-overlay:   oklch(0.14 0.02 50 / 0.55);
+
+  /* ── Semánticos ── */
+  --color-success: oklch(0.72 0.19 148);
+  --color-error:   oklch(0.62 0.24 28);
+  --color-warning: oklch(0.78 0.16 80);
+  --color-info:    oklch(0.65 0.18 240);
+
+  /* ── Radios orgánicos (no perfectos) ── */
+  --radius-sm:   6px;
+  --radius-md:   10px;
+  --radius-lg:   14px;
+  --radius-xl:   18px;
+  --radius-2xl:  22px;
+  --radius-3xl:  28px;
+  --radius-blob: 30% 70% 70% 30% / 30% 30% 70% 70%;
   --radius-full: 9999px;
 
-  /* Sombras */
-  --shadow-sm: 0 1px 3px oklch(0 0 0 / 0.06);
-  --shadow-md: 0 4px 16px oklch(0 0 0 / 0.08);
-  --shadow-lg: 0 8px 32px oklch(0 0 0 / 0.12);
+  /* ── Sombras con profundidad real ── */
+  --shadow-xs:   0 1px 2px oklch(0 0 0 / 0.04);
+  --shadow-sm:   0 2px 6px oklch(0 0 0 / 0.05), 0 1px 2px oklch(0 0 0 / 0.04);
+  --shadow-md:   0 8px 24px oklch(0 0 0 / 0.07), 0 2px 6px oklch(0 0 0 / 0.04);
+  --shadow-lg:   0 16px 48px oklch(0 0 0 / 0.10), 0 4px 12px oklch(0 0 0 / 0.06);
+  --shadow-xl:   0 24px 64px oklch(0 0 0 / 0.14), 0 8px 20px oklch(0 0 0 / 0.08);
+  --shadow-card:       0 4px 16px oklch(0 0 0 / 0.06), 0 1px 4px oklch(0 0 0 / 0.04);
+  --shadow-card-hover: 0 20px 52px oklch(0 0 0 / 0.12), 0 8px 16px oklch(0 0 0 / 0.06);
+  --shadow-card-hero:  0 12px 36px oklch(0.62 0.26 285 / 0.10), 0 4px 12px oklch(0 0 0 / 0.06);
+  --shadow-glow-1:     0 0 24px oklch(0.62 0.26 285 / 0.20);
+  --shadow-glow-2:     0 0 24px oklch(0.68 0.22 25 / 0.20);
+  --shadow-float:      0 8px 32px oklch(0 0 0 / 0.08), 0 2px 8px oklch(0 0 0 / 0.04);
 
-  /* Z-index */
+  /* ── Z-index ── */
   --z-dropdown: 100;
   --z-sticky:   200;
   --z-modal:    300;
   --z-toast:    400;
 
-  /* Transiciones */
+  /* ── Transiciones ── */
   --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-base: 0.25s cubic-bezier(0.19, 1, 0.22, 1);
+  --transition-base: 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+  --transition-spring: 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  --transition-smooth: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* ── Base ── */
+/* ══════════════════════════════════════════════════════════════════════════════
+   BASE
+   ══════════════════════════════════════════════════════════════════════════════ */
 
 @layer base {
   *, *::before, *::after {
@@ -58,22 +95,22 @@
   }
 
   body {
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-      Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-family: var(--font-body), system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background: var(--color-bg);
     color: var(--color-text);
-    line-height: 1.5;
+    line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: 'liga' 1, 'kern' 1;
   }
 
   ::selection {
-    background: var(--color-brand);
-    color: white;
+    background: oklch(0.62 0.26 285 / 0.25);
+    color: var(--color-text);
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-brand);
+    outline: 2px solid var(--color-accent-1);
     outline-offset: 2px;
     border-radius: var(--radius-sm);
   }
@@ -81,7 +118,7 @@
   ::view-transition-group(*),
   ::view-transition-old(*),
   ::view-transition-new(*) {
-    animation-duration: 0.25s;
+    animation-duration: 0.3s;
     animation-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
   }
 
@@ -105,49 +142,433 @@
   input, textarea, select {
     font: inherit;
   }
+
+  /* ── Scrollbar premium ── */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: oklch(0.80 0.02 65);
+    border-radius: var(--radius-full);
+    transition: background 0.2s;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: oklch(0.62 0.15 285);
+  }
 }
 
-/* ── Components ── */
+/* ══════════════════════════════════════════════════════════════════════════════
+   ANIMATIONS
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+@layer base {
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(16px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  @keyframes slideInRight {
+    from { opacity: 0; transform: translateX(12px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  @keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.92); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+
+  @keyframes shimmer {
+    0%   { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  @keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 0 0 0 oklch(0.62 0.26 285 / 0.3); }
+    50%      { box-shadow: 0 0 0 8px oklch(0.62 0.26 285 / 0); }
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-4px); }
+  }
+
+  @keyframes gradientShift {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  @keyframes bounceIn {
+    0%   { transform: scale(0.3); opacity: 0; }
+    50%  { transform: scale(1.05); }
+    70%  { transform: scale(0.95); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   COMPONENTS
+   ══════════════════════════════════════════════════════════════════════════════ */
 
 @layer components {
+
+  /* ── Inputs ── */
   .input {
-    border: 1px solid var(--color-border);
+    border: 1.5px solid var(--color-border);
+    border-radius: var(--radius-md);
     background: var(--color-bg);
     color: var(--color-text);
     outline: none;
-    transition: border-color var(--transition-fast);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
 
     &:focus {
-      border-color: var(--color-brand);
+      border-color: var(--color-accent-1);
+      box-shadow: 0 0 0 3px oklch(0.62 0.26 285 / 0.10);
+      background: var(--color-surface);
+    }
+
+    &::placeholder {
+      color: var(--color-muted);
     }
   }
 
+  /* ── Botón primario con gradiente ── */
   .btn-primary {
-    background: var(--color-brand);
+    background: var(--gradient-brand);
+    background-size: 200% 200%;
     color: white;
-    font-weight: 600;
-    transition: background var(--transition-fast);
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    border-radius: var(--radius-full);
+    position: relative;
+    overflow: hidden;
+    transition: box-shadow var(--transition-base), transform var(--transition-fast), filter var(--transition-fast);
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent 40%, oklch(1 0 0 / 0.15) 50%, transparent 60%);
+      background-size: 200% 100%;
+      animation: shimmer 3s infinite;
+      pointer-events: none;
+    }
 
     &:hover:not(:disabled) {
-      background: var(--color-brand-hover);
+      box-shadow: 0 4px 20px oklch(0.62 0.26 285 / 0.30), 0 2px 8px oklch(0.68 0.22 25 / 0.20);
+      transform: translateY(-1px);
+    }
+
+    &:active:not(:disabled) {
+      transform: translateY(0) scale(0.98);
     }
 
     &:disabled {
-      opacity: 0.5;
+      opacity: 0.45;
       cursor: not-allowed;
+      filter: grayscale(0.4);
     }
   }
 
+  /* ── Botón outline ── */
   .btn-outline {
-    border: 1px solid var(--color-border);
-    background: var(--color-bg);
+    border: 1.5px solid var(--color-border);
+    background: var(--color-surface);
     color: var(--color-text);
-    font-weight: 500;
-    transition: border-color var(--transition-fast), background var(--transition-fast);
+    font-weight: 600;
+    border-radius: var(--radius-xl);
+    transition: border-color var(--transition-fast), background var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast);
 
     &:hover {
-      border-color: var(--color-brand);
-      background: var(--color-brand-tint);
+      border-color: var(--color-accent-1);
+      background: var(--color-accent-1-tint);
+      color: var(--color-accent-1);
+      box-shadow: 0 2px 12px oklch(0.62 0.26 285 / 0.08);
     }
+  }
+
+  /* ── App background con textura papel + gradientes ── */
+  .app-bg {
+    background:
+      /* Gradiente superior izquierdo - violet */
+      radial-gradient(ellipse 700px 400px at 5% -5%, oklch(0.62 0.26 285 / 0.08), transparent 70%),
+      /* Gradiente superior derecho - coral */
+      radial-gradient(ellipse 600px 350px at 95% 2%, oklch(0.68 0.22 25 / 0.06), transparent 65%),
+      /* Gradiente central suave */
+      radial-gradient(ellipse 800px 500px at 50% 40%, oklch(0.62 0.26 285 / 0.03), transparent 60%),
+      /* Textura "papel" sutil */
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.015'/%3E%3C/svg%3E"),
+      var(--color-bg);
+    background-attachment: fixed;
+  }
+
+  /* ── Card base ── */
+  .card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-sm);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ── Card feed (hojas flotantes) ── */
+  .card-feed {
+    background: linear-gradient(165deg, var(--color-surface) 0%, var(--color-surface-2) 100%);
+    border: 1px solid color-mix(in oklch, var(--color-border), var(--color-accent-1) 8%);
+    border-radius: var(--radius-3xl);
+    box-shadow: var(--shadow-card);
+    position: relative;
+    overflow: hidden;
+    animation: fadeInUp 0.5s cubic-bezier(0.19, 1, 0.22, 1) both;
+    transition: transform var(--transition-base),
+                box-shadow var(--transition-base),
+                border-color var(--transition-base);
+
+    /* Borde interior sutil luminoso */
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 1px;
+      background: linear-gradient(165deg, oklch(1 0 0 / 0.5) 0%, transparent 40%, transparent 60%, oklch(1 0 0 / 0.1) 100%);
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask-composite: exclude;
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      pointer-events: none;
+    }
+
+    &:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-card-hover);
+      border-color: color-mix(in oklch, var(--color-border), var(--color-accent-1) 20%);
+    }
+  }
+
+  /* ── Hero card (más grande, con glow) ── */
+  .card-hero {
+    border-color: color-mix(in oklch, var(--color-border), var(--color-accent-1) 25%);
+    box-shadow: var(--shadow-card-hero);
+    background: linear-gradient(165deg,
+      var(--color-surface) 0%,
+      color-mix(in oklch, var(--color-surface), var(--color-accent-1-tint) 30%) 50%,
+      color-mix(in oklch, var(--color-surface-2), var(--color-accent-2-tint) 15%) 100%
+    );
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--gradient-brand);
+      border-radius: var(--radius-3xl) var(--radius-3xl) 0 0;
+    }
+
+    &:hover {
+      box-shadow: 0 24px 56px oklch(0.62 0.26 285 / 0.14), 0 8px 20px oklch(0 0 0 / 0.06);
+    }
+  }
+
+  /* ── Avatar ring con gradiente ── */
+  .avatar-ring {
+    padding: 2px;
+    border-radius: var(--radius-full);
+    background: var(--gradient-brand);
+    display: inline-block;
+    line-height: 0;
+    transition: box-shadow var(--transition-base), transform var(--transition-fast);
+
+    &:hover {
+      box-shadow: var(--shadow-glow-1);
+      transform: scale(1.05);
+    }
+  }
+
+  /* ── Hero avatar (más grande) ── */
+  .avatar-hero {
+    padding: 3px;
+    background: var(--gradient-brand-vivid);
+    background-size: 300% 300%;
+    animation: gradientShift 4s ease infinite;
+  }
+
+  /* ── Display name con estilo expresivo ── */
+  .name-display {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  /* ── Hero name: más grande ── */
+  .name-hero {
+    font-size: 1.05rem;
+    background: var(--gradient-brand);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ── Nav link del sidebar ── */
+  .nav-link {
+    color: var(--color-text-2);
+    transition: background var(--transition-fast), color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+    position: relative;
+
+    &:not(.active):hover {
+      background: var(--color-accent-1-tint);
+      color: var(--color-accent-1);
+      transform: translateX(4px);
+    }
+
+    &.active {
+      background: var(--gradient-brand);
+      color: white;
+      box-shadow: 0 4px 16px oklch(0.62 0.26 285 / 0.25);
+      font-weight: 700;
+    }
+  }
+
+  /* ── Botones de acción en posts: efecto "pressed" físico ── */
+  .action-btn {
+    color: var(--color-muted);
+    border-radius: var(--radius-lg);
+    border: 1.5px solid color-mix(in oklch, var(--color-border), var(--color-accent-1) 8%);
+    background: var(--color-surface);
+    box-shadow: 0 2px 0 oklch(0 0 0 / 0.05), inset 0 -1px 0 oklch(0 0 0 / 0.03);
+    transition: background var(--transition-fast),
+                color var(--transition-fast),
+                transform 0.1s cubic-bezier(0.34, 1.56, 0.64, 1),
+                box-shadow var(--transition-fast),
+                border-color var(--transition-fast);
+
+    &:hover {
+      background: var(--color-accent-1-tint);
+      color: var(--color-accent-1);
+      border-color: color-mix(in oklch, var(--color-border), var(--color-accent-1) 25%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px oklch(0.62 0.26 285 / 0.10), 0 2px 4px oklch(0 0 0 / 0.05);
+    }
+
+    &:active {
+      transform: translateY(1px) scale(0.97);
+      box-shadow: 0 1px 0 oklch(0 0 0 / 0.06), inset 0 2px 4px oklch(0 0 0 / 0.06);
+      background: color-mix(in oklch, var(--color-accent-1-tint), var(--color-accent-1-light) 40%);
+    }
+  }
+
+  /* ── Variante "liked" de action-btn ── */
+  .action-btn-active {
+    background: var(--color-accent-1-tint);
+    color: var(--color-accent-1);
+    border-color: color-mix(in oklch, var(--color-border), var(--color-accent-1) 30%);
+  }
+
+  /* ── Chip/tag para sidebar y descubrimiento ── */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: var(--radius-full);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    border: 1.5px solid var(--color-border);
+    background: var(--color-surface);
+    color: var(--color-text-2);
+    transition: all var(--transition-fast);
+    cursor: pointer;
+
+    &:hover {
+      background: var(--color-accent-1-tint);
+      border-color: var(--color-accent-1);
+      color: var(--color-accent-1);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px oklch(0.62 0.26 285 / 0.10);
+    }
+
+    &.chip-active {
+      background: var(--gradient-brand);
+      color: white;
+      border-color: transparent;
+      box-shadow: 0 2px 12px oklch(0.62 0.26 285 / 0.20);
+    }
+  }
+
+  /* ── Discovery card (panel derecho) ── */
+  .discover-card {
+    background: linear-gradient(135deg, var(--color-surface) 0%, var(--color-surface-2) 100%);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    padding: 14px;
+    transition: all var(--transition-base);
+    cursor: pointer;
+
+    &:hover {
+      border-color: color-mix(in oklch, var(--color-border), var(--color-accent-1) 25%);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+  }
+
+  /* ── Shimmer loading skeleton ── */
+  .skeleton {
+    background: linear-gradient(
+      90deg,
+      var(--color-surface-3) 25%,
+      var(--color-surface) 50%,
+      var(--color-surface-3) 75%
+    );
+    background-size: 400% 100%;
+    animation: shimmer 1.8s ease-in-out infinite;
+    border-radius: var(--radius-lg);
+  }
+
+  /* ── Badge/contador de notificaciones ── */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: var(--radius-full);
+    font-size: 0.6875rem;
+    font-weight: 800;
+    background: var(--gradient-brand);
+    color: white;
+    box-shadow: 0 2px 8px oklch(0.62 0.26 285 / 0.30);
+    animation: bounceIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  /* ── Divider decorativo ── */
+  .divider-brand {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, color-mix(in oklch, var(--color-border), var(--color-accent-1) 15%), transparent);
+  }
+
+  /* ── Tooltip ── */
+  .tooltip-popup {
+    background: oklch(0.18 0.02 50 / 0.92);
+    backdrop-filter: blur(8px);
+    color: white;
+    border-radius: var(--radius-md);
+    padding: 4px 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    box-shadow: var(--shadow-md);
+    animation: scaleIn 0.15s ease-out;
   }
 }
