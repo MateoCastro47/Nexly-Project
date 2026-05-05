@@ -18,6 +18,7 @@ public class PublicacionDTO {
     private boolean fijada;
     private boolean comentariosActivos;
     private List<String> imagenes;
+    private List<MediaDTO> media;
     private long conteoReacciones;
     private long conteoComentarios;
     private TipoReaccion reaccionDelVisor;
@@ -111,6 +112,14 @@ public class PublicacionDTO {
 
     public void setImagenes(List<String> imagenes) {
         this.imagenes = imagenes;
+    }
+
+    public List<MediaDTO> getMedia() {
+        return media;
+    }
+
+    public void setMedia(List<MediaDTO> media) {
+        this.media = media;
     }
 
     public long getConteoReacciones() {

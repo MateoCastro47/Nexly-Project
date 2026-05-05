@@ -1,6 +1,7 @@
 import type { Publicacion } from '../../types'
 import { useFeedStore } from '../../store/feedStore'
 import PostHeader from './PostHeader'
+import PostActions from './PostActions'
 
 interface Props {
   publicacion: Publicacion
@@ -73,11 +74,11 @@ export default function PostCard({ publicacion }: Props) {
       )}
 
       {/* PostActions — se añade en paso 6 */}
-      <div
-        className="flex gap-1 pt-1 border-t"
-        style={{ borderColor: 'var(--color-border)' }}
-      >
-        {/* placeholder */}
+      <div className='pt-1 border-t' style={{ borderColor: 'var(--color-border)'}}>
+        <PostActions
+            publicacionId={publicacion.id}
+            miReaccion={publicacion.miReaccion}
+        />
       </div>
     </article>
   )

@@ -19,10 +19,16 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException{
-        Usuario u = usuarioRepository.findByEmail(email).filter(Usuario::getActivo).orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
+        Usuario u = usuarioRepository.findByEmail(email)
+                .filter(Usuario::getActivo)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
+
+        if (u.getContrasenaHash() == null) {
+            throw new UsernameNotFoundException("Esta cuenta usa inicio de sesión con Google");
+        }
 
         return new User(
-            u.getId().toString(), 
+            u.getId().toString(),
             u.getContrasenaHash(),
             List.of(new SimpleGrantedAuthority("ROLE_" + u.getRol().name()))
         );

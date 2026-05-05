@@ -47,12 +47,19 @@ public class Publicacion {
     @OneToMany(mappedBy = "publicacion", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PublicacionImagen> imagenes;
 
+    @OneToMany(mappedBy = "publicacion", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comentario> comentarios;
+
+    @OneToMany(mappedBy = "publicacion", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Reaccion> reacciones;
+
     public Publicacion() {
     }
 
     public Publicacion(Long id, Usuario usuario, Comunidad comunidad, Publicacion publicacionRef, String contenido,
                        Visibilidad visibilidad, LocalDateTime fechaCreacion, LocalDateTime fechaEdicion,
-                       Boolean fijada, Boolean comentariosActivos, List<PublicacionImagen> imagenes) {
+                       Boolean fijada, Boolean comentariosActivos, List<PublicacionImagen> imagenes,
+                       List<Comentario> comentarios, List<Reaccion> reacciones) {
         this.id = id;
         this.usuario = usuario;
         this.comunidad = comunidad;
@@ -64,6 +71,8 @@ public class Publicacion {
         this.fijada = fijada;
         this.comentariosActivos = comentariosActivos;
         this.imagenes = imagenes;
+        this.comentarios = comentarios;
+        this.reacciones = reacciones;
     }
 
     public Long getId() {
@@ -152,6 +161,22 @@ public class Publicacion {
 
     public void setImagenes(List<PublicacionImagen> imagenes) {
         this.imagenes = imagenes;
+    }
+
+    public List<Comentario> getComentarios() {
+        return comentarios;
+    }
+
+    public void setComentarios(List<Comentario> comentarios) {
+        this.comentarios = comentarios;
+    }
+
+    public List<Reaccion> getReacciones() {
+        return reacciones;
+    }
+
+    public void setReacciones(List<Reaccion> reacciones) {
+        this.reacciones = reacciones;
     }
 
     @PrePersist

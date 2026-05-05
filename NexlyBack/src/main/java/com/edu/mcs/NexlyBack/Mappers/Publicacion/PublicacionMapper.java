@@ -6,6 +6,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 import com.edu.mcs.NexlyBack.DTOs.Publicacion.AutorResumenDTO;
+import com.edu.mcs.NexlyBack.DTOs.Publicacion.MediaDTO;
 import com.edu.mcs.NexlyBack.DTOs.Publicacion.PublicacionDTO;
 import com.edu.mcs.NexlyBack.models.Enums.TipoReaccion;
 import com.edu.mcs.NexlyBack.models.Publicacion;
@@ -24,9 +25,10 @@ public interface PublicacionMapper {
     @Mapping(target = "publicacionRefId", source = "publicacion.publicacionRef.id")
     @Mapping(target = "autor",            expression = "java(autor)")
     @Mapping(target = "imagenes",         expression = "java(imagenes)")
+    @Mapping(target = "media",            expression = "java(media)")
     @Mapping(target = "conteoReacciones", expression = "java(conteoReacciones)")
     @Mapping(target = "conteoComentarios",expression = "java(conteoComentarios)")
     @Mapping(target = "reaccionDelVisor", expression = "java(reaccionDelVisor)")
-    PublicacionDTO toDTO(Publicacion publicacion, AutorResumenDTO autor, List<String> imagenes,
+    PublicacionDTO toDTO(Publicacion publicacion, AutorResumenDTO autor, List<String> imagenes, List<MediaDTO> media,
                          long conteoReacciones, long conteoComentarios, TipoReaccion reaccionDelVisor);
 }

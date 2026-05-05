@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.edu.mcs.NexlyBack.DTOs.Publicacion.PublicacionDTO;
 import com.edu.mcs.NexlyBack.Services.Publicacion.PublicacionService;
+import com.edu.mcs.NexlyBack.models.Enums.TipoMedia;
 import com.edu.mcs.NexlyBack.models.Enums.TipoReaccion;
 import com.edu.mcs.NexlyBack.models.Enums.Visibilidad;
 import jakarta.validation.constraints.NotBlank;
@@ -53,8 +54,11 @@ public class PublicacionController {
         @RequestParam(required = false) Visibilidad visibilidad,
         @RequestParam(required = false) Long comunidadId,
         @RequestParam(required = false) List<String> imagenes,
+        @RequestParam(required = false) List<String> mediaUrls,
+        @RequestParam(required = false) List<TipoMedia> mediaTipos,
         Authentication auth){
-            PublicacionDTO dto = publicacionService.crear(userId(auth), contenido, visibilidad, comunidadId, imagenes);
+            PublicacionDTO dto = publicacionService.crear(
+                userId(auth), contenido, visibilidad, comunidadId, imagenes, mediaUrls, mediaTipos);
             return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 

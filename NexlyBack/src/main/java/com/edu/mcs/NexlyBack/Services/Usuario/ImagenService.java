@@ -23,24 +23,26 @@ public class ImagenService {
 
     public String subir(MultipartFile archivo, String carpeta){
         String contentType = archivo.getContentType();
-        if (contentType == null || !contentType.startsWith("image/")) {
-            throw new IllegalArgumentException("Solo se permiten imágenes");
+        if (contentType == null || !(contentType.startsWith("image/") || contentType.startsWith("video/"))) {
+            throw new IllegalArgumentException("Solo se permiten imagenes o videos");
         }
         if (!CARPETAS_PERMITIDAS.contains(carpeta)) {
             throw new IllegalArgumentException("Carpeta no permitida");
         }
         try{
+            String resourceType = contentType.startsWith("video/") ? "video" : "image";
             Map<?,?> resultado = cloudinary.uploader().upload(
                 archivo.getBytes(),
                 Map.of(
                     "folder", "nexly/" + carpeta,
                     "public_id", UUID.randomUUID().toString(),
-                    "overwrite", true
+                    "overwrite", true,
+                    "resource_type", resourceType
                 )
             );
             return (String) resultado.get("secure_url");
         }catch (IOException e){
-            throw new RuntimeException("Error al subir imagen", e);
+            throw new RuntimeException("Error al subir media", e);
         }
     }
 }

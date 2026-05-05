@@ -89,7 +89,7 @@ public class UsuarioService {
         u.setNombreCompleto(req.nombreCompleto());
         u.setNombreUsuario(req.nombreUsuario());
         u.setEmail(req.email());
-        u.setContrasenaHash(req.contrasena());
+        u.setContrasenaHash(passwordEncoder.encode(req.contrasena()));
         u.setFechaNacimiento(req.fechaNacimiento());
 
         Usuario savedUsuario = usuarioRepository.save(u);

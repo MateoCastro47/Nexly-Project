@@ -1,55 +1,61 @@
-import PostCard from '../../components/feed/PostCard'
-import type { Publicacion } from '../../types'
-
-const MOCK: Publicacion[] = [
-  {
-    id: 1,
-    contenido: '¡Primera publicación en Nexly! Conecta, comparte y crece con nosotros. 🚀',
-    imagenes: [],
-    visibilidad: 'PUBLICO',
-    autor: {
-      id: 1,
-      nombreCompleto: 'Mateo Castro',
-      nombreUsuario: 'mateocastro',
-      email: 'mateo@nexly.com',
-      seguidores: 128,
-      seguidos: 64,
-      activo: true,
-      rol: 'USER',
-    },
-    fechaCreacion: new Date(Date.now() - 5 * 60_000).toISOString(),
-    totalReacciones: 12,
-    totalComentarios: 3,
-  },
-  {
-    id: 2,
-    contenido: 'Explorando las comunidades de tecnología. ¿Alguien más por aquí?',
-    imagenes: [],
-    visibilidad: 'PUBLICO',
-    autor: {
-      id: 2,
-      nombreCompleto: 'Laura Gómez',
-      nombreUsuario: 'lauragomez',
-      email: 'laura@nexly.com',
-      seguidores: 340,
-      seguidos: 210,
-      activo: true,
-      rol: 'USER',
-    },
-    comunidadNombre: 'Tecnología',
-    fechaCreacion: new Date(Date.now() - 2 * 3_600_000).toISOString(),
-    totalReacciones: 47,
-    totalComentarios: 11,
-    miReaccion: 'ME_GUSTA',
-  },
-]
+import { useEffect, useRef } from "react";
+import { useFeedStore } from "../../store/feedStore";
+import CreatePost from "../../components/feed/CreatePost";
+import PostCard from "../../components/feed/PostCard";
 
 export default function FeedPage() {
-  return (
+  const { publicaciones, loading, error, hayMas, cargarFeed, cargarMas } = useFeedStore()
+  const sentinelRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    cargarFeed()
+  }, [cargarFeed])
+
+  useEffect(() => {
+    const sentinel = sentinelRef.current
+    if(!sentinel) return 
+    const observer = new IntersectionObserver(
+      ([entry]) => {if (entry.isIntersecting) cargarMas() },
+      { threshold: 0.1 }
+    )
+    observer.observe(sentinel)
+    return () => observer.disconnect()
+  }, [cargarMas])
+
+  return(
     <div className="flex flex-col gap-4">
-      {MOCK.map((p) => (
+      <CreatePost />
+
+      {error && (
+        <p className="text-sm text-center py-6" style={{ color: 'var(--color-error)' }}>
+          {error}
+        </p>
+      )}
+
+      {publicaciones.map((p) => (
         <PostCard key={p.id} publicacion={p} />
       ))}
+
+      {loading && (
+        <div className="flex flex-col gap-4">
+          {[0, 1].map((i) => (
+            <div
+            key={i}
+            className="rounded-2xl h-36 animate-pulse"
+            style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
+            >
+            </div>
+          ))}
+        </div>
+      )}
+
+      {hayMas && <div ref={sentinelRef} className="h-4"/>}
+
+      {!hayMas && publicaciones.length > 0 && (
+        <p className="text-xs text-center py-6" style={{ color: 'var(--color-muted)' }}>
+          Has llegado al final del feed
+        </p>
+      )}
     </div>
   )
 }

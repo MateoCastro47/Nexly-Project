@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
@@ -41,15 +42,19 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<UsuarioDTO> login(@Valid @RequestBody LoginRequest req) {
-        Authentication auth = authManager.authenticate(
-                new UsernamePasswordAuthenticationToken(req.email(), req.contrasenha())
-        );
-        Long userId = Long.parseLong(auth.getName());
-        String rol = auth.getAuthorities().iterator().next().getAuthority().replace("ROLE_", "");
-        UsuarioDTO usuario = usuariosService.getPerfil(userId, userId);
-        return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, buildTokenCookie(jwtUtil.generate(userId, rol)).toString())
-                .body(usuario);
+        try {
+            Authentication auth = authManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(req.email(), req.contrasenha())
+            );
+            Long userId = Long.parseLong(auth.getName());
+            String rol = auth.getAuthorities().iterator().next().getAuthority().replace("ROLE_", "");
+            UsuarioDTO usuario = usuariosService.getPerfil(userId, userId);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.SET_COOKIE, buildTokenCookie(jwtUtil.generate(userId, rol)).toString())
+                    .body(usuario);
+        } catch (AuthenticationException e) {
+            return ResponseEntity.status(401).build();
+        }
     }
 
     @PostMapping("/logout")

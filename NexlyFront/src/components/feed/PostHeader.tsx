@@ -15,7 +15,7 @@ function tiempoRelativo(fecha: string){
     const min = Math.floor(diff / 60_000)
     const h = Math.floor(diff / 3_600_000)
     const d = Math.floor(diff / 86_400_000)
-    if(min > 1) return 'ahora'
+    if(min < 1) return 'ahora'
     if(min < 60) return `${min}m`
     if(h < 24) return `${h}h`
     if(d < 7) return `${d}d`

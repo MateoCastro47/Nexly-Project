@@ -27,6 +27,9 @@ public class Comentario {
     @OneToMany(mappedBy = "comentarioPadre", cascade = CascadeType.ALL)
     private List<Comentario> respuestas;
 
+    @OneToMany(mappedBy = "comentario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ReaccionComentario> reacciones;
+
     @Column(nullable = false, columnDefinition = "TEXT")
     private String contenido;
 
@@ -40,13 +43,14 @@ public class Comentario {
     }
 
     public Comentario(Long id, Publicacion publicacion, Usuario usuario, Comentario comentarioPadre,
-                      List<Comentario> respuestas, String contenido, LocalDateTime fechaCreacion,
-                      LocalDateTime fechaEdicion) {
+                      List<Comentario> respuestas, List<ReaccionComentario> reacciones, String contenido,
+                      LocalDateTime fechaCreacion, LocalDateTime fechaEdicion) {
         this.id = id;
         this.publicacion = publicacion;
         this.usuario = usuario;
         this.comentarioPadre = comentarioPadre;
         this.respuestas = respuestas;
+        this.reacciones = reacciones;
         this.contenido = contenido;
         this.fechaCreacion = fechaCreacion;
         this.fechaEdicion = fechaEdicion;
@@ -90,6 +94,14 @@ public class Comentario {
 
     public void setRespuestas(List<Comentario> respuestas) {
         this.respuestas = respuestas;
+    }
+
+    public List<ReaccionComentario> getReacciones() {
+        return reacciones;
+    }
+
+    public void setReacciones(List<ReaccionComentario> reacciones) {
+        this.reacciones = reacciones;
     }
 
     public String getContenido() {

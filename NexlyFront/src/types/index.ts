@@ -18,7 +18,7 @@ export interface Publicacion {
   id: number
   contenido: string
   imagenes: string[]
-  visibilidad: 'PUBLICO' | 'SOLO_SEGUIDORES' | 'PRIVADO'
+  visibilidad: 'PUBLICA' | 'SEGUIDORES' | 'PRIVADA'
   autor: Usuario
   comunidadId?: number
   comunidadNombre?: string
@@ -93,7 +93,7 @@ export interface MiembroComunidad {
   estado: 'ACTIVO' | 'PENDIENTE' | 'BANEADO'
 }
 
-export type TipoReaccion = 'ME_GUSTA' | 'ME_ENCANTA' | 'ME_DIVIERTE' | 'ME_ASOMBRA' | 'ME_ENTRISTECE' | 'ME_ENOJA'
+export type TipoReaccion = 'ME_GUSTA' | 'ME_ENCANTA' | 'DIVERTIDO' | 'SORPRENDIDO' | 'TRISTE' | 'ENOJADO'
 
 export interface AuthResponse {
   token: string

@@ -1,5 +1,6 @@
 package com.edu.mcs.NexlyBack.models;
 
+import com.edu.mcs.NexlyBack.models.Enums.TipoMedia;
 import jakarta.persistence.*;
 
 @Entity
@@ -17,16 +18,21 @@ public class PublicacionImagen {
     @Column(nullable = false)
     private String url;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private TipoMedia tipo = TipoMedia.IMAGEN;
+
     @Column(nullable = false)
     private Short orden = 0;
 
     public PublicacionImagen() {
     }
 
-    public PublicacionImagen(Long id, Publicacion publicacion, String url, Short orden) {
+    public PublicacionImagen(Long id, Publicacion publicacion, String url, TipoMedia tipo, Short orden) {
         this.id = id;
         this.publicacion = publicacion;
         this.url = url;
+        this.tipo = tipo;
         this.orden = orden;
     }
 
@@ -54,6 +60,14 @@ public class PublicacionImagen {
         this.url = url;
     }
 
+    public TipoMedia getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(TipoMedia tipo) {
+        this.tipo = tipo;
+    }
+
     public Short getOrden() {
         return orden;
     }
@@ -65,5 +79,6 @@ public class PublicacionImagen {
     @PrePersist
     protected void onCreate() {
         if (this.orden == null) this.orden = 0;
+        if (this.tipo == null) this.tipo = TipoMedia.IMAGEN;
     }
 }
