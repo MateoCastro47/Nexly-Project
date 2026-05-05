@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -14,17 +15,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.edu.mcs.NexlyBack.DTOs.Publicacion.AutorResumenDTO;
+import com.edu.mcs.NexlyBack.DTOs.Publicacion.MediaDTO;
 import com.edu.mcs.NexlyBack.DTOs.Publicacion.PublicacionDTO;
 import com.edu.mcs.NexlyBack.Mappers.Publicacion.AutorResumenMapper;
 import com.edu.mcs.NexlyBack.Mappers.Publicacion.PublicacionMapper;
 import com.edu.mcs.NexlyBack.Repositories.Comunidad.ComunidadRepository;
 import com.edu.mcs.NexlyBack.Repositories.Publicacion.ComentarioRepository;
 import com.edu.mcs.NexlyBack.Repositories.Publicacion.PublicacionRepository;
+import com.edu.mcs.NexlyBack.Repositories.Publicacion.ReaccionComentarioRepository;
 import com.edu.mcs.NexlyBack.Repositories.Publicacion.ReaccionRepository;
 import com.edu.mcs.NexlyBack.Repositories.Usuario.SeguimientoRepository;
 import com.edu.mcs.NexlyBack.Repositories.Usuario.UsuarioRepository;
 import com.edu.mcs.NexlyBack.Services.Notificacion.NotificacionService;
 import com.edu.mcs.NexlyBack.models.Comunidad;
+import com.edu.mcs.NexlyBack.models.Enums.TipoMedia;
 import com.edu.mcs.NexlyBack.models.Enums.TipoNotificacion;
 import com.edu.mcs.NexlyBack.models.Enums.TipoReaccion;
 import com.edu.mcs.NexlyBack.models.Enums.Visibilidad;
@@ -41,6 +45,7 @@ public class PublicacionService {
     private final SeguimientoRepository seguimientoRepository;
     private final ComentarioRepository comentarioRepository;
     private final ReaccionRepository reaccionRepository;
+    private final ReaccionComentarioRepository reaccionComentarioRepository;
     private final UsuarioRepository usuarioRepository;
     private final ComunidadRepository comunidadRepository;
     private final PublicacionMapper publicacionMapper;
@@ -49,6 +54,7 @@ public class PublicacionService {
 
     public PublicacionService(PublicacionRepository publicacionRepository, SeguimientoRepository seguimientoRepository,
             ComentarioRepository comentarioRepository, ReaccionRepository reaccionRepository,
+            ReaccionComentarioRepository reaccionComentarioRepository,
             UsuarioRepository usuarioRepository, ComunidadRepository comunidadRepository,
             PublicacionMapper publicacionMapper, AutorResumenMapper autorResumenMapper,
             NotificacionService notificacionService) {
@@ -56,6 +62,7 @@ public class PublicacionService {
         this.seguimientoRepository = seguimientoRepository;
         this.comentarioRepository = comentarioRepository;
         this.reaccionRepository = reaccionRepository;
+        this.reaccionComentarioRepository = reaccionComentarioRepository;
         this.usuarioRepository = usuarioRepository;
         this.comunidadRepository = comunidadRepository;
         this.publicacionMapper = publicacionMapper;
@@ -84,7 +91,8 @@ public class PublicacionService {
 
     @Transactional
     public PublicacionDTO crear(Long userId, String contenido, Visibilidad visibilidad,
-                                Long comunidadId, List<String> imgs) {
+                    Long comunidadId, List<String> imgs,
+                    List<String> mediaUrls, List<TipoMedia> mediaTipos) {
         Usuario autor = usuarioRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchElementException("Usuario no encontrado"));
 
@@ -99,16 +107,35 @@ public class PublicacionService {
             p.setComunidad(comunidad);
         }
 
-        if (imgs != null && !imgs.isEmpty()) {
-            List<PublicacionImagen> imagenes = new ArrayList<>();
-            short orden = 0;
+        List<PublicacionImagen> imagenes = new ArrayList<>();
+        short orden = 0;
+
+        if (mediaUrls != null && !mediaUrls.isEmpty()) {
+            for (int i = 0; i < mediaUrls.size(); i++) {
+                String url = mediaUrls.get(i);
+                TipoMedia tipo = TipoMedia.IMAGEN;
+                if (mediaTipos != null && i < mediaTipos.size() && mediaTipos.get(i) != null) {
+                    tipo = mediaTipos.get(i);
+                }
+                PublicacionImagen img = new PublicacionImagen();
+                img.setPublicacion(p);
+                img.setUrl(url);
+                img.setTipo(tipo);
+                img.setOrden(orden++);
+                imagenes.add(img);
+            }
+        } else if (imgs != null && !imgs.isEmpty()) {
             for (String url : imgs) {
                 PublicacionImagen img = new PublicacionImagen();
                 img.setPublicacion(p);
                 img.setUrl(url);
+                img.setTipo(TipoMedia.IMAGEN);
                 img.setOrden(orden++);
                 imagenes.add(img);
             }
+        }
+
+        if (!imagenes.isEmpty()) {
             p.setImagenes(imagenes);
         }
 
@@ -138,6 +165,10 @@ public class PublicacionService {
         if (!p.getUsuario().getId().equals(userId))
             throw new IllegalStateException("Sin permiso para eliminar esta publicación");
 
+        reaccionComentarioRepository.deleteByPublicacionId(id);
+        comentarioRepository.nullifyPadreByPublicacionId(id);
+        comentarioRepository.deleteByPublicacionId(id);
+        reaccionRepository.deleteByPublicacionId(id);
         publicacionRepository.delete(p);
     }
 
@@ -146,11 +177,15 @@ public class PublicacionService {
         Publicacion publicacion = publicacionRepository.findById(publicacionId)
                 .orElseThrow(() -> new NoSuchElementException("Publicación no encontrada"));
 
-        reaccionRepository.findByUsuarioIdAndPublicacionId(userId, publicacionId)
-                .ifPresent(r -> reaccionRepository.deleteByUsuarioIdAndPublicacionId(userId, publicacionId));
-
-        Usuario usuario = usuarioRepository.getReferenceById(userId);
-        reaccionRepository.save(new Reaccion(usuario, publicacion, tipo, null));
+        Optional<Reaccion> existente = reaccionRepository.findByUsuarioIdAndPublicacionId(userId, publicacionId);
+        if (existente.isPresent()) {
+            // Actualizar en la entidad managed evita el DELETE+INSERT que causa StaleObjectStateException
+            existente.get().setTipo(tipo);
+            existente.get().setFecha(LocalDateTime.now());
+        } else {
+            Usuario usuario = usuarioRepository.getReferenceById(userId);
+            reaccionRepository.save(new Reaccion(usuario, publicacion, tipo, null));
+        }
 
         notificacionService.emitir(publicacion.getUsuario().getId(), userId,
                 TipoNotificacion.NUEVA_REACCION_PUBLICACION, publicacionId);
@@ -165,12 +200,10 @@ public class PublicacionService {
     }
 
     public Page<PublicacionDTO> getFeed(Long userId, int page, int size){
-       List<Long> seguidosId = seguimientoRepository.findSeguidosIdsBySeguidorId(userId);
-       if (seguidosId.isEmpty()) {
-        return Page.empty();
-       } 
+       List<Long> ids = new ArrayList<>(seguimientoRepository.findSeguidosIdsBySeguidorId(userId));
+       ids.add(userId);
        Pageable pageable = PageRequest.of(page, size);
-       return publicacionRepository.findPublicacionesDeSeguidos(seguidosId, Visibilidad.PUBLICA , pageable).map(p -> buildDTO(p, userId));
+       return publicacionRepository.findPublicacionesDeSeguidos(ids, Visibilidad.PUBLICA, pageable).map(p -> buildDTO(p, userId));
     }
 
 
@@ -188,18 +221,27 @@ public class PublicacionService {
     private PublicacionDTO buildDTO(Publicacion p, Long viewerId) {
         AutorResumenDTO autor = autorResumenMapper.toDTO(p.getUsuario());
 
-        List<String> imagenes = p.getImagenes() == null ? List.of()
-                : p.getImagenes().stream()
-                        .sorted(Comparator.comparing(PublicacionImagen::getOrden))
-                        .map(PublicacionImagen::getUrl)
-                        .toList();
+        List<PublicacionImagen> mediaOrdenada = p.getImagenes() == null
+            ? List.of()
+            : p.getImagenes().stream()
+                .sorted(Comparator.comparing(PublicacionImagen::getOrden))
+                .toList();
+
+        List<MediaDTO> media = mediaOrdenada.stream()
+            .map(m -> new MediaDTO(m.getUrl(), m.getTipo(), m.getOrden() == null ? 0 : m.getOrden()))
+            .toList();
+
+        List<String> imagenes = mediaOrdenada.stream()
+            .filter(m -> m.getTipo() == null || m.getTipo() == TipoMedia.IMAGEN)
+            .map(PublicacionImagen::getUrl)
+            .toList();
 
         TipoReaccion reaccionDelVisor = viewerId != null
                 ? publicacionRepository.findReaccionDelVisor(p.getId(), viewerId).orElse(null)
                 : null;
 
         return publicacionMapper.toDTO(
-                p, autor, imagenes,
+            p, autor, imagenes, media,
                 publicacionRepository.countReacciones(p.getId()),
                 publicacionRepository.countComentarios(p.getId()),
                 reaccionDelVisor

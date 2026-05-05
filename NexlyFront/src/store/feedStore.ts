@@ -11,7 +11,7 @@ interface FeedStore {
 
   cargarFeed: () => Promise<void>
   cargarMas: () => Promise<void>
-  crear: (data: { contenido: string; imagenes?: string[]; visibilidad: 'PUBLICO' | 'SOLO_SEGUIDORES' | 'PRIVADO' }) => Promise<void>
+  crear: (data: { contenido: string; imagenes?: string[]; visibilidad: 'PUBLICA' | 'SEGUIDORES' | 'PRIVADA' }) => Promise<void>
   eliminar: (id: number) => Promise<void>
   toggleReaccion: (id: number, tipo: TipoReaccion) => Promise<void>
 }
@@ -24,7 +24,7 @@ export const useFeedStore = create<FeedStore>((set, get) => ({
   error: '',
 
   cargarFeed: async () => {
-    set({ loading: true, error: '', pagina: 0, publicaciones: [] })
+    set({ loading: true, error: '', pagina: 0 })
     try {
       const { data } = await getFeed(0)
       set({ publicaciones: data.content, hayMas: !data.last, pagina: 0 })
@@ -54,8 +54,8 @@ export const useFeedStore = create<FeedStore>((set, get) => ({
     }
   },
 
-  crear: async (data) => {
-    const { data: nueva } = await crearPublicacion({ ...data })
+  crear: async (data: { contenido: string; imagenes?: string[]; visibilidad: 'PUBLICA' | 'SEGUIDORES' | 'PRIVADA' }) => {
+    const { data: nueva } = await crearPublicacion(data)
     set((s) => ({ publicaciones: [nueva, ...s.publicaciones] }))
   },
 
@@ -64,14 +64,39 @@ export const useFeedStore = create<FeedStore>((set, get) => ({
     set((s) => ({ publicaciones: s.publicaciones.filter((p) => p.id !== id) }))
   },
 
-  // Si ya tenía esa reacción → la quita. Si es distinta o no tenía → la pone.
   toggleReaccion: async (id, tipo) => {
-    const actual = get().publicaciones.find((p) => p.id === id)?.miReaccion
-    const { data: actualizada } = actual === tipo
-      ? await quitarReaccion(id)
-      : await reaccionar(id, tipo)
+    const post = get().publicaciones.find((p) => p.id === id)
+    if (!post) return
+    const actual = post.miReaccion
+    const quitando = actual === tipo
+
+    // Optimistic update inmediato
     set((s) => ({
-      publicaciones: s.publicaciones.map((p) => p.id === id ? actualizada : p),
+      publicaciones: s.publicaciones.map((p) => {
+        if (p.id !== id) return p
+        return {
+          ...p,
+          miReaccion: quitando ? undefined : tipo,
+          totalReacciones: quitando
+            ? p.totalReacciones - 1
+            : actual
+              ? p.totalReacciones        // cambia reacción, el total no varía
+              : p.totalReacciones + 1,
+        }
+      }),
     }))
+
+    try {
+      if (quitando) {
+        await quitarReaccion(id)
+      } else {
+        await reaccionar(id, tipo)
+      }
+    } catch {
+      // Rollback al estado previo si falla la API
+      set((s) => ({
+        publicaciones: s.publicaciones.map((p) => (p.id === id ? post : p)),
+      }))
+    }
   },
 }))
