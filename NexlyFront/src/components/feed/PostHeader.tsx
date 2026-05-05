@@ -7,7 +7,8 @@ interface Props {
     autor: Usuario;
     fechaCreacion: string
     comunidadNombre?: string
-    onEliminar?: () => void 
+    onEliminar?: () => void
+    isHero?: boolean
 }
 
 function tiempoRelativo(fecha: string){
@@ -22,24 +23,29 @@ function tiempoRelativo(fecha: string){
     return new Date(fecha).toLocaleDateString('es-ES', {day: 'numeric', month: 'short'})
 }
 
-export default function PostHeader({autor, fechaCreacion, comunidadNombre, onEliminar}: Props){
+export default function PostHeader({autor, fechaCreacion, comunidadNombre, onEliminar, isHero}: Props){
     const usuarioActual = useAuthStore((s) => s.usuario)
     const [menuAbierto, setMenuAbierto] = useState(false)
     const esPropio = usuarioActual?.id === autor.id
 
+    const avatarSize = isHero ? 'w-12 h-12' : 'w-10 h-10'
+
     return (
         <div className="flex items-start justify-between gap-3">
             <div className="flex items-center gap-3 min-w-0">
-                <Link to={`/perfil/${autor.nombreUsuario}`} className="shrink-0">
+                <Link
+                  to={`/perfil/${autor.nombreUsuario}`}
+                  className={`shrink-0 avatar-ring ${isHero ? 'avatar-hero' : ''}`}
+                >
                     {autor.fotoPerfil ? (
-                        <img src={autor.fotoPerfil} 
+                        <img src={autor.fotoPerfil}
                         alt=""
-                        className="w-10 h-10 rounded-full object-cover"
+                        className={`${avatarSize} rounded-full object-cover`}
                         />
                     ) : (
                         <div
-                            className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold"
-                            style={{ background: 'var(--color-brand)'}}
+                            className={`${avatarSize} rounded-full flex items-center justify-center text-white font-bold ${isHero ? 'text-base' : 'text-sm'}`}
+                            style={{ background: 'var(--color-accent-1-dark)' }}
                         >
                             {autor.nombreCompleto[0].toUpperCase()}
                         </div>
@@ -49,22 +55,35 @@ export default function PostHeader({autor, fechaCreacion, comunidadNombre, onEli
                     <div className="flex items-center gap-2 flex-wrap">
                         <Link
                         to={`/perfil/${autor.nombreUsuario}`}
-                        className="text-sm font-semibold leading-tight hover:underline truncate"
-                        style={{ color: 'var(--color-text)' }}
+                        className={`font-semibold leading-tight hover:underline truncate name-display ${
+                          isHero ? 'name-hero text-base' : 'text-sm'
+                        }`}
+                        style={isHero ? undefined : { color: 'var(--color-text)' }}
                         >
                         {autor.nombreCompleto}
                         </Link>
                         {comunidadNombre && (
                         <>
                             <span style={{ color: 'var(--color-muted)' }} className="text-xs">en</span>
-                            <span className="text-xs font-medium" style={{ color: 'var(--color-brand)' }}>
+                            <span
+                              className="text-xs font-semibold px-2 py-0.5 rounded-full"
+                              style={{
+                                color: 'var(--color-accent-1)',
+                                background: 'var(--color-accent-1-tint)',
+                              }}
+                            >
                             {comunidadNombre}
                             </span>
                         </>
                         )}
                     </div>
-                    <p className="text-xs" style={{ color: 'var(--color-muted)' }}>
-                        @{autor.nombreUsuario} · {tiempoRelativo(fechaCreacion)}
+                    <p className="text-xs flex items-center gap-1.5" style={{ color: 'var(--color-muted)' }}>
+                        @{autor.nombreUsuario}
+                        <span
+                          className="inline-block w-1 h-1 rounded-full"
+                          style={{ background: 'var(--color-muted)' }}
+                        />
+                        {tiempoRelativo(fechaCreacion)}
                     </p>
                 </div>
             </div>
@@ -74,10 +93,16 @@ export default function PostHeader({autor, fechaCreacion, comunidadNombre, onEli
             <div className="relative shrink-0">
             <button
                 onClick={() => setMenuAbierto((v) => !v)}
-                className="p-1.5 rounded-lg"
+                className="p-2 rounded-xl transition-all"
                 style={{ color: 'var(--color-muted)' }}
-                onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = 'var(--color-bg)')}
-                onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.background = 'var(--color-accent-1-tint)';
+                  (e.currentTarget as HTMLElement).style.color = 'var(--color-accent-1)';
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.background = 'transparent';
+                  (e.currentTarget as HTMLElement).style.color = 'var(--color-muted)';
+                }}
             >
                 <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <circle cx="12" cy="5"  r="1" fill="currentColor" />
@@ -91,16 +116,25 @@ export default function PostHeader({autor, fechaCreacion, comunidadNombre, onEli
                 {/* Overlay para cerrar al hacer clic fuera */}
                 <div className="fixed inset-0 z-10" onClick={() => setMenuAbierto(false)} />
                 <div
-                    className="absolute right-0 top-8 z-20 rounded-xl shadow-lg py-1 min-w-[140px]"
-                    style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
+                    className="absolute right-0 top-10 z-20 rounded-2xl py-1.5 min-w-[160px]"
+                    style={{
+                      background: 'var(--color-surface)',
+                      border: '1px solid var(--color-border)',
+                      boxShadow: 'var(--shadow-lg)',
+                      animation: 'scaleIn 0.15s ease-out',
+                    }}
                 >
                     <button
                     onClick={() => { onEliminar(); setMenuAbierto(false) }}
-                    className="w-full text-left px-4 py-2 text-sm"
-                    style={{ color: 'var(--color-error)' }}
-                    onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = 'var(--color-bg)')}
+                    className="w-full text-left px-4 py-2.5 text-sm font-medium flex items-center gap-2.5 transition-colors rounded-xl mx-auto"
+                    style={{ color: 'var(--color-error)', width: 'calc(100% - 8px)', marginLeft: '4px' }}
+                    onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = 'oklch(0.62 0.24 28 / 0.08)')}
                     onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
                     >
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="3 6 5 6 21 6" />
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                    </svg>
                     Eliminar publicación
                     </button>
                 </div>
