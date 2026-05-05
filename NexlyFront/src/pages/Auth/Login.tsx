@@ -31,7 +31,7 @@ export default function Login() {
       {/* ── Panel izquierdo (branding) ── */}
       <div
         className="hidden lg:flex lg:w-5/12 flex-col items-center justify-center p-14 relative overflow-hidden shrink-0"
-        style={{ background: 'linear-gradient(145deg, var(--color-brand-dark) 0%, var(--color-brand) 100%)' }}
+        style={{ background: 'var(--gradient-brand)' }}
       >
         <div className="absolute -top-24 -left-24 w-80 h-80 rounded-full opacity-[0.15]" style={{ background: 'white' }} />
         <div className="absolute -bottom-36 -right-20 w-[420px] h-[420px] rounded-full opacity-[0.08]" style={{ background: 'white' }} />
@@ -40,7 +40,7 @@ export default function Login() {
         <div className="relative z-10 text-center text-white select-none">
           <p className="text-6xl font-bold tracking-tight mb-6">Nexly</p>
           <p className="text-xl font-medium opacity-90 mb-4">Conecta. Comparte. Crece.</p>
-          <p className="text-sm opacity-65 max-w-[260px] leading-relaxed mx-auto">
+          <p className="text-sm opacity-90 max-w-[260px] leading-relaxed mx-auto">
             Únete a miles de personas que ya comparten sus ideas y momentos.
           </p>
         </div>
