@@ -19,4 +19,8 @@ public interface ReaccionRepository extends JpaRepository<Reaccion, ReaccionId> 
     @Query("DELETE FROM Reaccion r WHERE r.usuario.id = :usuarioId AND r.publicacion.id = :publicacionId")
     void deleteByUsuarioIdAndPublicacionId(@Param("usuarioId") Long usuarioId,
                                            @Param("publicacionId") Long publicacionId);
+
+    @Modifying
+    @Query("DELETE FROM Reaccion r WHERE r.publicacion.id = :publicacionId")
+    void deleteByPublicacionId(@Param("publicacionId") Long publicacionId);
 }

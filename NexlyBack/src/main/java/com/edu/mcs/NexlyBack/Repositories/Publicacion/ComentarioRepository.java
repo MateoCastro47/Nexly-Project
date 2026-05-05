@@ -6,6 +6,7 @@ import com.edu.mcs.NexlyBack.models.Enums.TipoReaccion;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -42,6 +43,12 @@ public interface ComentarioRepository extends JpaRepository<Comentario, Long> {
     @Query("SELECT r.tipo FROM ReaccionComentario r WHERE r.comentario.id = :comentarioId AND r.usuario.id = :usuarioId")
     Optional<TipoReaccion> findReaccionDelVisor(@Param("comentarioId") Long comentarioId,
                                                  @Param("usuarioId") Long usuarioId);
-    
 
+    @Modifying
+    @Query("UPDATE Comentario c SET c.comentarioPadre = NULL WHERE c.publicacion.id = :publicacionId")
+    void nullifyPadreByPublicacionId(@Param("publicacionId") Long publicacionId);
+
+    @Modifying
+    @Query("DELETE FROM Comentario c WHERE c.publicacion.id = :publicacionId")
+    void deleteByPublicacionId(@Param("publicacionId") Long publicacionId);
 }

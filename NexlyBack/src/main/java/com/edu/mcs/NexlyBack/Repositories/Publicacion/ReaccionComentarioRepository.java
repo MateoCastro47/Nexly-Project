@@ -19,4 +19,8 @@ public interface ReaccionComentarioRepository extends JpaRepository<ReaccionCome
     @Query("DELETE FROM ReaccionComentario r WHERE r.usuario.id = :usuarioId AND r.comentario.id = :comentarioId")
     void deleteByUsuarioIdAndComentarioId(@Param("usuarioId") Long usuarioId,
                                            @Param("comentarioId") Long comentarioId);
+
+    @Modifying
+    @Query("DELETE FROM ReaccionComentario r WHERE r.comentario.publicacion.id = :publicacionId")
+    void deleteByPublicacionId(@Param("publicacionId") Long publicacionId);
 }
