@@ -27,6 +27,16 @@ public interface PublicacionRepository extends JpaRepository<Publicacion, Long> 
         Pageable pageable
     );
 
+    @Query("SELECT p FROM Publicacion p WHERE p.visibilidad = :publica OR " +
+           "(p.visibilidad = :seguidores AND p.usuario.id IN :ids) " +
+           "ORDER BY p.fechaCreacion DESC")
+    Page<Publicacion> findFeedGlobal(
+        @Param("publica") Visibilidad publica,
+        @Param("seguidores") Visibilidad seguidores,
+        @Param("ids") List<Long> ids,
+        Pageable pageable
+    );
+
     //Conteo de reacciones para una publicación
     @Query("SELECT COUNT(r) FROM Reaccion r WHERE r.publicacion.id = :id")
     long countReacciones(@Param("id") Long id);

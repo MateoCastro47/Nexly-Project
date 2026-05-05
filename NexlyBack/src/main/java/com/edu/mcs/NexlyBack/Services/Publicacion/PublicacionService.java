@@ -203,7 +203,8 @@ public class PublicacionService {
        List<Long> ids = new ArrayList<>(seguimientoRepository.findSeguidosIdsBySeguidorId(userId));
        ids.add(userId);
        Pageable pageable = PageRequest.of(page, size);
-       return publicacionRepository.findPublicacionesDeSeguidos(ids, Visibilidad.PUBLICA, pageable).map(p -> buildDTO(p, userId));
+       return publicacionRepository.findFeedGlobal(Visibilidad.PUBLICA, Visibilidad.SEGUIDORES, ids, pageable)
+               .map(p -> buildDTO(p, userId));
     }
 
 
