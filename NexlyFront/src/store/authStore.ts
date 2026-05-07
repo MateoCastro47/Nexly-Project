@@ -4,15 +4,22 @@ import type { Usuario } from '../types'
 interface AuthState {
   usuario: Usuario | null
   initialized: boolean
+  onboardingPendiente: boolean
   setUsuario: (usuario: Usuario) => void
   setInitialized: () => void
+  cerrarOnboarding: () => void
   logout: () => void
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
   usuario: null,
   initialized: false,
-  setUsuario: (usuario) => set({ usuario }),
+  onboardingPendiente: false,
+  setUsuario: (usuario) => set({
+    usuario,
+    onboardingPendiente: !usuario.onboardingCompletado,
+  }),
   setInitialized: () => set({ initialized: true }),
-  logout: () => set({ usuario: null }),
+  cerrarOnboarding: () => set({ onboardingPendiente: false }),
+  logout: () => set({ usuario: null, onboardingPendiente: false }),
 }))

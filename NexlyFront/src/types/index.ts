@@ -12,6 +12,7 @@ export interface Usuario {
   bloqueado?: boolean
   activo: boolean
   rol: string
+  onboardingCompletado: boolean
 }
 
 export interface Publicacion {
@@ -23,9 +24,9 @@ export interface Publicacion {
   comunidadId?: number
   comunidadNombre?: string
   fechaCreacion: string
-  totalReacciones: number
-  totalComentarios: number
-  miReaccion?: TipoReaccion
+  conteoReacciones: number
+  conteoComentarios: number
+  reaccionDelVisor?: TipoReaccion
 }
 
 export interface Comentario {
