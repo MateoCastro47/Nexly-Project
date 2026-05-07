@@ -93,29 +93,29 @@ export default function PostCard({ publicacion, variant = 'normal' }: Props) {
       <ImagenGrid imagenes={publicacion.imagenes} isHero={isHero} />
 
       {/* Separador decorativo + stats */}
-      {(publicacion.totalReacciones > 0 || publicacion.totalComentarios > 0) && (
+      {(publicacion.conteoReacciones > 0 || publicacion.conteoComentarios > 0) && (
         <>
           <div className="divider-brand" />
           <div
             className="flex items-center gap-4 text-xs"
             style={{ color: 'var(--color-muted)' }}
           >
-            {publicacion.totalReacciones > 0 && (
+            {publicacion.conteoReacciones > 0 && (
               <span className="flex items-center gap-1.5">
                 <span
                   className="inline-block w-1.5 h-1.5 rounded-full"
                   style={{ background: 'var(--color-accent-1)' }}
                 />
-                {publicacion.totalReacciones} reacciones
+                {publicacion.conteoReacciones} reacciones
               </span>
             )}
-            {publicacion.totalComentarios > 0 && (
+            {publicacion.conteoComentarios > 0 && (
               <span className="flex items-center gap-1.5">
                 <span
                   className="inline-block w-1.5 h-1.5 rounded-full"
                   style={{ background: 'var(--color-accent-2)' }}
                 />
-                {publicacion.totalComentarios} comentarios
+                {publicacion.conteoComentarios} comentarios
               </span>
             )}
           </div>
@@ -127,7 +127,7 @@ export default function PostCard({ publicacion, variant = 'normal' }: Props) {
         <div className="divider-brand mb-3" />
         <PostActions
             publicacionId={publicacion.id}
-            miReaccion={publicacion.miReaccion}
+            miReaccion={publicacion.reaccionDelVisor}
         />
       </div>
     </article>

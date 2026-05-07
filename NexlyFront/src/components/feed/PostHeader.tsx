@@ -26,6 +26,7 @@ function tiempoRelativo(fecha: string){
 export default function PostHeader({autor, fechaCreacion, comunidadNombre, onEliminar, isHero}: Props){
     const usuarioActual = useAuthStore((s) => s.usuario)
     const [menuAbierto, setMenuAbierto] = useState(false)
+    const [fotoError, setFotoError] = useState(false)
     const esPropio = usuarioActual?.id === autor.id
 
     const avatarSize = isHero ? 'w-12 h-12' : 'w-10 h-10'
@@ -37,10 +38,11 @@ export default function PostHeader({autor, fechaCreacion, comunidadNombre, onEli
                   to={`/perfil/${autor.nombreUsuario}`}
                   className={`shrink-0 avatar-ring ${isHero ? 'avatar-hero' : ''}`}
                 >
-                    {autor.fotoPerfil ? (
+                    {autor.fotoPerfil && !fotoError ? (
                         <img src={autor.fotoPerfil}
                         alt=""
                         className={`${avatarSize} rounded-full object-cover`}
+                        onError={() => setFotoError(true)}
                         />
                     ) : (
                         <div

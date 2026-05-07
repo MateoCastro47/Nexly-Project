@@ -67,7 +67,7 @@ export const useFeedStore = create<FeedStore>((set, get) => ({
   toggleReaccion: async (id, tipo) => {
     const post = get().publicaciones.find((p) => p.id === id)
     if (!post) return
-    const actual = post.miReaccion
+    const actual = post.reaccionDelVisor
     const quitando = actual === tipo
 
     // Optimistic update inmediato
@@ -76,12 +76,12 @@ export const useFeedStore = create<FeedStore>((set, get) => ({
         if (p.id !== id) return p
         return {
           ...p,
-          miReaccion: quitando ? undefined : tipo,
-          totalReacciones: quitando
-            ? p.totalReacciones - 1
+          reaccionDelVisor: quitando ? undefined : tipo,
+          conteoReacciones: quitando
+            ? p.conteoReacciones - 1
             : actual
-              ? p.totalReacciones        // cambia reacción, el total no varía
-              : p.totalReacciones + 1,
+              ? p.conteoReacciones        // cambia reacción, el total no varía
+              : p.conteoReacciones + 1,
         }
       }),
     }))
