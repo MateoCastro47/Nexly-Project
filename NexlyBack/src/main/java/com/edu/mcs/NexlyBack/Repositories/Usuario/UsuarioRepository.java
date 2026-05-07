@@ -3,6 +3,7 @@ package com.edu.mcs.NexlyBack.Repositories.Usuario;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -65,5 +66,22 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long>{
 
     @Query("SELECT COUNT(p) FROM Publicacion p WHERE p.usuario.id = :id")
     long countPublicaciones(@Param("id") Long id);
-    
+
+    @Query("""
+            SELECT u FROM Usuario u
+            WHERE u.id != :viewerId
+              AND u.activo = true
+              AND NOT EXISTS (
+                SELECT s FROM Seguimiento s
+                WHERE s.seguidor.id = :viewerId AND s.seguido.id = u.id
+              )
+              AND NOT EXISTS (
+                SELECT b FROM Bloqueo b
+                WHERE (b.bloqueador.id = :viewerId AND b.bloqueado.id = u.id)
+                   OR (b.bloqueador.id = u.id      AND b.bloqueado.id = :viewerId)
+              )
+            ORDER BY u.fechaRegistro DESC
+            """)
+    List<Usuario> findSugerencias(@Param("viewerId") Long viewerId, Pageable pageable);
+
 }

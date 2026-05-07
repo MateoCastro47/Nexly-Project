@@ -67,6 +67,9 @@ public class Usuario {
     @Column(name = "oauth_id")
     private String oauthId;
 
+    @Column(name = "onboarding_completado", nullable = false)
+    private Boolean onboardingCompletado = false;
+
     @OneToMany(mappedBy = "seguidor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Seguimiento> seguidores;
@@ -413,11 +416,20 @@ public class Usuario {
         this.oauthId = oauthId;
     }
 
+    public Boolean getOnboardingCompletado() {
+        return onboardingCompletado;
+    }
+
+    public void setOnboardingCompletado(Boolean onboardingCompletado) {
+        this.onboardingCompletado = onboardingCompletado;
+    }
+
     @PrePersist
     protected void onCreate() {
         this.fechaRegistro = LocalDateTime.now();
         if (this.rol == null) this.rol = Rol.USER;
         if (this.perfilPrivado == null) this.perfilPrivado = false;
         if (this.activo == null) this.activo = true;
+        if (this.onboardingCompletado == null) this.onboardingCompletado = false;
     }
 }

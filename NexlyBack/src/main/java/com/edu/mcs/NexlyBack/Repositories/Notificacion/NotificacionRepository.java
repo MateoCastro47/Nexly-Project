@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.edu.mcs.NexlyBack.models.Notificacion;
 
@@ -18,4 +19,8 @@ public interface NotificacionRepository extends JpaRepository<Notificacion, Long
     @Modifying
     @Query("UPDATE Notificacion n SET n.leida = true WHERE n.destinatario.id = :destinatarioId AND n.leida = false")
     void marcarTodasLeidas(Long destinatarioId);
+
+    @Modifying
+    @Query("DELETE FROM Notificacion n WHERE n.destinatario.id = :userId OR n.emisor.id = :userId")
+    void deleteByUsuarioId(@Param("userId") Long userId);
 }

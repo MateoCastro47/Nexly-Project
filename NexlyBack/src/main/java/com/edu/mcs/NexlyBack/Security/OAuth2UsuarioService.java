@@ -36,6 +36,7 @@ public class OAuth2UsuarioService extends DefaultOAuth2UserService{
         String proveedor = request.getClientRegistration().getRegistrationId().toUpperCase();
 
         Usuario usuario = usuarioRepository.findByEmail(email)
+                .map((Usuario u) -> actualizarDesdeOAuth(u, fotoPerfil, proveedor, oauthId))
                 .orElseGet(() -> crearDesdeOAuth(email, nombre, fotoPerfil, proveedor, oauthId));
 
         Map<String, Object> attrs = new HashMap<>(oAuth2User.getAttributes());
@@ -46,6 +47,17 @@ public class OAuth2UsuarioService extends DefaultOAuth2UserService{
                 attrs,
                 "email"
         );
+    }
+
+    private Usuario actualizarDesdeOAuth(Usuario u, String fotoPerfil, String proveedor, String oauthId) {
+        if (fotoPerfil != null && u.getFotoPerfil() == null) {
+            u.setFotoPerfil(fotoPerfil);
+        }
+        if (u.getProveedorOAuth() == null) {
+            u.setProveedorOAuth(proveedor);
+            u.setOauthId(oauthId);
+        }
+        return usuarioRepository.save(u);
     }
 
     private Usuario crearDesdeOAuth(String email, String nombre, String fotoPerfil,

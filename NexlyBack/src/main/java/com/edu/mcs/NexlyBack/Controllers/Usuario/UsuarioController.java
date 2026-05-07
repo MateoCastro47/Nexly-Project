@@ -12,6 +12,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -53,6 +54,13 @@ public class UsuarioController {
     public ResponseEntity<List<UsuarioDTO>> buscar(@RequestParam String q, Authentication auth) {
         return ResponseEntity.ok(usuarioService.buscar(q, userId(auth)));
     }
+
+    @GetMapping("/sugerencias")
+    public ResponseEntity<List<UsuarioDTO>> sugerencias(
+            @RequestParam(defaultValue = "5") int limit,
+            Authentication auth) {
+        return ResponseEntity.ok(usuarioService.getSugerencias(userId(auth), limit));
+    }
     
      @PutMapping("/perfil")
     public ResponseEntity<UsuarioDTO> actualizarPerfil(@Valid @RequestBody ActualizarPerfilRequest req,
@@ -81,6 +89,20 @@ public class UsuarioController {
     @DeleteMapping("/{id}/bloquear")
     public ResponseEntity<Void> desbloquear(@PathVariable Long id, Authentication auth) {
         usuarioService.desbloquear(userId(auth), id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/onboarding")
+    public ResponseEntity<UsuarioDTO> completarOnboarding(
+            @RequestBody(required = false) ActualizarPerfilRequest req,
+            Authentication auth) {
+        return ResponseEntity.ok(usuarioService.completarOnboarding(userId(auth), req));
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> eliminarUsuario(@PathVariable Long id) {
+        usuarioService.eliminarUsuario(id);
         return ResponseEntity.noContent().build();
     }
 

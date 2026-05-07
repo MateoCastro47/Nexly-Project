@@ -5,6 +5,7 @@ package com.edu.mcs.NexlyBack.Services.Usuario;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +14,8 @@ import com.edu.mcs.NexlyBack.DTOs.Auth.RegisterRequest;
 import com.edu.mcs.NexlyBack.DTOs.Usuario.ActualizarPerfilRequest;
 import com.edu.mcs.NexlyBack.DTOs.Usuario.UsuarioDTO;
 import com.edu.mcs.NexlyBack.Mappers.UsuarioMapper;
+import com.edu.mcs.NexlyBack.Repositories.Comunidad.ComunidadRepository;
+import com.edu.mcs.NexlyBack.Repositories.Notificacion.NotificacionRepository;
 import com.edu.mcs.NexlyBack.Repositories.Usuario.BloqueoRepository;
 import com.edu.mcs.NexlyBack.Repositories.Usuario.SeguimientoRepository;
 import com.edu.mcs.NexlyBack.Repositories.Usuario.UsuarioRepository;
@@ -33,16 +36,21 @@ public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final UsuarioMapper usuarioMapper;
     private final NotificacionService notificacionService;
+    private final NotificacionRepository notificacionRepository;
+    private final ComunidadRepository comunidadRepository;
 
     public UsuarioService(PasswordEncoder passwordEncoder, SeguimientoRepository seguimientoRepository,
             BloqueoRepository bloqueoRepository, UsuarioRepository usuarioRepository, UsuarioMapper usuarioMapper,
-            NotificacionService notificacionService) {
+            NotificacionService notificacionService, NotificacionRepository notificacionRepository,
+            ComunidadRepository comunidadRepository) {
         this.passwordEncoder = passwordEncoder;
         this.seguimientoRepository = seguimientoRepository;
         this.bloqueoRepository = bloqueoRepository;
         this.usuarioRepository = usuarioRepository;
         this.usuarioMapper = usuarioMapper;
         this.notificacionService = notificacionService;
+        this.notificacionRepository = notificacionRepository;
+        this.comunidadRepository = comunidadRepository;
     }
 
     public UsuarioDTO getPerfil(Long targetId, Long viewerId) {
@@ -63,6 +71,13 @@ public class UsuarioService {
 
     public List<UsuarioDTO> buscar(String query, Long viewerId) {
         return usuarioRepository.buscarPorNombreOUsername(query)
+                .stream()
+                .map(u -> buildDTO(u, viewerId))
+                .toList();
+    }
+
+    public List<UsuarioDTO> getSugerencias(Long viewerId, int limit) {
+        return usuarioRepository.findSugerencias(viewerId, PageRequest.of(0, limit))
                 .stream()
                 .map(u -> buildDTO(u, viewerId))
                 .toList();
@@ -150,8 +165,36 @@ public class UsuarioService {
     }
 
     @Transactional
+    public UsuarioDTO completarOnboarding(Long userId, ActualizarPerfilRequest req) {
+        Usuario u = usuarioRepository.findById(userId)
+                .orElseThrow(() -> new NoSuchElementException("Usuario no encontrado"));
+        if (req != null) {
+            if (req.nombreCompleto() != null) u.setNombreCompleto(req.nombreCompleto());
+            if (req.biografia()      != null) u.setBiografia(req.biografia());
+            if (req.ubicacion()      != null) u.setUbicacion(req.ubicacion());
+            if (req.enlaceWeb()      != null) u.setEnlaceWeb(req.enlaceWeb());
+            if (req.fotoPerfil()     != null) u.setFotoPerfil(req.fotoPerfil());
+            if (req.fotoPortada()    != null) u.setFotoPortada(req.fotoPortada());
+            if (req.perfilPrivado()  != null) u.setPerfilPrivado(req.perfilPrivado());
+        }
+        u.setOnboardingCompletado(true);
+        return buildDTO(usuarioRepository.save(u), userId);
+    }
+
+    @Transactional
     public void desbloquear(Long bloqueadorId, Long bloqueadoId){
         bloqueoRepository.deleteByBloqueadorIdAndBloqueadoId(bloqueadorId, bloqueadoId);
+    }
+
+    @Transactional
+    public void eliminarUsuario(Long id) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Usuario no encontrado"));
+        // Notificacion no está en el cascade de Usuario — borrar primero
+        notificacionRepository.deleteByUsuarioId(id);
+        // Preservar comunidades creadas (sólo nullificar creador, no borrarlas)
+        comunidadRepository.nullifyCreador(id);
+        usuarioRepository.delete(usuario);
     }
     
     // --- privado: resuelve datos calculados y delega al mapper ---

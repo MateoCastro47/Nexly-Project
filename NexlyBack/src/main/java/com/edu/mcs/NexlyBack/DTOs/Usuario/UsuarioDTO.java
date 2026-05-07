@@ -13,6 +13,8 @@ public class UsuarioDTO {
     private long seguidos;
     private long publicaciones;
 
+    private boolean onboardingCompletado;
+
     // Estado relacional respecto al usuario autenticado
     private boolean teSigue;
     private boolean loSigues;
@@ -143,5 +145,11 @@ public class UsuarioDTO {
         this.teBloqueo = teBloqueo;
     }
 
+    public boolean isOnboardingCompletado() {
+        return onboardingCompletado;
+    }
 
+    public void setOnboardingCompletado(boolean onboardingCompletado) {
+        this.onboardingCompletado = onboardingCompletado;
+    }
 }
