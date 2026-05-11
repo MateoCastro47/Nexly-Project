@@ -45,12 +45,14 @@ export interface Publicacion {
 export interface Comentario {
   id: number
   contenido: string
-  autor: Usuario
-  fechaCreacion: string
-  totalRespuestas: number
-  totalReacciones: number
-  miReaccion?: TipoReaccion
+  autor: Pick<Usuario, 'id' | 'nombreCompleto' | 'nombreUsuario' | 'fotoPerfil'>
+  publicacionId: number
   comentarioPadreId?: number
+  fechaCreacion: string
+  fechaEdicion?: string
+  conteoRespuestas: number
+  conteoReacciones: number
+  reaccion?: TipoReaccion
 }
 
 export interface Notificacion {
