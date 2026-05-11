@@ -132,7 +132,7 @@ export default function DiscoverPanel() {
 
       {/* ── Tendencias ── */}
       <div
-        className="rounded-3xl p-5 flex flex-col gap-3"
+        className="rounded-3xl p-5 flex flex-col gap-1"
         style={{
           background: 'linear-gradient(165deg, var(--color-surface), var(--color-surface-2))',
           border: '1px solid var(--color-border)',
@@ -140,15 +140,43 @@ export default function DiscoverPanel() {
         }}
       >
         <h3
-          className="text-sm font-bold flex items-center gap-2"
+          className="text-sm font-bold flex items-center gap-2 mb-3"
           style={{ fontFamily: 'var(--font-display)', color: 'var(--color-text)' }}
         >
-          <span className="text-base">🔥</span>
+          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="url(#trend-grad)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <defs>
+              <linearGradient id="trend-grad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stopColor="oklch(0.50 0.22 275)" />
+                <stop offset="100%" stopColor="oklch(0.64 0.16 32)" />
+              </linearGradient>
+            </defs>
+            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+            <polyline points="17 6 23 6 23 12" />
+          </svg>
           Tendencias
         </h3>
-        <p className="text-xs" style={{ color: 'var(--color-muted)' }}>
-          Las tendencias aparecerán aquí.
-        </p>
+        {[
+          { tag: '#TechLatam',       posts: '3.1K publicaciones', cat: 'Tecnología' },
+          { tag: '#Desarrolladores', posts: '2.4K publicaciones', cat: 'Programación' },
+          { tag: '#DiseñoWeb',       posts: '1.8K publicaciones', cat: 'Diseño' },
+          { tag: '#NexlyApp',        posts: '956 publicaciones',  cat: 'Comunidad' },
+          { tag: '#OpenSource',      posts: '742 publicaciones',  cat: 'Dev' },
+        ].map(({ tag, posts, cat }) => (
+          <button
+            key={tag}
+            className="w-full text-left px-3 py-2.5 rounded-2xl transition-all group"
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLElement).style.background = 'var(--color-accent-1-tint)'
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLElement).style.background = 'transparent'
+            }}
+          >
+            <p className="text-[0.6875rem] font-medium" style={{ color: 'var(--color-muted)' }}>{cat}</p>
+            <p className="text-sm font-bold" style={{ color: 'var(--color-text)', fontFamily: 'var(--font-display)' }}>{tag}</p>
+            <p className="text-[0.6875rem]" style={{ color: 'var(--color-muted)' }}>{posts}</p>
+          </button>
+        ))}
       </div>
 
       {/* ── Quién seguir ── */}

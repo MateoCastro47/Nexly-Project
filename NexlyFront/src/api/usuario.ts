@@ -16,6 +16,9 @@ export const completarOnboarding = (data: OnboardingPayload) =>
 export const getSugerencias = (limit = 5) =>
   client.get<Usuario[]>('/usuario/sugerencias', { params: { limit } })
 
+export const getPerfilPorNombreUsuario = (nombreUsuario: string) =>
+  client.get<Usuario>(`/usuario/username/${nombreUsuario}`)
+
 export const seguirUsuario = (id: number) =>
   client.post<void>(`/usuario/${id}/seguir`)
 

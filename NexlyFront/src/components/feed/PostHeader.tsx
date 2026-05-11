@@ -116,7 +116,7 @@ export default function PostHeader({autor, fechaCreacion, comunidadNombre, onEli
                 <>
                 <div className="fixed inset-0 z-10" onClick={() => setMenuAbierto(false)} />
                 <div
-                    className="absolute right-0 top-10 z-20 rounded-2xl py-1.5 min-w-[160px]"
+                    className="absolute right-0 top-10 z-20 rounded-2xl py-1.5 min-w-40"
                     style={{
                       background: 'var(--color-surface)',
                       border: '1px solid var(--color-border)',

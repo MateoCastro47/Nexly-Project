@@ -98,22 +98,43 @@ export default function FeedPage() {
       {hayMas && <div ref={sentinelRef} className="h-4"/>}
 
       {!hayMas && publicaciones.length > 0 && (
-        <div className="flex flex-col items-center py-10 gap-2">
-          <div
-            className="w-10 h-10 rounded-full flex items-center justify-center text-lg"
-            style={{ background: 'var(--color-accent-1-tint)' }}
-          >
-            🎉
+        <div className="flex flex-col items-center py-12 gap-4">
+          <div className="relative">
+            <div
+              className="w-14 h-14 rounded-2xl flex items-center justify-center"
+              style={{
+                background: 'var(--gradient-brand-soft)',
+                border: '1px solid color-mix(in oklch, var(--color-border), var(--color-accent-1) 18%)',
+                boxShadow: '0 4px 16px oklch(0.50 0.22 275 / 0.12)',
+              }}
+            >
+              <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="url(#end-grad)" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                <defs>
+                  <linearGradient id="end-grad" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor="oklch(0.50 0.22 275)" />
+                    <stop offset="100%" stopColor="oklch(0.64 0.16 32)" />
+                  </linearGradient>
+                </defs>
+                <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" />
+                <path d="M8 12l3 3 5-5" />
+              </svg>
+            </div>
           </div>
-          <p
-            className="text-sm font-medium"
-            style={{ color: 'var(--color-muted)', fontFamily: 'var(--font-display)' }}
-          >
-            Has llegado al final del feed
-          </p>
-          <p className="text-xs" style={{ color: 'oklch(0.65 0.01 50)' }}>
-            ¡Sigue explorando comunidades para más contenido!
-          </p>
+          <div className="flex flex-col items-center gap-1 text-center">
+            <p
+              className="text-sm font-bold"
+              style={{ color: 'var(--color-text)', fontFamily: 'var(--font-display)' }}
+            >
+              Todo al día por ahora
+            </p>
+            <p className="text-xs" style={{ color: 'var(--color-muted)' }}>
+              Explora comunidades para descubrir más contenido
+            </p>
+          </div>
+          <div
+            className="h-px w-24"
+            style={{ background: 'var(--gradient-brand-soft)' }}
+          />
         </div>
       )}
     </div>

@@ -1,13 +1,17 @@
-import type { Publicacion } from '../../types'
+import { useState } from 'react'
+import type { Publicacion, TipoReaccion } from '../../types'
 import { useFeedStore } from '../../store/feedStore'
 import PostHeader from './PostHeader'
 import PostActions from './PostActions'
 import FlairBadge from './FlairBadge'
 import QuoteCard from './QuoteCard'
+import CommentSection from './CommentSection'
 
 interface Props {
   publicacion: Publicacion
   variant?: 'normal' | 'hero'
+  onEliminar?: () => void
+  onToggleReaccion?: (id: number, tipo: TipoReaccion) => void
 }
 
 function ImagenGrid({ imagenes, isHero }: { imagenes: string[]; isHero?: boolean }) {
@@ -61,10 +65,11 @@ function ImagenGrid({ imagenes, isHero }: { imagenes: string[]; isHero?: boolean
   )
 }
 
-export default function PostCard({ publicacion, variant = 'normal' }: Props) {
-  const eliminar    = useFeedStore((s) => s.eliminar)
-  const setCitando  = useFeedStore((s) => s.setCitando)
+export default function PostCard({ publicacion, variant = 'normal', onEliminar, onToggleReaccion }: Props) {
+  const eliminarDelFeed = useFeedStore((s) => s.eliminar)
+  const setCitando      = useFeedStore((s) => s.setCitando)
   const isHero = variant === 'hero'
+  const [showComments, setShowComments] = useState(false)
 
   return (
     <article
@@ -84,7 +89,7 @@ export default function PostCard({ publicacion, variant = 'normal' }: Props) {
         autor={publicacion.autor}
         fechaCreacion={publicacion.fechaCreacion}
         comunidadNombre={publicacion.comunidadNombre}
-        onEliminar={() => eliminar(publicacion.id)}
+        onEliminar={onEliminar ?? (() => eliminarDelFeed(publicacion.id))}
         isHero={isHero}
       />
 
@@ -92,7 +97,7 @@ export default function PostCard({ publicacion, variant = 'normal' }: Props) {
 
       {publicacion.contenido && (
         <p
-          className={`leading-relaxed whitespace-pre-wrap ${isHero ? 'text-base' : 'text-sm'}`}
+          className={`leading-relaxed whitespace-pre-wrap ${isHero ? 'text-base' : 'text-[0.9375rem]'}`}
           style={{ color: 'var(--color-text)' }}
         >
           {publicacion.contenido}
@@ -140,8 +145,17 @@ export default function PostCard({ publicacion, variant = 'normal' }: Props) {
           publicacionId={publicacion.id}
           miReaccion={publicacion.reaccionDelVisor}
           onCitar={() => setCitando(publicacion)}
+          onComentar={() => setShowComments((v) => !v)}
+          onToggleReaccion={onToggleReaccion}
         />
       </div>
+
+      {showComments && (
+        <>
+          <div className="divider-brand" />
+          <CommentSection pubId={publicacion.id} />
+        </>
+      )}
     </article>
   )
 }

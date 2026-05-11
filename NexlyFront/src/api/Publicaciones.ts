@@ -37,3 +37,6 @@ export const reaccionar = (id: number, tipo: TipoReaccion) =>
 
 export const quitarReaccion = (id: number) =>
   client.delete<void>(`/publicaciones/${id}/reacciones`)
+
+export const getPublicacionesDeUsuario = (userId: number, page = 0, size = 10) =>
+  client.get<Page<Publicacion>>(`/publicaciones/usuario/${userId}`, { params: { page, size } })
