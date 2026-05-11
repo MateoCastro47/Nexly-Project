@@ -1,5 +1,6 @@
 package com.edu.mcs.NexlyBack.models;
 
+import com.edu.mcs.NexlyBack.models.Enums.TipoPost;
 import com.edu.mcs.NexlyBack.models.Enums.Visibilidad;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
@@ -53,13 +54,19 @@ public class Publicacion {
     @OneToMany(mappedBy = "publicacion", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Reaccion> reacciones;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private TipoPost tipoPost;
+
     public Publicacion() {
     }
 
+    
+
     public Publicacion(Long id, Usuario usuario, Comunidad comunidad, Publicacion publicacionRef, String contenido,
-                       Visibilidad visibilidad, LocalDateTime fechaCreacion, LocalDateTime fechaEdicion,
-                       Boolean fijada, Boolean comentariosActivos, List<PublicacionImagen> imagenes,
-                       List<Comentario> comentarios, List<Reaccion> reacciones) {
+            Visibilidad visibilidad, LocalDateTime fechaCreacion, LocalDateTime fechaEdicion, Boolean fijada,
+            Boolean comentariosActivos, List<PublicacionImagen> imagenes, List<Comentario> comentarios,
+            List<Reaccion> reacciones, TipoPost tipoPost) {
         this.id = id;
         this.usuario = usuario;
         this.comunidad = comunidad;
@@ -73,7 +80,10 @@ public class Publicacion {
         this.imagenes = imagenes;
         this.comentarios = comentarios;
         this.reacciones = reacciones;
+        this.tipoPost = tipoPost;
     }
+
+
 
     public Long getId() {
         return id;
@@ -179,11 +189,27 @@ public class Publicacion {
         this.reacciones = reacciones;
     }
 
+    
+
     @PrePersist
     protected void onCreate() {
         this.fechaCreacion = LocalDateTime.now();
         if (this.visibilidad == null) this.visibilidad = Visibilidad.PUBLICA;
         if (this.fijada == null) this.fijada = false;
+        if (this.tipoPost == null) this.tipoPost = TipoPost.NORMAL; 
         if (this.comentariosActivos == null) this.comentariosActivos = true;
     }
+
+
+
+    public TipoPost getTipoPost() {
+        return tipoPost;
+    }
+
+
+
+    public void setTipoPost(TipoPost tipoPost) {
+        this.tipoPost = tipoPost;
+    }
+    
 }

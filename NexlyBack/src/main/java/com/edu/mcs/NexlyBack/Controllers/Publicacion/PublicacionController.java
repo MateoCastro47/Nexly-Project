@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.edu.mcs.NexlyBack.DTOs.Publicacion.PublicacionDTO;
 import com.edu.mcs.NexlyBack.Services.Publicacion.PublicacionService;
 import com.edu.mcs.NexlyBack.models.Enums.TipoMedia;
+import com.edu.mcs.NexlyBack.models.Enums.TipoPost;
 import com.edu.mcs.NexlyBack.models.Enums.TipoReaccion;
 import com.edu.mcs.NexlyBack.models.Enums.Visibilidad;
 import jakarta.validation.constraints.NotBlank;
@@ -48,17 +49,28 @@ public class PublicacionController {
         return ResponseEntity.ok(publicacionService.getPublicacionesDeUsuario(userId, userId(auth), page, size));
     }
 
+    @GetMapping("/comunidad/{comunidadId}")
+    public ResponseEntity<Page<PublicacionDTO>> getPorComunidad(
+            @PathVariable Long comunidadId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            Authentication auth) {
+        return ResponseEntity.ok(publicacionService.getPorComunidad(comunidadId, userId(auth), page, size));
+    }
+
     @PostMapping
     public ResponseEntity<PublicacionDTO> crear(
         @RequestParam @NotBlank String contenido,
         @RequestParam(required = false) Visibilidad visibilidad,
+        @RequestParam(required = false) TipoPost tipoPost,
         @RequestParam(required = false) Long comunidadId,
+        @RequestParam(required = false) Long publicacionRefId,
         @RequestParam(required = false) List<String> imagenes,
         @RequestParam(required = false) List<String> mediaUrls,
         @RequestParam(required = false) List<TipoMedia> mediaTipos,
         Authentication auth){
             PublicacionDTO dto = publicacionService.crear(
-                userId(auth), contenido, visibilidad, comunidadId, imagenes, mediaUrls, mediaTipos);
+                userId(auth), contenido, visibilidad, tipoPost, comunidadId, publicacionRefId, imagenes, mediaUrls, mediaTipos);
             return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 
@@ -88,6 +100,18 @@ public class PublicacionController {
     public ResponseEntity<Void> quitarReaccion(@PathVariable Long id, Authentication auth){
         publicacionService.quitarReaccion(id, userId(auth));
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}/fijar")
+    public ResponseEntity<Void> fijar(@PathVariable Long id, Authentication auth) {
+        publicacionService.fijar(id, userId(auth));
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{id}/fijar")
+    public ResponseEntity<Void> desfijar(@PathVariable Long id, Authentication auth) {
+        publicacionService.desfijar(id, userId(auth));
+        return ResponseEntity.ok().build();
     }
 
     private Long userId(Authentication auth) { return (Long) auth.getPrincipal(); }

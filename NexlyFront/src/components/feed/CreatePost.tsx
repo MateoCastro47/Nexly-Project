@@ -3,14 +3,26 @@ import { useAuthStore } from '../../store/authStore'
 import { useFeedStore } from '../../store/feedStore'
 import { uploadImagen } from '../../api/media'
 import EmojiPicker from './EmojiPicker'
+import QuoteCard from './QuoteCard'
+import SelectPill from './SelectPill'
+import type { SelectOption } from './SelectPill'
+import type { TipoPost } from '../../types'
 
 type Visibilidad  = 'PUBLICA' | 'SEGUIDORES' | 'PRIVADA'
 type ActivePanel  = null | 'emoji' | 'poll'
 
-const VISIBILIDAD_OPTS: { value: Visibilidad; label: string; icon: string }[] = [
-  { value: 'PUBLICA',    label: 'Todos',      icon: '🌍' },
-  { value: 'SEGUIDORES', label: 'Seguidores', icon: '👥' },
-  { value: 'PRIVADA',    label: 'Solo yo',    icon: '🔒' },
+const VISIBILIDAD_OPTS: SelectOption[] = [
+  { value: 'PUBLICA',    label: 'Todos',      icon: '🌍', color: 'oklch(0.50 0.18 150)',  bg: 'oklch(0.50 0.18 150 / 0.12)' },
+  { value: 'SEGUIDORES', label: 'Seguidores', icon: '👥', color: 'var(--color-accent-1)', bg: 'var(--color-accent-1-tint)' },
+  { value: 'PRIVADA',    label: 'Solo yo',    icon: '🔒', color: 'var(--color-muted)',    bg: 'oklch(0.50 0 0 / 0.08)' },
+]
+
+const FLAIR_OPTS: SelectOption[] = [
+  { value: 'NORMAL',   label: 'Tipo de post', icon: '🏷️', color: 'var(--color-muted)',    bg: 'oklch(0.50 0 0 / 0.07)' },
+  { value: 'PREGUNTA', label: 'Pregunta',     icon: '❓',  color: 'var(--color-accent-1)', bg: 'var(--color-accent-1-tint)' },
+  { value: 'NOTICIA',  label: 'Noticia',      icon: '📰', color: 'oklch(0.50 0.18 150)',  bg: 'oklch(0.50 0.18 150 / 0.12)' },
+  { value: 'DEBATE',   label: 'Debate',       icon: '⚡',  color: 'oklch(0.60 0.20 50)',   bg: 'oklch(0.60 0.20 50 / 0.12)' },
+  { value: 'ANUNCIO',  label: 'Anuncio',      icon: '📣', color: 'oklch(0.52 0.22 300)',  bg: 'oklch(0.52 0.22 300 / 0.12)' },
 ]
 
 const MAX_CHARS   = 280
@@ -216,11 +228,14 @@ function PollCreator({
 // ── CreatePost ───────────────────────────────────────────────────────────────
 
 export default function CreatePost() {
-  const usuario = useAuthStore((s) => s.usuario)
-  const crear   = useFeedStore((s) => s.crear)
+  const usuario     = useAuthStore((s) => s.usuario)
+  const crear       = useFeedStore((s) => s.crear)
+  const postCitado  = useFeedStore((s) => s.postCitado)
+  const setCitando  = useFeedStore((s) => s.setCitando)
 
   const [contenido,    setContenido]    = useState('')
   const [visibilidad,  setVisibilidad]  = useState<Visibilidad>('PUBLICA')
+  const [tipoPost,     setTipoPost]     = useState<TipoPost>('NORMAL')
   const [loading,      setLoading]      = useState(false)
   const [focused,      setFocused]      = useState(false)
   const [imagenes,     setImagenes]     = useState<ImagenPreview[]>([])
@@ -233,7 +248,7 @@ export default function CreatePost() {
 
   if (!usuario) return null
 
-  const expanded   = focused || contenido.length > 0 || imagenes.length > 0 || showPoll
+  const expanded   = focused || contenido.length > 0 || imagenes.length > 0 || showPoll || !!postCitado || tipoPost !== 'NORMAL'
   const uploading  = imagenes.some((i) => i.uploading)
   const hasError   = imagenes.some((i) => i.error)
 
@@ -321,6 +336,8 @@ export default function CreatePost() {
       await crear({
         contenido: textoFinal,
         visibilidad,
+        tipoPost: tipoPost !== 'NORMAL' ? tipoPost : undefined,
+        publicacionRefId: postCitado?.id,
         imagenes: imagenes.map((i) => i.uploadedUrl).filter(Boolean),
       })
       setContenido('')
@@ -329,6 +346,8 @@ export default function CreatePost() {
       setShowPoll(false)
       setFocused(false)
       setActivePanel(null)
+      setTipoPost('NORMAL')
+      setCitando(null)
     } finally {
       setLoading(false)
     }
@@ -351,6 +370,10 @@ export default function CreatePost() {
         transition: 'border-color 0.3s, box-shadow 0.3s, transform 0.3s',
       }}
       onClick={() => taRef.current?.focus()}
+      onBlur={(e) => {
+        if (e.currentTarget.contains(e.relatedTarget as Node)) return
+        if (!contenido && imagenes.length === 0 && !showPoll && !postCitado && tipoPost === 'NORMAL') setFocused(false)
+      }}
     >
       {/* Fila principal */}
       <div className="flex gap-3">
@@ -377,7 +400,6 @@ export default function CreatePost() {
             value={contenido}
             onChange={(e) => setContenido(e.target.value)}
             onFocus={() => setFocused(true)}
-            onBlur={() => { if (!contenido && imagenes.length === 0 && !showPoll) setFocused(false) }}
             placeholder="¿Qué está pasando?"
             rows={expanded ? 3 : 1}
             className="w-full resize-none bg-transparent outline-none leading-relaxed"
@@ -394,6 +416,27 @@ export default function CreatePost() {
 
           {/* Imágenes adjuntas */}
           <ImagenGrid imagenes={imagenes} onRemove={removeImagen} />
+
+          {/* Preview del post citado */}
+          {postCitado && (
+            <div className="relative">
+              <button
+                onClick={() => setCitando(null)}
+                className="absolute -top-1.5 -right-1.5 z-10 w-5 h-5 rounded-full flex items-center justify-center text-white text-xs"
+                style={{ background: 'var(--color-muted)' }}
+                title="Quitar cita"
+              >
+                ✕
+              </button>
+              <QuoteCard post={{
+                id: postCitado.id,
+                contenido: postCitado.contenido,
+                autor: postCitado.autor,
+                imagenes: postCitado.imagenes,
+                fechaCreacion: postCitado.fechaCreacion,
+              }} />
+            </div>
+          )}
 
           {/* Encuesta */}
           {showPoll && (
@@ -494,19 +537,21 @@ export default function CreatePost() {
           <div className="w-px h-5 mx-1.5 shrink-0" style={{ background: 'var(--color-border)' }} />
 
           {/* Visibilidad */}
-          <select
+          <SelectPill
             value={visibilidad}
-            onChange={(e) => setVisibilidad(e.target.value as Visibilidad)}
-            className="text-xs px-3 py-1.5 rounded-full font-bold border-none outline-none cursor-pointer transition-colors"
-            style={{
-              color: 'var(--color-accent-1)',
-              background: 'var(--color-accent-1-tint)',
-            }}
-          >
-            {VISIBILIDAD_OPTS.map(({ value, label, icon }) => (
-              <option key={value} value={value}>{icon} {label}</option>
-            ))}
-          </select>
+            onChange={(v) => setVisibilidad(v as Visibilidad)}
+            options={VISIBILIDAD_OPTS}
+          />
+
+          {/* Flair — solo cuando el compositor está expandido */}
+          {expanded && (
+            <SelectPill
+              value={tipoPost}
+              onChange={(v) => setTipoPost(v as TipoPost)}
+              options={FLAIR_OPTS}
+              neutralValue="NORMAL"
+            />
+          )}
         </div>
 
         {/* Contador + botón */}

@@ -2,6 +2,8 @@ import type { Publicacion } from '../../types'
 import { useFeedStore } from '../../store/feedStore'
 import PostHeader from './PostHeader'
 import PostActions from './PostActions'
+import FlairBadge from './FlairBadge'
+import QuoteCard from './QuoteCard'
 
 interface Props {
   publicacion: Publicacion
@@ -37,7 +39,6 @@ function ImagenGrid({ imagenes, isHero }: { imagenes: string[]; isHero?: boolean
     </div>
   )
 
-  // 3 o más: primera ocupa toda la izquierda, las demás apiladas a la derecha
   return (
     <div className="grid grid-cols-2 gap-1.5 rounded-2xl overflow-hidden">
       <div className="overflow-hidden group row-span-2">
@@ -61,7 +62,8 @@ function ImagenGrid({ imagenes, isHero }: { imagenes: string[]; isHero?: boolean
 }
 
 export default function PostCard({ publicacion, variant = 'normal' }: Props) {
-  const eliminar = useFeedStore((s) => s.eliminar)
+  const eliminar    = useFeedStore((s) => s.eliminar)
+  const setCitando  = useFeedStore((s) => s.setCitando)
   const isHero = variant === 'hero'
 
   return (
@@ -69,6 +71,15 @@ export default function PostCard({ publicacion, variant = 'normal' }: Props) {
       className={`card card-feed flex flex-col gap-4 ${isHero ? 'card-hero p-6' : 'p-5'}`}
       style={isHero ? { animationDelay: '0.1s' } : undefined}
     >
+      {publicacion.fijada && (
+        <div className="flex items-center gap-1.5 -mb-1 text-xs" style={{ color: 'var(--color-muted)' }}>
+          <svg className="w-3 h-3 shrink-0" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5v6h2v-6h5v-2l-2-2z" />
+          </svg>
+          <span>Publicación fijada</span>
+        </div>
+      )}
+
       <PostHeader
         autor={publicacion.autor}
         fechaCreacion={publicacion.fechaCreacion}
@@ -77,22 +88,23 @@ export default function PostCard({ publicacion, variant = 'normal' }: Props) {
         isHero={isHero}
       />
 
-      {/* Contenido */}
+      <FlairBadge tipo={publicacion.tipoPost} />
+
       {publicacion.contenido && (
         <p
-          className={`leading-relaxed whitespace-pre-wrap ${
-            isHero ? 'text-base' : 'text-sm'
-          }`}
+          className={`leading-relaxed whitespace-pre-wrap ${isHero ? 'text-base' : 'text-sm'}`}
           style={{ color: 'var(--color-text)' }}
         >
           {publicacion.contenido}
         </p>
       )}
 
-      {/* Imágenes */}
+      {publicacion.publicacionCitada && (
+        <QuoteCard post={publicacion.publicacionCitada} />
+      )}
+
       <ImagenGrid imagenes={publicacion.imagenes} isHero={isHero} />
 
-      {/* Separador decorativo + stats */}
       {(publicacion.conteoReacciones > 0 || publicacion.conteoComentarios > 0) && (
         <>
           <div className="divider-brand" />
@@ -122,12 +134,12 @@ export default function PostCard({ publicacion, variant = 'normal' }: Props) {
         </>
       )}
 
-      {/* PostActions */}
       <div className="pt-1">
         <div className="divider-brand mb-3" />
         <PostActions
-            publicacionId={publicacion.id}
-            miReaccion={publicacion.reaccionDelVisor}
+          publicacionId={publicacion.id}
+          miReaccion={publicacion.reaccionDelVisor}
+          onCitar={() => setCitando(publicacion)}
         />
       </div>
     </article>

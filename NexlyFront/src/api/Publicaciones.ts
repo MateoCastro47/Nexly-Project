@@ -1,4 +1,4 @@
-import type { Publicacion, Page, TipoReaccion } from "../types";
+import type { Publicacion, Page, TipoPost, TipoReaccion } from "../types";
 import client from "./client";
 
 
@@ -12,14 +12,18 @@ export const crearPublicacion = (data: {
     contenido: string
     imagenes?: string[]
     visibilidad: 'PUBLICA' | 'SEGUIDORES' | 'PRIVADA'
+    tipoPost?: TipoPost
     comunidadId?: number
+    publicacionRefId?: number
 }) => {
     // El backend usa @RequestParam — se envían como query params en la URL
     const params: Record<string, unknown> = {
         contenido: data.contenido,
         visibilidad: data.visibilidad,
     }
+    if (data.tipoPost && data.tipoPost !== 'NORMAL') params.tipoPost = data.tipoPost
     if (data.comunidadId != null) params.comunidadId = data.comunidadId
+    if (data.publicacionRefId != null) params.publicacionRefId = data.publicacionRefId
     if (data.imagenes?.length) params.imagenes = data.imagenes
     return client.post<Publicacion>('/publicaciones', null, { params })
 }

@@ -15,14 +15,27 @@ export interface Usuario {
   onboardingCompletado: boolean
 }
 
+export type TipoPost = 'NORMAL' | 'PREGUNTA' | 'NOTICIA' | 'DEBATE' | 'ANUNCIO'
+
+export interface PublicacionCitada {
+  id: number
+  contenido: string
+  autor: Pick<Usuario, 'id' | 'nombreCompleto' | 'nombreUsuario' | 'fotoPerfil'>
+  imagenes: string[]
+  fechaCreacion: string
+}
+
 export interface Publicacion {
   id: number
   contenido: string
   imagenes: string[]
   visibilidad: 'PUBLICA' | 'SEGUIDORES' | 'PRIVADA'
+  tipoPost: TipoPost
+  fijada: boolean
   autor: Usuario
   comunidadId?: number
   comunidadNombre?: string
+  publicacionCitada?: PublicacionCitada
   fechaCreacion: string
   conteoReacciones: number
   conteoComentarios: number

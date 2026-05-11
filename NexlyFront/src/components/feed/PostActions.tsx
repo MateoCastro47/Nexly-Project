@@ -23,9 +23,10 @@ const REACTION_META: Record<TipoReaccion, { emoji: string; label: string; color:
 interface Props {
   publicacionId: number
   miReaccion?: TipoReaccion
+  onCitar?: () => void
 }
 
-export default function PostActions({ publicacionId, miReaccion }: Props) {
+export default function PostActions({ publicacionId, miReaccion, onCitar }: Props) {
   const toggleReaccion = useFeedStore((s) => s.toggleReaccion)
   const [pickerVisible, setPickerVisible] = useState(false)
   const [hoveredReaccion, setHoveredReaccion] = useState<TipoReaccion | null>(null)
@@ -51,7 +52,6 @@ export default function PostActions({ publicacionId, miReaccion }: Props) {
       {/* Botón principal + picker */}
       <div className="relative flex-1" onMouseEnter={showPicker} onMouseLeave={hidePicker}>
 
-        {/* Picker flotante con glassmorphism */}
         {pickerVisible && (
           <div
             onMouseEnter={showPicker}
@@ -94,7 +94,6 @@ export default function PostActions({ publicacionId, miReaccion }: Props) {
           </div>
         )}
 
-        {/* Botón principal */}
         <button
           onClick={() => handleReaccion(miReaccion ?? 'ME_GUSTA')}
           className={`action-btn flex items-center justify-center gap-2 w-full px-4 py-2.5 text-sm font-semibold ${
@@ -124,14 +123,17 @@ export default function PostActions({ publicacionId, miReaccion }: Props) {
         Comentar
       </button>
 
-      {/* Compartir */}
+      {/* Citar */}
       <button
+        onClick={onCitar}
         className="action-btn flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold"
+        title="Citar publicación"
       >
         <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
-          <polyline points="16 6 12 2 8 6" />
-          <line x1="12" y1="2" x2="12" y2="15" />
+          <path d="M17 1l4 4-4 4" />
+          <path d="M3 11V9a4 4 0 0 1 4-4h14" />
+          <path d="M7 23l-4-4 4-4" />
+          <path d="M21 13v2a4 4 0 0 1-4 4H3" />
         </svg>
       </button>
     </div>

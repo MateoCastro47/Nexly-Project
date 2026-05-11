@@ -16,10 +16,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.edu.mcs.NexlyBack.DTOs.Publicacion.AutorResumenDTO;
 import com.edu.mcs.NexlyBack.DTOs.Publicacion.MediaDTO;
+import com.edu.mcs.NexlyBack.DTOs.Publicacion.PublicacionCitadaDTO;
 import com.edu.mcs.NexlyBack.DTOs.Publicacion.PublicacionDTO;
 import com.edu.mcs.NexlyBack.Mappers.Publicacion.AutorResumenMapper;
 import com.edu.mcs.NexlyBack.Mappers.Publicacion.PublicacionMapper;
 import com.edu.mcs.NexlyBack.Repositories.Comunidad.ComunidadRepository;
+import com.edu.mcs.NexlyBack.Repositories.Comunidad.MiembroComunidadRepository;
 import com.edu.mcs.NexlyBack.Repositories.Publicacion.ComentarioRepository;
 import com.edu.mcs.NexlyBack.Repositories.Publicacion.PublicacionRepository;
 import com.edu.mcs.NexlyBack.Repositories.Publicacion.ReaccionComentarioRepository;
@@ -28,10 +30,14 @@ import com.edu.mcs.NexlyBack.Repositories.Usuario.SeguimientoRepository;
 import com.edu.mcs.NexlyBack.Repositories.Usuario.UsuarioRepository;
 import com.edu.mcs.NexlyBack.Services.Notificacion.NotificacionService;
 import com.edu.mcs.NexlyBack.models.Comunidad;
+import com.edu.mcs.NexlyBack.models.Enums.EstadoMiembro;
+import com.edu.mcs.NexlyBack.models.Enums.RolComunidad;
 import com.edu.mcs.NexlyBack.models.Enums.TipoMedia;
 import com.edu.mcs.NexlyBack.models.Enums.TipoNotificacion;
+import com.edu.mcs.NexlyBack.models.Enums.TipoPost;
 import com.edu.mcs.NexlyBack.models.Enums.TipoReaccion;
 import com.edu.mcs.NexlyBack.models.Enums.Visibilidad;
+import com.edu.mcs.NexlyBack.models.MiembroComunidad;
 import com.edu.mcs.NexlyBack.models.Publicacion;
 import com.edu.mcs.NexlyBack.models.PublicacionImagen;
 import com.edu.mcs.NexlyBack.models.Reaccion;
@@ -48,6 +54,7 @@ public class PublicacionService {
     private final ReaccionComentarioRepository reaccionComentarioRepository;
     private final UsuarioRepository usuarioRepository;
     private final ComunidadRepository comunidadRepository;
+    private final MiembroComunidadRepository miembroComunidadRepository;
     private final PublicacionMapper publicacionMapper;
     private final AutorResumenMapper autorResumenMapper;
     private final NotificacionService notificacionService;
@@ -56,6 +63,7 @@ public class PublicacionService {
             ComentarioRepository comentarioRepository, ReaccionRepository reaccionRepository,
             ReaccionComentarioRepository reaccionComentarioRepository,
             UsuarioRepository usuarioRepository, ComunidadRepository comunidadRepository,
+            MiembroComunidadRepository miembroComunidadRepository,
             PublicacionMapper publicacionMapper, AutorResumenMapper autorResumenMapper,
             NotificacionService notificacionService) {
         this.publicacionRepository = publicacionRepository;
@@ -65,6 +73,7 @@ public class PublicacionService {
         this.reaccionComentarioRepository = reaccionComentarioRepository;
         this.usuarioRepository = usuarioRepository;
         this.comunidadRepository = comunidadRepository;
+        this.miembroComunidadRepository = miembroComunidadRepository;
         this.publicacionMapper = publicacionMapper;
         this.autorResumenMapper = autorResumenMapper;
         this.notificacionService = notificacionService;
@@ -91,8 +100,8 @@ public class PublicacionService {
 
     @Transactional
     public PublicacionDTO crear(Long userId, String contenido, Visibilidad visibilidad,
-                    Long comunidadId, List<String> imgs,
-                    List<String> mediaUrls, List<TipoMedia> mediaTipos) {
+                    TipoPost tipoPost, Long comunidadId, Long publicacionRefId,
+                    List<String> imgs, List<String> mediaUrls, List<TipoMedia> mediaTipos) {
         Usuario autor = usuarioRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchElementException("Usuario no encontrado"));
 
@@ -100,6 +109,13 @@ public class PublicacionService {
         p.setUsuario(autor);
         p.setContenido(contenido);
         p.setVisibilidad(visibilidad != null ? visibilidad : Visibilidad.PUBLICA);
+        p.setTipoPost(tipoPost != null ? tipoPost : TipoPost.NORMAL);
+
+        if (publicacionRefId != null) {
+            Publicacion ref = publicacionRepository.findById(publicacionRefId)
+                    .orElseThrow(() -> new NoSuchElementException("Publicación citada no encontrada"));
+            p.setPublicacionRef(ref);
+        }
 
         if (comunidadId != null) {
             Comunidad comunidad = comunidadRepository.findById(comunidadId)
@@ -199,6 +215,32 @@ public class PublicacionService {
         reaccionRepository.deleteByUsuarioIdAndPublicacionId(userId, publicacionId);
     }
 
+    public Page<PublicacionDTO> getPorComunidad(Long comunidadId, Long viewerId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return publicacionRepository.findByComunidadId(comunidadId, pageable)
+                .map(p -> buildDTO(p, viewerId));
+    }
+
+    @Transactional
+    public void fijar(Long publicacionId, Long userId) {
+        Publicacion p = publicacionRepository.findById(publicacionId)
+                .orElseThrow(() -> new NoSuchElementException("Publicación no encontrada"));
+        if (p.getComunidad() == null)
+            throw new IllegalStateException("Solo se pueden fijar publicaciones de comunidad");
+        verificarRolModerador(userId, p.getComunidad().getId());
+        p.setFijada(true);
+    }
+
+    @Transactional
+    public void desfijar(Long publicacionId, Long userId) {
+        Publicacion p = publicacionRepository.findById(publicacionId)
+                .orElseThrow(() -> new NoSuchElementException("Publicación no encontrada"));
+        if (p.getComunidad() == null)
+            throw new IllegalStateException("Solo se pueden desfijar publicaciones de comunidad");
+        verificarRolModerador(userId, p.getComunidad().getId());
+        p.setFijada(false);
+    }
+
     public Page<PublicacionDTO> getFeed(Long userId, int page, int size){
        List<Long> ids = new ArrayList<>(seguimientoRepository.findSeguidosIdsBySeguidorId(userId));
        ids.add(userId);
@@ -209,6 +251,16 @@ public class PublicacionService {
 
 
     // --- privado: resuelve visibilidad y delega al mapper ---
+
+    private void verificarRolModerador(Long userId, Long comunidadId) {
+        MiembroComunidad miembro = miembroComunidadRepository
+                .findByUsuarioIdAndComunidadId(userId, comunidadId)
+                .orElseThrow(() -> new IllegalStateException("No eres miembro de esta comunidad"));
+        if (miembro.getRol() != RolComunidad.ADMIN && miembro.getRol() != RolComunidad.MOD)
+            throw new IllegalStateException("Se requiere rol de moderador o administrador");
+        if (miembro.getEstado() != EstadoMiembro.ACEPTADO)
+            throw new IllegalStateException("Tu membresía no está activa");
+    }
 
     private boolean esVisible(Publicacion p, Long viewerId) {
         Long autorId = p.getUsuario().getId();
@@ -241,11 +293,25 @@ public class PublicacionService {
                 ? publicacionRepository.findReaccionDelVisor(p.getId(), viewerId).orElse(null)
                 : null;
 
+        PublicacionCitadaDTO citada = null;
+        if (p.getPublicacionRef() != null) {
+            Publicacion ref = p.getPublicacionRef();
+            AutorResumenDTO autorRef = autorResumenMapper.toDTO(ref.getUsuario());
+            List<String> imagenesRef = ref.getImagenes() == null ? List.of()
+                : ref.getImagenes().stream()
+                    .filter(m -> m.getTipo() == null || m.getTipo() == TipoMedia.IMAGEN)
+                    .map(PublicacionImagen::getUrl)
+                    .toList();
+            citada = new PublicacionCitadaDTO(
+                ref.getId(), ref.getContenido(), autorRef, imagenesRef, ref.getFechaCreacion()
+            );
+        }
+
         return publicacionMapper.toDTO(
             p, autor, imagenes, media,
                 publicacionRepository.countReacciones(p.getId()),
                 publicacionRepository.countComentarios(p.getId()),
-                reaccionDelVisor
+                reaccionDelVisor, citada
         );
     }
 }

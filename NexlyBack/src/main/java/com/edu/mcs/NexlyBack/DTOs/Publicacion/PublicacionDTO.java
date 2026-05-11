@@ -3,6 +3,7 @@ package com.edu.mcs.NexlyBack.DTOs.Publicacion;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.edu.mcs.NexlyBack.models.Enums.TipoPost;
 import com.edu.mcs.NexlyBack.models.Enums.TipoReaccion;
 import com.edu.mcs.NexlyBack.models.Enums.Visibilidad;
 
@@ -10,7 +11,7 @@ public class PublicacionDTO {
     private Long id;
     private AutorResumenDTO autor;
     private Long comunidadId;
-    private Long publicacionRefId;
+    private PublicacionCitadaDTO publicacionCitada;
     private String contenido;
     private Visibilidad visibilidad;
     private LocalDateTime fechaCreacion;
@@ -22,6 +23,8 @@ public class PublicacionDTO {
     private long conteoReacciones;
     private long conteoComentarios;
     private TipoReaccion reaccionDelVisor;
+    private TipoPost tipoPost;
+
 
     public PublicacionDTO() {
     }
@@ -50,18 +53,18 @@ public class PublicacionDTO {
         this.comunidadId = comunidadId;
     }
 
-    public Long getPublicacionRefId() {
-        return publicacionRefId;
+    public PublicacionCitadaDTO getPublicacionCitada() {
+        return publicacionCitada;
     }
 
-    public void setPublicacionRefId(Long publicacionRefId) {
-        this.publicacionRefId = publicacionRefId;
+    public void setPublicacionCitada(PublicacionCitadaDTO publicacionCitada) {
+        this.publicacionCitada = publicacionCitada;
     }
 
     public String getContenido() {
         return contenido;
     }
-
+    
     public void setContenido(String contenido) {
         this.contenido = contenido;
     }
@@ -144,6 +147,14 @@ public class PublicacionDTO {
 
     public void setReaccionDelVisor(TipoReaccion reaccionDelVisor) {
         this.reaccionDelVisor = reaccionDelVisor;
+    }
+
+    public TipoPost getTipoPost() {
+        return tipoPost;
+    }
+
+    public void setTipoPost(TipoPost tipoPost) {
+        this.tipoPost = tipoPost;
     }
 
 

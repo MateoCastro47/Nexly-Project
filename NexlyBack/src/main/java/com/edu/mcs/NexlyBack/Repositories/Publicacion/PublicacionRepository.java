@@ -49,4 +49,9 @@ public interface PublicacionRepository extends JpaRepository<Publicacion, Long> 
     @Query("SELECT r.tipo FROM Reaccion r WHERE r.publicacion.id = :publicacionId AND r.usuario.id = :usuarioId")
     Optional<TipoReaccion> findReaccionDelVisor(@Param("publicacionId") Long publicacionId,
                                                  @Param("usuarioId") Long usuarioId);
+
+    // Feed de comunidad: fijadas primero, luego por fecha descendente
+    @Query("SELECT p FROM Publicacion p WHERE p.comunidad.id = :comunidadId " +
+           "ORDER BY p.fijada DESC, p.fechaCreacion DESC")
+    Page<Publicacion> findByComunidadId(@Param("comunidadId") Long comunidadId, Pageable pageable);
 }

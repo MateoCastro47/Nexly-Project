@@ -16,7 +16,6 @@ function FeedSkeleton() {
             animationDelay: `${i * 0.1}s`,
           }}
         >
-          {/* Header skeleton */}
           <div className="flex items-center gap-3">
             <div className="skeleton w-10 h-10 rounded-full shrink-0" />
             <div className="flex-1 flex flex-col gap-2">
@@ -24,15 +23,12 @@ function FeedSkeleton() {
               <div className="skeleton h-3 w-20 rounded-full" />
             </div>
           </div>
-          {/* Content skeleton */}
           <div className="flex flex-col gap-2">
             <div className="skeleton h-3 w-full rounded-full" />
             <div className="skeleton h-3 w-4/5 rounded-full" />
             <div className="skeleton h-3 w-3/5 rounded-full" />
           </div>
-          {/* Image skeleton */}
           {i === 0 && <div className="skeleton h-48 w-full rounded-2xl" />}
-          {/* Actions skeleton */}
           <div className="flex gap-2 pt-2">
             <div className="skeleton h-10 flex-1 rounded-xl" />
             <div className="skeleton h-10 flex-1 rounded-xl" />
@@ -45,8 +41,9 @@ function FeedSkeleton() {
 }
 
 export default function FeedPage() {
-  const { publicaciones, loading, error, hayMas, cargarFeed, cargarMas } = useFeedStore()
+  const { publicaciones, loading, error, hayMas, postCitado, cargarFeed, cargarMas } = useFeedStore()
   const sentinelRef = useRef<HTMLDivElement>(null)
+  const createPostRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     cargarFeed()
@@ -54,7 +51,7 @@ export default function FeedPage() {
 
   useEffect(() => {
     const sentinel = sentinelRef.current
-    if(!sentinel) return 
+    if(!sentinel) return
     const observer = new IntersectionObserver(
       ([entry]) => {if (entry.isIntersecting) cargarMas() },
       { threshold: 0.1 }
@@ -63,10 +60,17 @@ export default function FeedPage() {
     return () => observer.disconnect()
   }, [cargarMas])
 
+  useEffect(() => {
+    if (postCitado) {
+      createPostRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }, [postCitado])
+
   return(
     <div className="flex flex-col gap-5">
-      {/* Contenedor principal de crear publicación */}
-      <CreatePost />
+      <div ref={createPostRef}>
+        <CreatePost />
+      </div>
 
       {error && (
         <div

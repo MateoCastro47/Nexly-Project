@@ -89,8 +89,7 @@ export default function PostHeader({autor, fechaCreacion, comunidadNombre, onEli
                     </p>
                 </div>
             </div>
-            
-        {/* Menú opciones — solo en publicaciones propias */}
+
         {esPropio && onEliminar && (
             <div className="relative shrink-0">
             <button
@@ -115,7 +114,6 @@ export default function PostHeader({autor, fechaCreacion, comunidadNombre, onEli
 
             {menuAbierto && (
                 <>
-                {/* Overlay para cerrar al hacer clic fuera */}
                 <div className="fixed inset-0 z-10" onClick={() => setMenuAbierto(false)} />
                 <div
                     className="absolute right-0 top-10 z-20 rounded-2xl py-1.5 min-w-[160px]"

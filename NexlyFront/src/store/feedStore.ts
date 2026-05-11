@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import type { Publicacion, TipoReaccion } from '../types'
+import type { Publicacion, TipoPost, TipoReaccion } from '../types'
 import { crearPublicacion, eliminarPublicacion, getFeed, quitarReaccion, reaccionar } from '../api/Publicaciones'
 
 interface FeedStore {
@@ -8,12 +8,14 @@ interface FeedStore {
   hayMas: boolean
   loading: boolean
   error: string
+  postCitado: Publicacion | null
 
   cargarFeed: () => Promise<void>
   cargarMas: () => Promise<void>
-  crear: (data: { contenido: string; imagenes?: string[]; visibilidad: 'PUBLICA' | 'SEGUIDORES' | 'PRIVADA' }) => Promise<void>
+  crear: (data: { contenido: string; imagenes?: string[]; visibilidad: 'PUBLICA' | 'SEGUIDORES' | 'PRIVADA'; tipoPost?: TipoPost; publicacionRefId?: number }) => Promise<void>
   eliminar: (id: number) => Promise<void>
   toggleReaccion: (id: number, tipo: TipoReaccion) => Promise<void>
+  setCitando: (p: Publicacion | null) => void
 }
 
 export const useFeedStore = create<FeedStore>((set, get) => ({
@@ -22,6 +24,7 @@ export const useFeedStore = create<FeedStore>((set, get) => ({
   hayMas: true,
   loading: false,
   error: '',
+  postCitado: null,
 
   cargarFeed: async () => {
     set({ loading: true, error: '', pagina: 0 })
@@ -54,7 +57,7 @@ export const useFeedStore = create<FeedStore>((set, get) => ({
     }
   },
 
-  crear: async (data: { contenido: string; imagenes?: string[]; visibilidad: 'PUBLICA' | 'SEGUIDORES' | 'PRIVADA' }) => {
+  crear: async (data: { contenido: string; imagenes?: string[]; visibilidad: 'PUBLICA' | 'SEGUIDORES' | 'PRIVADA'; tipoPost?: TipoPost; publicacionRefId?: number }) => {
     const { data: nueva } = await crearPublicacion(data)
     set((s) => ({ publicaciones: [nueva, ...s.publicaciones] }))
   },
@@ -63,6 +66,8 @@ export const useFeedStore = create<FeedStore>((set, get) => ({
     await eliminarPublicacion(id)
     set((s) => ({ publicaciones: s.publicaciones.filter((p) => p.id !== id) }))
   },
+
+  setCitando: (p) => set({ postCitado: p }),
 
   toggleReaccion: async (id, tipo) => {
     const post = get().publicaciones.find((p) => p.id === id)
