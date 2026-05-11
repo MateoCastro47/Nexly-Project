@@ -5,6 +5,8 @@ import Register from '../pages/Auth/Register'
 import OAuth2Callback from '../pages/Auth/OAuth2CallBack'
 import AppLayout from '../components/layout/AppLayout'
 import FeedPage from '../pages/Feed/FeedPage'
+import ProfilePage from '../pages/Profile/ProfilePage'
+import NotificacionesPage from '../pages/Notificaciones/NotificacionesPage'
 import OnboardingModal from '../components/onboarding/OnboardingModal'
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
@@ -21,6 +23,8 @@ const browserRouter = createBrowserRouter([
     element: <PrivateRoute><AppLayout /></PrivateRoute>,
     children: [
       { index: true, element: <FeedPage /> },
+      { path: 'perfil/:nombreUsuario', element: <ProfilePage /> },
+      { path: 'notificaciones', element: <NotificacionesPage /> },
     ],
   },
 ])
