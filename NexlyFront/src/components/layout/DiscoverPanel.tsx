@@ -1,6 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { Usuario } from '../../types'
 import { getSugerencias, seguirUsuario, dejarDeSeguirUsuario } from '../../api/usuario'
+import { useBusqueda } from '../../hooks/useBusqueda'
+import BusquedaDropdown from '../busqueda/BusquedaDropdown'
 
 function AvatarSugerencia({ usuario }: { usuario: Usuario }) {
   const [imgError, setImgError] = useState(false)
@@ -95,6 +97,9 @@ function SugerenciaItem({ usuario, onToggle }: SugerenciaItemProps) {
 export default function DiscoverPanel() {
   const [sugerencias, setSugerencias] = useState<Usuario[]>([])
   const [cargando, setCargando] = useState(true)
+  const {query, setQuery, resultados, loading, limpiar, hayResultados, sinResultados} = useBusqueda()
+  const searchRef = useRef<HTMLDivElement>(null)
+  const mostrarDropdown = query.trim().length >= 2
 
   useEffect(() => {
     getSugerencias(5)
@@ -111,25 +116,35 @@ export default function DiscoverPanel() {
     <aside className="hidden xl:flex flex-col w-80 shrink-0 px-5 py-6 gap-6 h-screen sticky top-0 overflow-y-auto">
 
       {/* ── Buscar ── */}
-      <div className="relative">
-        <svg
-          className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          style={{ color: 'var(--color-muted)' }}
-        >
-          <circle cx="11" cy="11" r="8" />
-          <line x1="21" y1="21" x2="16.65" y2="16.65" />
-        </svg>
+      <div className="relative" ref={searchRef}>
+        <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4" />
         <input
           type="text"
           placeholder="Buscar en Nexly"
-          className="input w-full pl-10 pr-4 py-2.5 text-sm rounded-2xl"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onKeyDown={(e) => e.key === 'Escape' && limpiar()}
+          className="input w-full pl-10 pr-8 py-2.5 text-sm rounded-2xl"
         />
+        {query && (
+          <button onClick={limpiar} className="absolute right-3 top-1/2 -translate-y-1/2"
+            style={{ color: 'var(--color-muted)' }}>
+            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        )}
+        {mostrarDropdown && (
+          <BusquedaDropdown
+            query={query}
+            usuarios={resultados.usuarios}
+            comunidades={resultados.comunidades}
+            loading={loading}
+            sinResultados={sinResultados}
+            onClose={limpiar}
+          />
+        )}
       </div>
-
       {/* ── Tendencias ── */}
       <div
         className="rounded-3xl p-5 flex flex-col gap-1"

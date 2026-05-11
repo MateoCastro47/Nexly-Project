@@ -106,7 +106,7 @@ export default function Sidebar() {
                 {icon}
                 {to === '/notificaciones' && noLeidas > 0 && (
                   <span
-                    className="absolute -top-1 -right-1 min-w-[16px] h-4 px-0.5 rounded-full flex items-center justify-center text-[10px] font-bold text-white"
+                    className="absolute -top-1 -right-1 min-w-4 h-4 px-0.5 rounded-full flex items-center justify-center text-[10px] font-bold text-white"
                     style={{ background: 'var(--color-accent-2)' }}
                   >
                     {noLeidas > 99 ? '99+' : noLeidas}
