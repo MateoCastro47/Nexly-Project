@@ -9,6 +9,7 @@ import ProfilePage from '../pages/Profile/ProfilePage'
 import NotificacionesPage from '../pages/Notificaciones/NotificacionesPage'
 import OnboardingModal from '../components/onboarding/OnboardingModal'
 import BusquedaPage from '../pages/Busqueda/BusquedaPage'
+import ChatPage from '../pages/Chat/ChatPage'
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const usuario = useAuthStore((s) => s.usuario)
@@ -27,6 +28,7 @@ const browserRouter = createBrowserRouter([
       { path: 'perfil/:nombreUsuario', element: <ProfilePage /> },
       { path: 'notificaciones', element: <NotificacionesPage /> },
       { path: 'busqueda', element: <BusquedaPage /> },
+      { path: 'chat', element: <ChatPage/>}
     ],
   },
 ])
