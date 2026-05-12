@@ -93,6 +93,8 @@ export interface Mensaje{
   autorFoto?: string;
   contenido: string;
   fechaEnvia: string;
+  pendiente?: boolean;
+  error?: boolean;
 }
 
 export interface Comunidad {
