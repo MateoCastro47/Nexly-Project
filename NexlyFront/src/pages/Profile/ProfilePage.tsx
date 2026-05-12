@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import { useAuthStore } from '../../store/authStore'
 import { usePerfilStore } from '../../store/perfilStore'
 import PostCard from '../../components/feed/PostCard'
+import EditarPerfilModal from '../../components/perfil/EditarPerfilModal'
 
 type Tab = 'posts' | 'replies' | 'likes'
 
@@ -103,7 +104,7 @@ function EmptyPosts({ nombre }: { nombre: string }) {
         ✍️
       </div>
       <p className="text-sm font-medium" style={{ color: 'var(--color-text)' }}>
-        {nombre} aún no publicó nada
+        {nombre} aún no ha publicado nada
       </p>
     </div>
   )
@@ -120,6 +121,7 @@ export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState<Tab>('posts')
   const [fotoError, setFotoError] = useState(false)
   const [portadaError, setPortadaError] = useState(false)
+  const [editando, setEditando] = useState(false)
   const sentinelRef = useRef<HTMLDivElement>(null)
 
   const esPropio = authUsuario?.nombreUsuario === nombreUsuario
@@ -225,6 +227,7 @@ export default function ProfilePage() {
 
               {esPropio ? (
                 <button
+                  onClick={() => setEditando(true)}
                   className="px-5 py-2 text-sm font-semibold rounded-full transition-all"
                   style={{
                     border: '1.5px solid var(--color-border)',
@@ -345,6 +348,10 @@ export default function ProfilePage() {
           )}
 
           {hayMas && <div ref={sentinelRef} className="h-4" />}
+
+          {editando && usuario && (
+            <EditarPerfilModal usuario={usuario} onClose={() => setEditando(false)} />
+          )}
         </>
       ) : (
         <div

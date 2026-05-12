@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import type { Usuario, Publicacion, TipoReaccion } from '../types'
 import { getPerfilPorNombreUsuario, seguirUsuario, dejarDeSeguirUsuario } from '../api/usuario'
 import { getPublicacionesDeUsuario, reaccionar, quitarReaccion, eliminarPublicacion } from '../api/Publicaciones'
+import { useAuthStore } from './authStore'
 
 interface PerfilStore {
   usuario: Usuario | null
@@ -13,6 +14,7 @@ interface PerfilStore {
   error: string
 
   cargarPerfil: (nombreUsuario: string) => Promise<void>
+  actualizarUsuario: (usuario: Usuario) => void
   cargarMasPosts: () => Promise<void>
   toggleSeguir: () => Promise<void>
   toggleReaccion: (id: number, tipo: TipoReaccion) => Promise<void>
@@ -60,6 +62,11 @@ export const usePerfilStore = create<PerfilStore>((set, get) => ({
     } finally {
       set({ loadingPosts: false })
     }
+  },
+
+  actualizarUsuario: (usuario) => {
+    set({usuario})
+    useAuthStore.getState().setUsuario(usuario)
   },
 
   toggleSeguir: async () => {

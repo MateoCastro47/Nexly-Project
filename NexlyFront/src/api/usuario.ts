@@ -10,6 +10,13 @@ export interface OnboardingPayload {
   perfilPrivado?: boolean
 }
 
+export interface EditarPerfilPayload {
+  nombreCompleto?: string;
+  biografia?: string;
+  fotoPerfil?: string;
+  fotoPortada?: string;
+}
+
 export const completarOnboarding = (data: OnboardingPayload) =>
   client.post<Usuario>('/usuario/onboarding', data)
 
@@ -24,3 +31,6 @@ export const seguirUsuario = (id: number) =>
 
 export const dejarDeSeguirUsuario = (id: number) =>
   client.delete<void>(`/usuario/${id}/seguir`)
+
+export const actualizarPerfil = (data: EditarPerfilPayload) => 
+  client.put<Usuario>('/usuario/perfil', data)
