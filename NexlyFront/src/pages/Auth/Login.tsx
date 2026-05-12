@@ -115,7 +115,7 @@ export default function Login() {
               disabled={loading}
               className="btn-primary w-full rounded-xl py-3 text-sm mt-0.5"
             >
-              {loading ? 'Ingresando...' : 'Iniciar sesión'}
+              {loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
             </button>
 
             {/* Separador */}

@@ -46,10 +46,10 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long>{
         .orElse(false);
     }
 
-    @Query("SELECT COUNT(s) FROM Seguimiento s WHERE s.seguido.id = :id AND s.estado = 'ACEPTADO'")
+    @Query("SELECT COUNT(s) FROM Seguimiento s WHERE s.seguido.id = :id AND s.estado = com.edu.mcs.NexlyBack.models.Enums.EstadoSeguimiento.ACEPTADA")
     long countSeguidores(@Param("id") Long id);
 
-    @Query("SELECT COUNT(s) FROM Seguimiento s WHERE s.seguidor.id = :id AND s.estado = 'ACEPTADO'")
+    @Query("SELECT COUNT(s) FROM Seguimiento s WHERE s.seguidor.id = :id AND s.estado = com.edu.mcs.NexlyBack.models.Enums.EstadoSeguimiento.ACEPTADA")
     long countSeguidos(@Param("id") Long id);
 
     //Bloqueo

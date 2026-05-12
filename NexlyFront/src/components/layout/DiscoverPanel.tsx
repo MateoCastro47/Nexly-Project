@@ -97,7 +97,7 @@ function SugerenciaItem({ usuario, onToggle }: SugerenciaItemProps) {
 export default function DiscoverPanel() {
   const [sugerencias, setSugerencias] = useState<Usuario[]>([])
   const [cargando, setCargando] = useState(true)
-  const {query, setQuery, resultados, loading, limpiar, hayResultados, sinResultados} = useBusqueda()
+  const {query, setQuery, resultados, loading, limpiar, sinResultados} = useBusqueda()
   const searchRef = useRef<HTMLDivElement>(null)
   const mostrarDropdown = query.trim().length >= 2
 
@@ -219,7 +219,7 @@ export default function DiscoverPanel() {
           </div>
         ) : sugerencias.length === 0 ? (
           <p className="text-xs" style={{ color: 'var(--color-muted)' }}>
-            Ya seguís a todos los usuarios disponibles.
+            Ya sigues a todos los usuarios disponibles.
           </p>
         ) : (
           <div className="flex flex-col gap-4">

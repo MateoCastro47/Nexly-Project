@@ -8,7 +8,7 @@ type Step = typeof STEPS[number]
 
 const TITLES: Record<Step, string> = {
   foto:       'Tu imagen',
-  info:       'Cuéntanos sobre vos',
+  info:       'Cuéntanos sobre ti',
   privacidad: 'Privacidad',
 }
 
@@ -48,7 +48,7 @@ export default function OnboardingModal() {
       setForm((f) => ({ ...f, fotoPerfil: url }))
       setFotoError(false)
     } catch {
-      setUploadError('No se pudo subir la imagen. Intentá de nuevo.')
+      setUploadError('No se pudo subir la imagen. Inténtalo de nuevo.')
     } finally {
       setUploadingAvatar(false)
     }
@@ -63,7 +63,7 @@ export default function OnboardingModal() {
       const url = await uploadImagen(file, 'portadas')
       setForm((f) => ({ ...f, fotoPortada: url }))
     } catch {
-      setUploadError('No se pudo subir la imagen. Intentá de nuevo.')
+      setUploadError('No se pudo subir la imagen. Inténtalo de nuevo.')
     } finally {
       setUploadingPortada(false)
     }
@@ -235,7 +235,7 @@ export default function OnboardingModal() {
                 className="input w-full resize-none px-3 py-2.5 text-sm rounded-xl"
                 rows={3}
                 maxLength={160}
-                placeholder="Contá algo sobre vos..."
+                placeholder="Cuéntanos algo sobre ti..."
                 value={form.biografia}
                 onChange={(e) => setForm((f) => ({ ...f, biografia: e.target.value }))}
               />
