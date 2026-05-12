@@ -26,12 +26,12 @@ interface ChatStore {
   activaId: number | null
   porConversacion: Record<number, MensajesState>
   loadingConversaciones: boolean
-  enviando: boolean
 
   cargarConversaciones: () => Promise<void>
   seleccionar: (id: number) => Promise<void>
   cargarMas: (id: number) => Promise<void>
   enviar: (id: number, contenido: string) => Promise<void>
+  reintentarEnvio: (msg: Mensaje) => void
   iniciarDirecta: (otroId: number) => Promise<number>
   agregarMensaje: (msg: Mensaje) => void
   conectarWS: () => void
@@ -40,6 +40,17 @@ interface ChatStore {
 
 export const selectTotalNoLeidos = (s: ChatStore) =>
     s.conversaciones.reduce((acc, c) => acc + c.noLeidos, 0)
+
+// Mueve la conversación `id` al principio de la lista aplicándole `patch`.
+const subirAlTope = (
+  lista: Conversacion[],
+  id: number,
+  patch: Partial<Conversacion>,
+): Conversacion[] => {
+  const idx = lista.findIndex((c) => c.id === id)
+  if (idx === -1) return lista
+  return [{ ...lista[idx], ...patch }, ...lista.slice(0, idx), ...lista.slice(idx + 1)]
+}
 
 
 const estadoInicial = (): MensajesState => ({
@@ -55,7 +66,6 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   activaId: null,
   porConversacion: {},
   loadingConversaciones: false,
-  enviando: false,
 
   cargarConversaciones: async () => {
     set({ loadingConversaciones: true })
@@ -138,14 +148,81 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   },
 
   enviar: async (id, contenido) => {
-    set({ enviando: true })
-    try {
-      const { data } = await enviarMensajeREST(id, contenido)
-      // Agrega aquí (el WS broadcast deduplica por id)
-      get().agregarMensaje(data)
-    } finally {
-      set({ enviando: false })
+    const u = useAuthStore.getState().usuario
+    const tempId = -Date.now()
+    const optimista: Mensaje = {
+        id: tempId,
+        conversacionId: id,
+        autorId: u?.id ?? 0,
+        autorUsername: u?.nombreUsuario ?? '',
+        autorFoto: u?.fotoPerfil,
+        contenido,
+        fechaEnvia: new Date().toISOString(),
+        pendiente: true,
     }
+    // Inserción optimista
+    set((s) => ({
+        porConversacion: {
+            ...s.porConversacion,
+            [id]: {
+                ...(s.porConversacion[id] ?? estadoInicial()),
+                items: [...(s.porConversacion[id]?.items ?? []), optimista],
+            },
+        },
+        conversaciones: subirAlTope(s.conversaciones, id, { ultimoMensajePreview: contenido }),
+    }))
+    try {
+        const { data } = await enviarMensajeREST(id, contenido)
+        // Reconciliar: si el eco por WS llegó antes, ya está → borra el temporal;
+        // si no, sustituye el temporal por el mensaje real.
+        set((s) => {
+            const e = s.porConversacion[id]
+            if (!e) return s
+            const yaExiste = e.items.some((m) => m.id === data.id)
+            return {
+                porConversacion: {
+                    ...s.porConversacion,
+                    [id]: {
+                        ...e,
+                        items: yaExiste
+                            ? e.items.filter((m) => m.id !== tempId)
+                            : e.items.map((m) => (m.id === tempId ? data : m)),
+                    },
+                },
+            }
+        })
+    } catch {
+        // Marca el mensaje como fallido para mostrar "Reintentar"
+        set((s) => {
+            const e = s.porConversacion[id]
+            if (!e) return s
+            return {
+                porConversacion: {
+                    ...s.porConversacion,
+                    [id]: {
+                        ...e,
+                        items: e.items.map((m) =>
+                            m.id === tempId ? { ...m, pendiente: false, error: true } : m,
+                        ),
+                    },
+                },
+            }
+        })
+    }
+  },
+
+  reintentarEnvio: (msg) => {
+    set((s) => {
+        const e = s.porConversacion[msg.conversacionId]
+        if (!e) return s
+        return {
+            porConversacion: {
+                ...s.porConversacion,
+                [msg.conversacionId]: { ...e, items: e.items.filter((m) => m.id !== msg.id) },
+            },
+        }
+    })
+    get().enviar(msg.conversacionId, msg.contenido)
   },
 
   iniciarDirecta: async (otroId) => {
@@ -164,33 +241,40 @@ export const useChatStore = create<ChatStore>((set, get) => ({
     const esActiva = msg.conversacionId === get().activaId
 
     set((s) => {
-            const estado = s.porConversacion[msg.conversacionId]
-            if(estado?.items.some((m) => m.id === msg.id)) return s
+        const estado = s.porConversacion[msg.conversacionId]
+        if (estado?.items.some((m) => m.id === msg.id)) return s
 
-            return{
-                porConversacion: estado
-                ?{
-                    ...s.porConversacion,
-                    [msg.conversacionId]: {...estado, items: [...estado.items, msg] },
-                }
-                : s.porConversacion,
-            conversaciones: s.conversaciones.map((c) =>
-                c.id === msg.conversacionId
-                ? {
-                    ...c,
-                    ultimoMensajePreview: msg.contenido,
-                    noLeidos: esMio || esActiva ? 0 : c.noLeidos + 1
-                }
-                : c,
-            ),
+        let porConversacion = s.porConversacion
+        if (estado) {
+            let items = estado.items
+            if (esMio) {
+                // El eco de un mensaje propio sustituye al optimista equivalente
+                const i = items.findIndex(
+                    (m) => m.pendiente && !m.error && m.contenido === msg.contenido,
+                )
+                if (i !== -1) items = items.filter((_, j) => j !== i)
+            }
+            porConversacion = {
+                ...s.porConversacion,
+                [msg.conversacionId]: { ...estado, items: [...items, msg] },
+            }
+        }
+
+        const actual = s.conversaciones.find((c) => c.id === msg.conversacionId)
+        return {
+            porConversacion,
+            conversaciones: subirAlTope(s.conversaciones, msg.conversacionId, {
+                ultimoMensajePreview: msg.contenido,
+                noLeidos: esMio || esActiva ? 0 : (actual?.noLeidos ?? 0) + 1,
+            }),
         }
     })
 
-    if (esActiva && !esMio){
+    if (esActiva && !esMio) {
         marcarLeidos(msg.conversacionId).catch(() => {})
     }
 
-    if(!get().conversaciones.some((c) => c.id === msg.conversacionId)) {
+    if (!get().conversaciones.some((c) => c.id === msg.conversacionId)) {
         get().cargarConversaciones()
     }
   },
