@@ -34,13 +34,13 @@ export default function Login() {
         style={{ background: 'var(--gradient-brand)' }}
       >
         <div className="absolute -top-24 -left-24 w-80 h-80 rounded-full opacity-[0.15]" style={{ background: 'white' }} />
-        <div className="absolute -bottom-36 -right-20 w-[420px] h-[420px] rounded-full opacity-[0.08]" style={{ background: 'white' }} />
+        <div className="absolute -bottom-36 -right-20 w-105 h-105 rounded-full opacity-[0.08]" style={{ background: 'white' }} />
         <div className="absolute top-1/3 right-8 w-40 h-40 rounded-full opacity-[0.10]" style={{ background: 'white' }} />
 
         <div className="relative z-10 text-center text-white select-none">
           <p className="text-6xl font-bold tracking-tight mb-6">Nexly</p>
           <p className="text-xl font-medium opacity-90 mb-4">Conecta. Comparte. Crece.</p>
-          <p className="text-sm opacity-90 max-w-[260px] leading-relaxed mx-auto">
+          <p className="text-sm opacity-90 max-w-65 leading-relaxed mx-auto">
             Únete a miles de personas que ya comparten sus ideas y momentos.
           </p>
         </div>

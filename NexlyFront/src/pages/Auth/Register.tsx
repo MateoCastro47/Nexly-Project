@@ -3,6 +3,21 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../store/authStore'
 import { register } from '../../api/auth'
 
+// El backend manda el mensaje en data.error. Para errores de validación
+// el formato es "campo: mensaje"; para conflictos (email/usuario en uso) es texto plano.
+function traducirErrorRegistro(raw?: string): string {
+  if (!raw) return 'Error al registrarse'
+  const campo = raw.split(':')[0].trim()
+  switch (campo) {
+    case 'contrasena':      return 'La contraseña debe tener al menos 8 caracteres'
+    case 'nombreUsuario':   return 'El nombre de usuario no es válido (máximo 50 caracteres)'
+    case 'nombreCompleto':  return 'El nombre completo no es válido (máximo 100 caracteres)'
+    case 'email':           return 'El email no tiene un formato válido'
+    case 'fechaNacimiento': return 'La fecha de nacimiento debe ser una fecha pasada'
+    default:                return raw // p.ej. "Email de usuario ya registrado"
+  }
+}
+
 export default function Register() {
   const navigate = useNavigate()
   const setUsuario = useAuthStore((s) => s.setUsuario)
@@ -31,7 +46,7 @@ export default function Register() {
       setUsuario(data)
       navigate('/')
     } catch (err: any) {
-      setError(err.response?.data?.message ?? 'Error al registrarse')
+      setError(traducirErrorRegistro(err.response?.data?.error))
     } finally {
       setLoading(false)
     }
