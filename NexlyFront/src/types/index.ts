@@ -67,24 +67,32 @@ export interface Notificacion {
   referenciaId?: number
 }
 
-export interface Conversacion {
-  id: number
-  esGrupo: boolean
-  nombre?: string
-  participantes: Usuario[]
-  ultimoMensaje?: Mensaje
-  noLeidos: number
+export interface ParticipanteConversacion{
+  id: number;
+  username: string;
+  fotoPerfil?: string;
+
 }
 
-export interface Mensaje {
-  id: number
-  contenido: string
-  emisorId: number
-  emisorNombre: string
-  emisorFoto?: string
-  conversacionId: number
-  fechaEnvio: string
-  leido: boolean
+export interface Conversacion{
+  id: number;
+  nombre?: string;
+  foto?: string;
+  esGrupal: boolean;
+  ultimoMensaje?: string;
+  ultimoMensajePreview?: string;
+  noLeidos: number;
+  participantes: ParticipanteConversacion[];
+}
+
+export interface Mensaje{
+  id: number;
+  conversacionId: number;
+  autorId: number;
+  autorUsername:string;
+  autorFoto?: string;
+  contenido: string;
+  fechaEnvia: string;
 }
 
 export interface Comunidad {
