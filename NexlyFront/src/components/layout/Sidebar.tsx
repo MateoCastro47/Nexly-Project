@@ -1,6 +1,7 @@
 import { NavLink, useNavigate } from "react-router-dom"
 import { useAuthStore } from "../../store/authStore"
 import { useNotificacionesStore } from "../../store/notificacionesStore"
+import { useChatStore, selectTotalNoLeidos } from "../../store/chatStore"
 import { logout } from "../../api/auth"
 
 const NAV = [{
@@ -49,6 +50,7 @@ const NAV = [{
 export default function Sidebar() {
   const { usuario, logout: clearUsuario } = useAuthStore()
   const noLeidas = useNotificacionesStore((s) => s.noLeidas)
+  const noLeidosChat = useChatStore(selectTotalNoLeidos)
   const navigate = useNavigate()
 
   const handleLogout = async () => {
@@ -110,6 +112,14 @@ export default function Sidebar() {
                     style={{ background: 'var(--color-accent-2)' }}
                   >
                     {noLeidas > 99 ? '99+' : noLeidas}
+                  </span>
+                )}
+                {to === '/chat' && noLeidosChat > 0 && (
+                  <span
+                    className="absolute -top-1 -right-1 min-w-4 h-4 px-0.5 rounded-full flex items-center justify-center text-[10px] font-bold text-white"
+                    style={{ background: 'var(--color-accent-2)' }}
+                  >
+                    {noLeidosChat > 99 ? '99+' : noLeidosChat}
                   </span>
                 )}
               </span>
