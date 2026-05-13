@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { Client } from '@stomp/stompjs'
-import SockJS from 'sockjs-client/dist/sockjs.min.js'
+import SockJS from 'sockjs-client'
 import type { Notificacion } from '../types'
 import {
   getConteoNoLeidas,
