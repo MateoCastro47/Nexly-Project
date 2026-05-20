@@ -119,8 +119,8 @@ export default function BusquedaPage() {
                 onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--color-surface-2)')}
                 onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
               >
-                {c.imagenUrl ? (
-                  <img src={c.imagenUrl} className="w-10 h-10 rounded-xl object-cover shrink-0" alt="" />
+                {c.foto ? (
+                  <img src={c.foto} className="w-10 h-10 rounded-xl object-cover shrink-0" alt="" />
                 ) : (
                   <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm font-bold shrink-0"
                     style={{ background: 'var(--gradient-brand)' }}>

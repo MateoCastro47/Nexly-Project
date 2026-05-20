@@ -97,28 +97,6 @@ export interface Mensaje{
   error?: boolean;
 }
 
-export interface Comunidad {
-  id: number
-  nombre: string
-  descripcion?: string
-  imagenUrl?: string
-  portadaUrl?: string
-  totalMiembros: number
-  esPublica: boolean
-  miRol?: 'ADMIN' | 'MODERADOR' | 'MIEMBRO'
-  esMiembro: boolean
-  silenciada?: boolean
-}
-
-export interface MiembroComunidad {
-  usuarioId: number
-  nombreCompleto: string
-  nombreUsuario: string
-  fotoPerfil?: string
-  rol: 'ADMIN' | 'MODERADOR' | 'MIEMBRO'
-  estado: 'ACTIVO' | 'PENDIENTE' | 'BANEADO'
-}
-
 export type TipoReaccion = 'ME_GUSTA' | 'ME_ENCANTA' | 'DIVERTIDO' | 'SORPRENDIDO' | 'TRISTE' | 'ENOJADO'
 
 export interface AuthResponse {
@@ -133,3 +111,36 @@ export interface Page<T> {
   number: number
   last: boolean
 }
+
+export type RolComunidad = 'ADMIN' | 'MOD' | 'MIEMBRO'
+
+export interface AutorResumen {
+  id: number
+  nombreCompleto: string
+  nombreUsuario: string
+  fotoPerfil?: string
+}
+
+export interface Comunidad {
+  id: number
+  nombre: string
+  descripcion?: string
+  reglas?: string
+  foto?: string
+  esPublica: boolean
+  creador?: AutorResumen
+  categoria?: string
+  totalMiembros: number
+  esMiembro: boolean
+  esCreador: boolean
+  miRol?: RolComunidad
+}
+
+export interface MiembroComunidad {
+  usuarioId: number
+  nombreUsuario: string
+  fotoPerfil?: string
+  rol: RolComunidad
+  fechaUnion: string
+}
+

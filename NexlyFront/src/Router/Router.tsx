@@ -10,6 +10,8 @@ import NotificacionesPage from '../pages/Notificaciones/NotificacionesPage'
 import OnboardingModal from '../components/onboarding/OnboardingModal'
 import BusquedaPage from '../pages/Busqueda/BusquedaPage'
 import ChatPage from '../pages/Chat/ChatPage'
+import ComunidadesPage from '../pages/Comunidades/ComunidadesPage'
+import ComunidadDetallePage from '../pages/Comunidades/ComunidadDetallePage'
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const usuario = useAuthStore((s) => s.usuario)
@@ -28,7 +30,9 @@ const browserRouter = createBrowserRouter([
       { path: 'perfil/:nombreUsuario', element: <ProfilePage /> },
       { path: 'notificaciones', element: <NotificacionesPage /> },
       { path: 'busqueda', element: <BusquedaPage /> },
-      { path: 'chat', element: <ChatPage/>}
+      { path: 'chat', element: <ChatPage/>},
+      { path: 'comunidades', element: <ComunidadesPage />},
+      { path: 'comunidades/:id', element: <ComunidadDetallePage />}
     ],
   },
 ])
