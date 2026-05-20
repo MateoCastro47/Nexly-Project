@@ -2,11 +2,13 @@ import { useRef, useState } from 'react'
 import { useAuthStore } from '../../store/authStore'
 import { useFeedStore } from '../../store/feedStore'
 import { uploadImagen } from '../../api/media'
+import { crearPublicacion } from '../../api/Publicaciones'
 import EmojiPicker from './EmojiPicker'
 import QuoteCard from './QuoteCard'
 import SelectPill from './SelectPill'
 import type { SelectOption } from './SelectPill'
-import type { TipoPost } from '../../types'
+import type { Publicacion, TipoPost } from '../../types'
+
 
 type Visibilidad  = 'PUBLICA' | 'SEGUIDORES' | 'PRIVADA'
 type ActivePanel  = null | 'emoji' | 'poll'
@@ -226,12 +228,20 @@ function PollCreator({
 }
 
 // ── CreatePost ───────────────────────────────────────────────────────────────
+interface CreatePostProps {
+  comunidadId?: number
+  comunidadNombre?: string
+  onCreated?: (publicacion: Publicacion) => void
+}
 
-export default function CreatePost() {
+export default function CreatePost({comunidadId, comunidadNombre, onCreated }: CreatePostProps = {}) {
   const usuario     = useAuthStore((s) => s.usuario)
   const crear       = useFeedStore((s) => s.crear)
   const postCitado  = useFeedStore((s) => s.postCitado)
   const setCitando  = useFeedStore((s) => s.setCitando)
+
+  const enComunidad = comunidadId != null;
+  const citaActiva = enComunidad ? null : postCitado
 
   const [contenido,    setContenido]    = useState('')
   const [visibilidad,  setVisibilidad]  = useState<Visibilidad>('PUBLICA')
@@ -248,7 +258,7 @@ export default function CreatePost() {
 
   if (!usuario) return null
 
-  const expanded   = focused || contenido.length > 0 || imagenes.length > 0 || showPoll || !!postCitado || tipoPost !== 'NORMAL'
+  const expanded   = focused || contenido.length > 0 || imagenes.length > 0 || showPoll || !!citaActiva || tipoPost !== 'NORMAL'
   const uploading  = imagenes.some((i) => i.uploading)
   const hasError   = imagenes.some((i) => i.error)
 
@@ -332,14 +342,30 @@ export default function CreatePost() {
       textoFinal += '\n\n📊 Encuesta\n' + pollValidas.map((o) => `• ${o}`).join('\n')
     }
 
+    
+    const imagenesUrls = imagenes.map((i) => i.uploadedUrl).filter(Boolean)
+    const tipoFinal = tipoPost !== 'NORMAL' ? tipoPost : undefined
+
     try {
-      await crear({
+      if (enComunidad) {
+      const { data: nueva } = await crearPublicacion({
         contenido: textoFinal,
-        visibilidad,
-        tipoPost: tipoPost !== 'NORMAL' ? tipoPost : undefined,
-        publicacionRefId: postCitado?.id,
-        imagenes: imagenes.map((i) => i.uploadedUrl).filter(Boolean),
+        visibilidad: 'PUBLICA',
+        tipoPost: tipoFinal,
+        comunidadId,
+        imagenes: imagenesUrls,
       })
+        onCreated?.(nueva)
+      } else {
+        await crear({
+          contenido: textoFinal,
+          visibilidad,
+          tipoPost: tipoFinal,
+          publicacionRefId: citaActiva?.id,
+          imagenes: imagenesUrls,
+        })
+        setCitando(null)
+      }
       setContenido('')
       setImagenes([])
       setPollOpts(['', ''])
@@ -347,7 +373,6 @@ export default function CreatePost() {
       setFocused(false)
       setActivePanel(null)
       setTipoPost('NORMAL')
-      setCitando(null)
     } finally {
       setLoading(false)
     }
@@ -372,7 +397,7 @@ export default function CreatePost() {
       onClick={() => taRef.current?.focus()}
       onBlur={(e) => {
         if (e.currentTarget.contains(e.relatedTarget as Node)) return
-        if (!contenido && imagenes.length === 0 && !showPoll && !postCitado && tipoPost === 'NORMAL') setFocused(false)
+        if (!contenido && imagenes.length === 0 && !showPoll && !citaActiva && tipoPost === 'NORMAL') setFocused(false)
       }}
     >
       {/* Fila principal */}
@@ -394,6 +419,16 @@ export default function CreatePost() {
         )}
 
         <div className="flex-1 flex flex-col gap-2 min-w-0">
+          {enComunidad && comunidadNombre && (
+            <div className='flex items-center gap-1.5 text-xs font-semibold w-fit px-2.5 py-1 rounded-full'
+            style={{background: 'var(--color-accent-1-tint)', color: 'var(--color-accent-1)' }}>
+              <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+              </svg>
+              <span>Publicando en {comunidadNombre}</span>
+            </div>
+          )}
           {/* Textarea */}
           <textarea
             ref={taRef}
@@ -418,7 +453,7 @@ export default function CreatePost() {
           <ImagenGrid imagenes={imagenes} onRemove={removeImagen} />
 
           {/* Preview del post citado */}
-          {postCitado && (
+          {citaActiva && (
             <div className="relative">
               <button
                 onClick={() => setCitando(null)}
@@ -429,11 +464,11 @@ export default function CreatePost() {
                 ✕
               </button>
               <QuoteCard post={{
-                id: postCitado.id,
-                contenido: postCitado.contenido,
-                autor: postCitado.autor,
-                imagenes: postCitado.imagenes,
-                fechaCreacion: postCitado.fechaCreacion,
+                id: citaActiva.id,
+                contenido: citaActiva.contenido,
+                autor: citaActiva.autor,
+                imagenes: citaActiva.imagenes,
+                fechaCreacion: citaActiva.fechaCreacion,
               }} />
             </div>
           )}
@@ -537,11 +572,11 @@ export default function CreatePost() {
           <div className="w-px h-5 mx-1.5 shrink-0" style={{ background: 'var(--color-border)' }} />
 
           {/* Visibilidad */}
-          <SelectPill
+          {!enComunidad && ( <SelectPill
             value={visibilidad}
             onChange={(v) => setVisibilidad(v as Visibilidad)}
             options={VISIBILIDAD_OPTS}
-          />
+          />)}
 
           {/* Flair — solo cuando el compositor está expandido */}
           {expanded && (
