@@ -7,6 +7,7 @@ import com.edu.mcs.NexlyBack.Security.JwtUtil;
 import com.edu.mcs.NexlyBack.Services.Usuario.UsuarioService;
 
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -25,11 +26,14 @@ public class AuthController {
     private final UsuarioService usuariosService;
     private final AuthenticationManager authManager;
     private final JwtUtil jwtUtil;
+    private final String cookieName;
 
-    public AuthController(UsuarioService usuariosService, AuthenticationManager authManager, JwtUtil jwtUtil) {
+    public AuthController(UsuarioService usuariosService, AuthenticationManager authManager, JwtUtil jwtUtil,
+                          @Value("${app.auth.cookie-name}") String cookieName) {
         this.usuariosService = usuariosService;
         this.authManager = authManager;
         this.jwtUtil = jwtUtil;
+        this.cookieName = cookieName;
     }
 
     @PostMapping("/register")
@@ -59,7 +63,7 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout() {
-        ResponseCookie cookie = ResponseCookie.from("nexly_token", "")
+        ResponseCookie cookie = ResponseCookie.from(cookieName, "")
                 .httpOnly(true)
                 .path("/")
                 .maxAge(0)
@@ -70,7 +74,7 @@ public class AuthController {
     }
 
     private ResponseCookie buildTokenCookie(String token) {
-        return ResponseCookie.from("nexly_token", token)
+        return ResponseCookie.from(cookieName, token)
                 .httpOnly(true)
                 .secure(false) // cambiar a true en producción (HTTPS)
                 .sameSite("Strict")
