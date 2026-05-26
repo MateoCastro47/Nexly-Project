@@ -1,6 +1,90 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useNotificacionesStore } from '../../store/notificacionesStore'
 import type { Notificacion } from '../../types'
+import {
+  activarPush,
+  desactivarPush,
+  esIOSNoInstalada,
+  estadoPush,
+  type EstadoPush,
+} from '../../lib/push'
+
+function IconoCampana() {
+  return (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+      <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+    </svg>
+  )
+}
+
+function PushToggle() {
+  const [estado, setEstado] = useState<EstadoPush | null>(null)
+  const [cargando, setCargando] = useState(false)
+
+  useEffect(() => {
+    estadoPush().then(setEstado)
+  }, [])
+
+  if (estado === null || estado === 'no-soportado') return null
+
+  if (estado === 'denegado') {
+    return (
+      <span className="text-xs" style={{ color: 'var(--color-muted)' }}>
+        Notificaciones bloqueadas en el navegador
+      </span>
+    )
+  }
+
+  if (esIOSNoInstalada()) {
+    return (
+      <span className="text-xs text-right max-w-40" style={{ color: 'var(--color-muted)' }}>
+        Instala Nexly (Compartir → Añadir a inicio) para recibir notificaciones
+      </span>
+    )
+  }
+
+  const activa = estado === 'activa'
+
+  const toggle = async () => {
+    setCargando(true)
+    try {
+      if (activa) {
+        await desactivarPush()
+        setEstado('inactiva')
+      } else {
+        await activarPush()
+        setEstado('activa')
+      }
+    } catch (e) {
+      setEstado(await estadoPush())
+      alert(e instanceof Error ? e.message : 'No se pudo cambiar el estado de las notificaciones')
+    } finally {
+      setCargando(false)
+    }
+  }
+
+  return (
+    <button
+      onClick={toggle}
+      disabled={cargando}
+      title={activa ? 'Desactivar notificaciones del navegador' : 'Activar notificaciones del navegador'}
+      className="flex items-center gap-1.5 text-sm font-semibold px-3 py-1.5 rounded-xl transition-colors disabled:opacity-50 shrink-0"
+      style={{
+        color: activa ? 'var(--color-accent-1)' : 'var(--color-muted)',
+        background: activa ? 'var(--color-accent-1-tint)' : 'transparent',
+      }}
+      onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--color-accent-1-tint)')}
+      onMouseLeave={(e) =>
+        (e.currentTarget.style.background = activa ? 'var(--color-accent-1-tint)' : 'transparent')
+      }
+    >
+      <IconoCampana />
+      {cargando ? '...' : activa ? 'Activadas' : 'Activar'}
+    </button>
+  )
+}
 
 function tiempoRelativo(fecha: string): string {
   const diff = Date.now() - new Date(fecha).getTime()
@@ -139,17 +223,20 @@ export default function NotificacionesPage() {
           )}
         </div>
 
-        {noLeidas > 0 && (
-          <button
-            onClick={marcarTodasLeidas}
-            className="text-sm font-semibold px-3 py-1.5 rounded-xl transition-colors"
-            style={{ color: 'var(--color-accent-1)' }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--color-accent-1-tint)')}
-            onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
-          >
-            Marcar todas como leídas
-          </button>
-        )}
+        <div className="flex items-center gap-2">
+          <PushToggle />
+          {noLeidas > 0 && (
+            <button
+              onClick={marcarTodasLeidas}
+              className="text-sm font-semibold px-3 py-1.5 rounded-xl transition-colors"
+              style={{ color: 'var(--color-accent-1)' }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--color-accent-1-tint)')}
+              onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+            >
+              Marcar todas como leídas
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Lista */}
