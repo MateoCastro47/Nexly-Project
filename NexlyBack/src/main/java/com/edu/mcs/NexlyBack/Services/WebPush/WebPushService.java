@@ -51,11 +51,26 @@ public class WebPushService {
     }
 
     @PostConstruct
-    public void init() throws Exception {
-        if (Security.getProvider("BC") == null) {
-            Security.addProvider(new BouncyCastleProvider());
+    public void init() {
+        if (publicKey == null || publicKey.isBlank()
+                || privateKey == null || privateKey.isBlank()) {
+            log.warn("Web Push deshabilitado: faltan las claves VAPID (VAPID_PUBLIC_KEY / VAPID_PRIVATE_KEY).");
+            return;
         }
-        this.pushService = new PushService(publicKey, privateKey, subject);
+        try {
+            if (Security.getProvider("BC") == null) {
+                Security.addProvider(new BouncyCastleProvider());
+            }
+            this.pushService = new PushService(publicKey, privateKey, subject);
+        } catch (Exception e) {
+            log.error("No se pudo inicializar el Web Push; quedara deshabilitado.", e);
+            this.pushService = null;
+        }
+    }
+
+    /** ¿Está el push operativo? (claves VAPID presentes y servicio inicializado). */
+    public boolean estaHabilitado() {
+        return pushService != null;
     }
 
     public String getPublicKey() {
@@ -90,6 +105,8 @@ public class WebPushService {
     @Async
     @Transactional
     public void enviar(Long userId, String titulo, String cuerpo, String url) {
+        if (!estaHabilitado()) return; // sin claves VAPID, no hay push
+
         List<WebPushSubscriptions> subs = repo.findByUsuarioId(userId);
         if (subs.isEmpty()) return;
 
