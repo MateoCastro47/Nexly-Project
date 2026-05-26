@@ -97,7 +97,7 @@ export default function EmojiPicker({ onSelect, onClose }: Props) {
         {visible.length > 0 ? visible.map((emoji, i) => (
           <button
             key={i}
-            onClick={() => { onSelect(emoji) }}
+            onClick={() => { onSelect(emoji); onClose() }}
             className="text-2xl p-2 rounded-2xl leading-none transition-all aspect-square flex items-center justify-center"
             style={{ background: 'transparent' }}
             onMouseEnter={(e) => {
