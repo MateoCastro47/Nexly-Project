@@ -8,8 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
-
 @RestController
 @RequestMapping("/api/notificaciones")
 public class NotificacionController {
@@ -28,18 +26,18 @@ public class NotificacionController {
         return ResponseEntity.ok(notificacionService.getMisNotificaciones(userId(auth), page, size));
     }
 
-    @GetMapping("/no-leidas/count")
-    public ResponseEntity<Map<String, Long>> contarNoLeidas(Authentication auth) {
-        return ResponseEntity.ok(Map.of("count", notificacionService.contarNoLeidas(userId(auth))));
+    @GetMapping("/no-leidas/conteo")
+    public ResponseEntity<Long> contarNoLeidas(Authentication auth) {
+        return ResponseEntity.ok(notificacionService.contarNoLeidas(userId(auth)));
     }
 
-    @PutMapping("/leer-todas")
+    @PatchMapping("/leer-todas")
     public ResponseEntity<Void> marcarTodasLeidas(Authentication auth) {
         notificacionService.marcarTodasLeidas(userId(auth));
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/{id}/leer")
+    @PatchMapping("/{id}/leer")
     public ResponseEntity<Void> marcarLeida(@PathVariable Long id, Authentication auth) {
         notificacionService.marcarLeida(id, userId(auth));
         return ResponseEntity.noContent().build();
