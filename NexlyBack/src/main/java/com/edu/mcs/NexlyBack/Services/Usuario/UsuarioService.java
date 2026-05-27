@@ -19,6 +19,7 @@ import com.edu.mcs.NexlyBack.Repositories.Notificacion.NotificacionRepository;
 import com.edu.mcs.NexlyBack.Repositories.Usuario.BloqueoRepository;
 import com.edu.mcs.NexlyBack.Repositories.Usuario.SeguimientoRepository;
 import com.edu.mcs.NexlyBack.Repositories.Usuario.UsuarioRepository;
+import com.edu.mcs.NexlyBack.Services.Auth.VerificacionEmailService;
 import com.edu.mcs.NexlyBack.Services.Notificacion.NotificacionService;
 import com.edu.mcs.NexlyBack.models.Bloqueo;
 import com.edu.mcs.NexlyBack.models.Seguimiento;
@@ -38,11 +39,12 @@ public class UsuarioService {
     private final NotificacionService notificacionService;
     private final NotificacionRepository notificacionRepository;
     private final ComunidadRepository comunidadRepository;
+    private final VerificacionEmailService verificacionEmailService;
 
     public UsuarioService(PasswordEncoder passwordEncoder, SeguimientoRepository seguimientoRepository,
             BloqueoRepository bloqueoRepository, UsuarioRepository usuarioRepository, UsuarioMapper usuarioMapper,
             NotificacionService notificacionService, NotificacionRepository notificacionRepository,
-            ComunidadRepository comunidadRepository) {
+            ComunidadRepository comunidadRepository, VerificacionEmailService verificacionEmailService) {
         this.passwordEncoder = passwordEncoder;
         this.seguimientoRepository = seguimientoRepository;
         this.bloqueoRepository = bloqueoRepository;
@@ -51,6 +53,7 @@ public class UsuarioService {
         this.notificacionService = notificacionService;
         this.notificacionRepository = notificacionRepository;
         this.comunidadRepository = comunidadRepository;
+        this.verificacionEmailService = verificacionEmailService;
     }
 
     public UsuarioDTO getPerfil(Long targetId, Long viewerId) {
@@ -106,8 +109,10 @@ public class UsuarioService {
         u.setEmail(req.email());
         u.setContrasenaHash(passwordEncoder.encode(req.contrasena()));
         u.setFechaNacimiento(req.fechaNacimiento());
+        u.setEmailVerificado(false); // requiere confirmar el correo antes de poder entrar
 
         Usuario savedUsuario = usuarioRepository.save(u);
+        verificacionEmailService.crearYEnviar(savedUsuario);
         return buildDTO(savedUsuario, savedUsuario.getId());
     }
 

@@ -72,9 +72,11 @@ public class NotificacionService {
         Notificacion n = new Notificacion(destinatario, emisor, tipo, entidadId);
         NotificacionDTO dto = notificacionMapper.tNotificacionDTO(notificacionRepository.save(n));
 
-        // broadcast WebSocket al destinatario
+        // broadcast WebSocket al destinatario.
+        // El Principal del WS se identifica por userId (ver JwtHandShakeInterceptor),
+        // así que hay que enviar por id, no por nombreUsuario (igual que el chat).
         messagingTemplate.convertAndSendToUser(
-                destinatario.getNombreUsuario(),
+                String.valueOf(destinatarioId),
                 "/queue/notificaciones",
                 dto
         );

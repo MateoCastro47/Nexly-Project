@@ -61,6 +61,9 @@ public class Usuario {
     @Column(nullable = false)
     private Boolean activo = true;
 
+    @Column(name = "email_verificado", nullable = false)
+    private Boolean emailVerificado = false;
+
     @Column(name = "proveedor_oauth", length = 20)
     private String proveedorOAuth;
 
@@ -295,6 +298,14 @@ public class Usuario {
         this.activo = activo;
     }
 
+    public Boolean getEmailVerificado() {
+        return emailVerificado;
+    }
+
+    public void setEmailVerificado(Boolean emailVerificado) {
+        this.emailVerificado = emailVerificado;
+    }
+
     public List<Seguimiento> getSeguidores() {
         return seguidores;
     }
@@ -431,5 +442,6 @@ public class Usuario {
         if (this.perfilPrivado == null) this.perfilPrivado = false;
         if (this.activo == null) this.activo = true;
         if (this.onboardingCompletado == null) this.onboardingCompletado = false;
+        if (this.emailVerificado == null) this.emailVerificado = false;
     }
 }
