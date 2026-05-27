@@ -1,7 +1,6 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { useAuthStore } from '../../store/authStore'
-import { register } from '../../api/auth'
+import { Link } from 'react-router-dom'
+import { register, reenviarVerificacion } from '../../api/auth'
 
 // El backend manda el mensaje en data.error. Para errores de validación
 // el formato es "campo: mensaje"; para conflictos (email/usuario en uso) es texto plano.
@@ -19,8 +18,6 @@ function traducirErrorRegistro(raw?: string): string {
 }
 
 export default function Register() {
-  const navigate = useNavigate()
-  const setUsuario = useAuthStore((s) => s.setUsuario)
   const [form, setForm] = useState({
     nombreCompleto: '',
     nombreUsuario: '',
@@ -31,6 +28,8 @@ export default function Register() {
   })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [registrado, setRegistrado] = useState(false)
+  const [reenviado, setReenviado] = useState(false)
 
   const handleSubmit = async (e: { preventDefault(): void }) => {
     e.preventDefault()
@@ -42,14 +41,76 @@ export default function Register() {
     setLoading(true)
     try {
       const { nombreCompleto, nombreUsuario, email, contrasena, fechaNacimiento } = form
-      const { data } = await register({ nombreCompleto, nombreUsuario, email, contrasena, fechaNacimiento })
-      setUsuario(data)
-      navigate('/')
+      await register({ nombreCompleto, nombreUsuario, email, contrasena, fechaNacimiento })
+      setRegistrado(true)
     } catch (err: any) {
       setError(traducirErrorRegistro(err.response?.data?.error))
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleReenviar = async () => {
+    try {
+      await reenviarVerificacion(form.email)
+    } catch {
+      // No revelamos si el correo existe o ya está verificado.
+    } finally {
+      setReenviado(true)
+    }
+  }
+
+  // Pantalla de confirmación: tras registrarse hay que verificar el correo antes de entrar.
+  if (registrado) {
+    return (
+      <div className="h-screen flex overflow-hidden">
+        <div
+          className="hidden lg:flex lg:w-5/12 flex-col items-center justify-center p-14 relative overflow-hidden shrink-0"
+          style={{ background: 'var(--gradient-brand)' }}
+        >
+          <div className="absolute -top-24 -left-24 w-80 h-80 rounded-full opacity-[0.15]" style={{ background: 'white' }} />
+          <div className="absolute -bottom-36 -right-20 w-105 h-105 rounded-full opacity-[0.08]" style={{ background: 'white' }} />
+          <div className="relative z-10 text-center text-white select-none">
+            <p className="text-6xl font-bold tracking-tight mb-6">Nexly</p>
+            <p className="text-xl font-medium opacity-90">Ya casi estás dentro</p>
+          </div>
+        </div>
+
+        <div className="flex-1 flex items-center justify-center p-6 overflow-y-auto" style={{ background: 'var(--color-bg)' }}>
+          <div className="w-full max-w-sm rounded-2xl p-8 shadow-md text-center" style={{ background: 'var(--color-surface)' }}>
+            <div
+              className="mx-auto mb-5 w-14 h-14 rounded-full flex items-center justify-center"
+              style={{ background: 'var(--color-brand)' }}
+            >
+              <svg className="w-7 h-7 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                <polyline points="22,6 12,13 2,6" />
+              </svg>
+            </div>
+            <h2 className="text-2xl font-bold mb-2" style={{ color: 'var(--color-text)' }}>Revisa tu correo</h2>
+            <p className="text-sm mb-6" style={{ color: 'var(--color-muted)' }}>
+              Te hemos enviado un enlace de verificación a{' '}
+              <span className="font-semibold" style={{ color: 'var(--color-text)' }}>{form.email}</span>.
+              Ábrelo para activar tu cuenta y poder iniciar sesión.
+            </p>
+
+            {reenviado ? (
+              <p className="text-sm mb-4" style={{ color: 'var(--color-brand)' }}>
+                Si la cuenta existe y no estaba verificada, te hemos reenviado el correo.
+              </p>
+            ) : (
+              <button onClick={handleReenviar} className="btn-outline w-full rounded-xl py-3 text-sm mb-3">
+                Reenviar correo
+              </button>
+            )}
+
+            <Link to="/login" className="btn-primary inline-block w-full rounded-xl py-3 text-sm">
+              Ir a iniciar sesión
+            </Link>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (

@@ -2,6 +2,7 @@ import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
 import { useAuthStore } from '../store/authStore'
 import Login from '../pages/Auth/Login'
 import Register from '../pages/Auth/Register'
+import Verificar from '../pages/Auth/Verificar'
 import OAuth2Callback from '../pages/Auth/OAuth2CallBack'
 import AppLayout from '../components/layout/AppLayout'
 import FeedPage from '../pages/Feed/FeedPage'
@@ -21,6 +22,7 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
 const browserRouter = createBrowserRouter([
   { path: '/login', element: <Login /> },
   { path: '/register', element: <Register /> },
+  { path: '/verificar', element: <Verificar /> },
   { path: '/auth/callback', element: <OAuth2Callback /> },
   {
     path: '/',

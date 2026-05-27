@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../store/authStore";
 import { useState } from "react";
-import { login } from "../../api/auth";
+import { login, reenviarVerificacion } from "../../api/auth";
 
 export default function Login() {
   const navigate = useNavigate()
@@ -9,19 +9,37 @@ export default function Login() {
   const [form, setForm] = useState({ email: "", contrasenha: "" })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [noVerificado, setNoVerificado] = useState(false)
+  const [reenviado, setReenviado] = useState(false)
 
   const handleSubmit = async (e: { preventDefault(): void }) => {
     e.preventDefault()
     setError('')
+    setNoVerificado(false)
+    setReenviado(false)
     setLoading(true)
     try {
       const { data } = await login(form.email, form.contrasenha)
       setUsuario(data)
       navigate('/')
-    } catch {
-      setError('Email o contraseña incorrectos')
+    } catch (err: any) {
+      if (err.response?.status === 403 && err.response?.data?.error === 'EMAIL_NO_VERIFICADO') {
+        setNoVerificado(true)
+      } else {
+        setError('Email o contraseña incorrectos')
+      }
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleReenviar = async () => {
+    try {
+      await reenviarVerificacion(form.email)
+    } catch {
+      // No revelamos si el correo existe o ya está verificado.
+    } finally {
+      setReenviado(true)
     }
   }
 
@@ -108,6 +126,29 @@ export default function Login() {
 
             {error && (
               <p className="text-xs px-1" style={{ color: 'var(--color-error)' }}>{error}</p>
+            )}
+
+            {noVerificado && (
+              <div
+                className="rounded-xl p-3 text-xs"
+                style={{ background: 'color-mix(in srgb, var(--color-brand) 10%, transparent)', color: 'var(--color-text)' }}
+              >
+                <p className="mb-2">
+                  Tu cuenta aún no está verificada. Revisa tu correo y pulsa el enlace de confirmación.
+                </p>
+                {reenviado ? (
+                  <p style={{ color: 'var(--color-brand)' }}>Correo de verificación reenviado.</p>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={handleReenviar}
+                    className="font-semibold underline"
+                    style={{ color: 'var(--color-brand)' }}
+                  >
+                    Reenviar correo de verificación
+                  </button>
+                )}
+              </div>
             )}
 
             <button
