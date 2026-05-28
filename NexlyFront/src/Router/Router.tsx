@@ -13,6 +13,11 @@ import BusquedaPage from '../pages/Busqueda/BusquedaPage'
 import ChatPage from '../pages/Chat/ChatPage'
 import ComunidadesPage from '../pages/Comunidades/ComunidadesPage'
 import ComunidadDetallePage from '../pages/Comunidades/ComunidadDetallePage'
+import AdminLayout from '../pages/Admin/AdminLayout'
+import AdminDashboard from '../pages/Admin/AdminDashboard'
+import AdminUsuarios from '../pages/Admin/AdminUsuarios'
+import AdminPublicaciones from '../pages/Admin/AdminPublicaciones'
+import AdminComunidades from '../pages/Admin/AdminComunidades'
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const usuario = useAuthStore((s) => s.usuario)
@@ -35,6 +40,16 @@ const browserRouter = createBrowserRouter([
       { path: 'chat', element: <ChatPage/>},
       { path: 'comunidades', element: <ComunidadesPage />},
       { path: 'comunidades/:id', element: <ComunidadDetallePage />}
+    ],
+  },
+  {
+    path: '/admin',
+    element: <PrivateRoute><AdminLayout /></PrivateRoute>,
+    children: [
+      { index: true, element: <AdminDashboard /> },
+      { path: 'usuarios', element: <AdminUsuarios /> },
+      { path: 'publicaciones', element: <AdminPublicaciones /> },
+      { path: 'comunidades', element: <AdminComunidades /> },
     ],
   },
 ])

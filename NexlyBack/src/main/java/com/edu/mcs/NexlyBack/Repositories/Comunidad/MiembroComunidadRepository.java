@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -35,4 +36,9 @@ public interface MiembroComunidadRepository extends JpaRepository<MiembroComunid
     @Query("SELECT m FROM MiembroComunidad m WHERE m.usuario.id = :usuarioId AND m.estado = :estado")
     List<MiembroComunidad> findComunidadesDeUsuario(@Param("usuarioId") Long usuarioId,
                                                     @Param("estado") EstadoMiembro estado);
+
+    @Modifying
+    @Query("DELETE FROM MiembroComunidad m WHERE m.comunidad.id = :comunidadId")
+    void deleteByComunidadId(@Param("comunidadId") Long comunidadId);
+
 }

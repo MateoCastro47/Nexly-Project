@@ -61,15 +61,15 @@ export default function Sidebar() {
 
   return(
     <aside
-        className="hidden lg:flex flex-col justify-between w-68 shrink-0 h-screen sticky top-0 px-5 py-6 border-r"
+        className="fixed bottom-0 left-0 right-0 z-50 flex flex-col lg:sticky lg:top-0 lg:justify-between lg:w-68 lg:shrink-0 lg:h-screen lg:px-5 lg:py-6 lg:border-r border-t lg:border-t-0"
         style={{
           background: 'linear-gradient(180deg, var(--color-surface) 0%, var(--color-surface-2) 100%)',
           borderColor: 'var(--color-border)',
         }}
     >
-        <div>
-        {/* Logo con gradiente */}
-        <div className="px-3 mb-7 flex items-center gap-2">
+        <div className="flex w-full lg:block lg:w-auto">
+        {/* Logo con gradiente - Oculto en móvil */}
+        <div className="hidden lg:flex px-3 mb-7 items-center gap-2">
           <div
             className="w-9 h-9 rounded-2xl flex items-center justify-center text-white font-bold text-lg"
             style={{
@@ -93,15 +93,15 @@ export default function Sidebar() {
           </span>
         </div>
 
-        {/* Nav */}
-        <nav className="flex flex-col gap-1.5">
+        {/* Nav - flex row on mobile, col on desktop */}
+        <nav className="flex w-full justify-around lg:flex-col lg:justify-start lg:gap-1.5 p-2 lg:p-0">
           {NAV.map(({ to, label, icon }) => (
             <NavLink
               key={to}
               to={to}
               end={to === '/'}
               className={({ isActive }) =>
-                `nav-link flex items-center gap-3.5 px-4 py-3 rounded-2xl text-[1rem] font-semibold ${isActive ? 'active' : ''}`
+                `nav-link flex flex-col lg:flex-row items-center justify-center lg:justify-start gap-1 lg:gap-3.5 px-2 py-2 lg:px-4 lg:py-3 rounded-2xl text-[10px] lg:text-[1rem] font-medium lg:font-semibold flex-1 lg:flex-none ${isActive ? 'active' : ''}`
               }
             >
               <span className="relative">
@@ -126,12 +126,47 @@ export default function Sidebar() {
               {label}
             </NavLink>
           ))}
+
+          {usuario?.rol === 'ADMIN' && (
+            <NavLink
+              to="/admin"
+              className={({ isActive }) =>
+                `nav-link hidden lg:flex items-center gap-3.5 px-4 py-3 rounded-2xl text-[1rem] font-semibold ${isActive ? 'active' : ''}`
+              }
+            >
+              <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z" />
+              </svg>
+              Administración
+            </NavLink>
+          )}
+
+          {/* Perfil Icon en Mobile */}
+          {usuario && (
+             <NavLink
+             to={`/perfil/${usuario.nombreUsuario}`}
+             className={({ isActive }) =>
+               `nav-link flex lg:hidden flex-col items-center justify-center gap-1 px-2 py-2 rounded-2xl text-[10px] font-medium flex-1 ${isActive ? 'active' : ''}`
+             }
+           >
+             <span className="relative">
+                {usuario.fotoPerfil ? (
+                    <img src={usuario.fotoPerfil} alt="Perfil" className="w-6 h-6 rounded-full object-cover" />
+                ) : (
+                    <div className="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px] font-bold" style={{ background: 'var(--color-accent-1)' }}>
+                        {usuario.nombreCompleto[0].toUpperCase()}
+                    </div>
+                )}
+             </span>
+             Perfil
+           </NavLink>
+          )}
         </nav>
 
       </div>
 
       {usuario && (
-        <div className="flex flex-col gap-2">
+        <div className="hidden lg:flex flex-col gap-2">
             <div className="divider-brand mb-1" />
             <div
                 className="flex items-center gap-3 px-3.5 py-3.5 rounded-2xl transition-all cursor-pointer"
@@ -147,6 +182,7 @@ export default function Sidebar() {
                   (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-border)'
                   ;(e.currentTarget as HTMLElement).style.boxShadow = 'none'
                 }}
+                onClick={() => navigate(`/perfil/${usuario.nombreUsuario}`)}
             >
                 {usuario.fotoPerfil ? (
                     <div className="avatar-ring shrink-0">

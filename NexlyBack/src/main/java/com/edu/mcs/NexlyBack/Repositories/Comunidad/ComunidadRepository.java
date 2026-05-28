@@ -41,4 +41,7 @@ public interface ComunidadRepository extends JpaRepository<Comunidad, Long> {
     @Query("SELECT COUNT(m) FROM MiembroComunidad m WHERE m.comunidad.id = :id " +
            "AND m.estado = com.edu.mcs.NexlyBack.models.Enums.EstadoMiembro.ACEPTADO")
     long countMiembros(@Param("id") Long id);
+
+    // Conteo de comunidades públicas (dashboard de administración)
+    long countByEsPublicaTrue();
 }
