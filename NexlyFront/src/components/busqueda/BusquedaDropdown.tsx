@@ -98,8 +98,8 @@ export default function BusquedaDropdown({query, usuarios, comunidades, loading,
                 onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--color-surface-2)')}
                 onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
                 >
-                {c.imagenUrl ? (
-                    <img src={c.imagenUrl} className="w-8 h-8 rounded-xl object-cover shrink-0" alt="" />
+                {c.foto ? (
+                    <img src={c.foto} className="w-8 h-8 rounded-xl object-cover shrink-0" alt="" />
                 ) : (
                     <div className="w-8 h-8 rounded-xl flex items-center justify-center text-white text-xs font-bold shrink-0"
                     style={{ background: 'var(--gradient-brand)' }}>

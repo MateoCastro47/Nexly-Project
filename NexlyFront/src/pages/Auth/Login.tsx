@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../store/authStore";
 import { useState } from "react";
-import { login } from "../../api/auth";
+import { login, reenviarVerificacion } from "../../api/auth";
 
 export default function Login() {
   const navigate = useNavigate()
@@ -9,19 +9,37 @@ export default function Login() {
   const [form, setForm] = useState({ email: "", contrasenha: "" })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [noVerificado, setNoVerificado] = useState(false)
+  const [reenviado, setReenviado] = useState(false)
 
   const handleSubmit = async (e: { preventDefault(): void }) => {
     e.preventDefault()
     setError('')
+    setNoVerificado(false)
+    setReenviado(false)
     setLoading(true)
     try {
       const { data } = await login(form.email, form.contrasenha)
       setUsuario(data)
       navigate('/')
-    } catch {
-      setError('Email o contraseña incorrectos')
+    } catch (err: any) {
+      if (err.response?.status === 403 && err.response?.data?.error === 'EMAIL_NO_VERIFICADO') {
+        setNoVerificado(true)
+      } else {
+        setError('Email o contraseña incorrectos')
+      }
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleReenviar = async () => {
+    try {
+      await reenviarVerificacion(form.email)
+    } catch {
+      // No revelamos si el correo existe o ya está verificado.
+    } finally {
+      setReenviado(true)
     }
   }
 
@@ -33,14 +51,14 @@ export default function Login() {
         className="hidden lg:flex lg:w-5/12 flex-col items-center justify-center p-14 relative overflow-hidden shrink-0"
         style={{ background: 'var(--gradient-brand)' }}
       >
-        <div className="absolute -top-24 -left-24 w-80 h-80 rounded-full opacity-[0.15]" style={{ background: 'white' }} />
-        <div className="absolute -bottom-36 -right-20 w-[420px] h-[420px] rounded-full opacity-[0.08]" style={{ background: 'white' }} />
-        <div className="absolute top-1/3 right-8 w-40 h-40 rounded-full opacity-[0.10]" style={{ background: 'white' }} />
+        <div className="absolute -top-24 -left-24 w-80 h-80 rounded-full opacity-[0.15]" style={{ background: 'white', animation: 'float 9s ease-in-out infinite' }} />
+        <div className="absolute -bottom-36 -right-20 w-105 h-105 rounded-full opacity-[0.08]" style={{ background: 'white', animation: 'float 11s ease-in-out infinite' }} />
+        <div className="absolute top-1/3 right-8 w-40 h-40 rounded-full opacity-[0.10]" style={{ background: 'white', animation: 'float 7s ease-in-out infinite' }} />
 
         <div className="relative z-10 text-center text-white select-none">
-          <p className="text-6xl font-bold tracking-tight mb-6">Nexly</p>
+          <p className="text-6xl font-bold tracking-tight mb-6" style={{ fontFamily: 'var(--font-display)' }}>Nexly</p>
           <p className="text-xl font-medium opacity-90 mb-4">Conecta. Comparte. Crece.</p>
-          <p className="text-sm opacity-90 max-w-[260px] leading-relaxed mx-auto">
+          <p className="text-sm opacity-90 max-w-65 leading-relaxed mx-auto">
             Únete a miles de personas que ya comparten sus ideas y momentos.
           </p>
         </div>
@@ -53,15 +71,29 @@ export default function Login() {
       >
         {/* Card */}
         <div
-          className="w-full max-w-sm rounded-2xl p-8 shadow-md"
-          style={{ background: 'var(--color-surface)' }}
+          className="w-full max-w-sm rounded-2xl p-8"
+          style={{
+            background: 'var(--color-surface)',
+            border: '1px solid var(--color-border)',
+            boxShadow: 'var(--shadow-lg)',
+            animation: 'fadeInUp 0.5s cubic-bezier(0.19, 1, 0.22, 1) both',
+          }}
         >
           {/* Logo solo en mobile */}
-          <p className="lg:hidden text-center text-3xl font-bold mb-6" style={{ color: 'var(--color-brand)' }}>
+          <p
+            className="lg:hidden text-center text-3xl font-bold mb-6"
+            style={{
+              fontFamily: 'var(--font-display)',
+              background: 'var(--gradient-brand)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}
+          >
             Nexly
           </p>
 
-          <h2 className="text-2xl font-bold mb-1" style={{ color: 'var(--color-text)' }}>
+          <h2 className="text-2xl font-bold mb-1" style={{ color: 'var(--color-text)', fontFamily: 'var(--font-display)' }}>
             Bienvenido de vuelta
           </h2>
           <p className="text-sm mb-7" style={{ color: 'var(--color-muted)' }}>
@@ -110,6 +142,29 @@ export default function Login() {
               <p className="text-xs px-1" style={{ color: 'var(--color-error)' }}>{error}</p>
             )}
 
+            {noVerificado && (
+              <div
+                className="rounded-xl p-3 text-xs"
+                style={{ background: 'color-mix(in srgb, var(--color-brand) 10%, transparent)', color: 'var(--color-text)' }}
+              >
+                <p className="mb-2">
+                  Tu cuenta aún no está verificada. Revisa tu correo y pulsa el enlace de confirmación.
+                </p>
+                {reenviado ? (
+                  <p style={{ color: 'var(--color-brand)' }}>Correo de verificación reenviado.</p>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={handleReenviar}
+                    className="font-semibold underline"
+                    style={{ color: 'var(--color-brand)' }}
+                  >
+                    Reenviar correo de verificación
+                  </button>
+                )}
+              </div>
+            )}
+
             <button
               type="submit"
               disabled={loading}
@@ -119,9 +174,11 @@ export default function Login() {
             </button>
 
             {/* Separador */}
-            <p className="text-center text-xs my-1" style={{ color: 'var(--color-muted)' }}>
-              o continúa con
-            </p>
+            <div className="flex items-center gap-3 my-1">
+              <div className="flex-1 h-px" style={{ background: 'var(--color-border)' }} />
+              <span className="text-xs" style={{ color: 'var(--color-muted)' }}>o continúa con</span>
+              <div className="flex-1 h-px" style={{ background: 'var(--color-border)' }} />
+            </div>
 
             {/* Google */}
             <a

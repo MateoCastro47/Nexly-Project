@@ -40,3 +40,6 @@ export const quitarReaccion = (id: number) =>
 
 export const getPublicacionesDeUsuario = (userId: number, page = 0, size = 10) =>
   client.get<Page<Publicacion>>(`/publicaciones/usuario/${userId}`, { params: { page, size } })
+
+export const getPublicacionesDeComunidad = (comunidadId: number, page = 0, size = 20) =>
+  client.get<Page<Publicacion>>(`/publicaciones/comunidad/${comunidadId}`, {params: {page, size}})

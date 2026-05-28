@@ -6,10 +6,11 @@ import org.mapstruct.Mapping;
 import com.edu.mcs.NexlyBack.DTOs.Comunidad.ComunidadDTO;
 import com.edu.mcs.NexlyBack.DTOs.Publicacion.AutorResumenDTO;
 import com.edu.mcs.NexlyBack.models.Comunidad;
+import com.edu.mcs.NexlyBack.models.Enums.RolComunidad;
 
 @Mapper(componentModel = "spring")
 public interface ComunidadMapper {
-    
+
     @Mapping(target = "id",          source = "comunidad.id")
     @Mapping(target = "nombre",      source = "comunidad.nombre")
     @Mapping(target = "descripcion", source = "comunidad.descripcion")
@@ -21,6 +22,7 @@ public interface ComunidadMapper {
     @Mapping(target = "totalMiembros", source = "totalMiembros")
     @Mapping(target = "esMiembro",   source = "esMiembro")
     @Mapping(target = "esCreador",   source = "esCreador")
-    ComunidadDTO toDTO(Comunidad comunidad, AutorResumenDTO creador, String categoria, long totalMiembros, boolean esMiembro, boolean esCreador);
+    @Mapping(target = "miRol",       source = "miRol")
+    ComunidadDTO toDTO(Comunidad comunidad, AutorResumenDTO creador, String categoria, long totalMiembros, boolean esMiembro, boolean esCreador, RolComunidad miRol);
 
 }

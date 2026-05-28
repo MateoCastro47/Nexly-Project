@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -54,4 +55,14 @@ public interface PublicacionRepository extends JpaRepository<Publicacion, Long> 
     @Query("SELECT p FROM Publicacion p WHERE p.comunidad.id = :comunidadId " +
            "ORDER BY p.fijada DESC, p.fechaCreacion DESC")
     Page<Publicacion> findByComunidadId(@Param("comunidadId") Long comunidadId, Pageable pageable);
+
+        // Al borrar una comunidad, sus publicaciones se conservan como publicaciones de feed
+    @Modifying
+    @Query("UPDATE Publicacion p SET p.comunidad = null WHERE p.comunidad.id = :comunidadId")
+    void desvincularDeComunidad(@Param("comunidadId") Long comunidadId);
+
+    // Conteo de publicaciones agrupadas por tipo (gráfico del dashboard)
+    @Query("SELECT p.tipoPost, COUNT(p) FROM Publicacion p GROUP BY p.tipoPost")
+    List<Object[]> contarPorTipo();
+
 }

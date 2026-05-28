@@ -13,6 +13,7 @@ export interface Usuario {
   activo: boolean
   rol: string
   onboardingCompletado: boolean
+  perfilPrivado?: boolean
 }
 
 export type TipoPost = 'NORMAL' | 'PREGUNTA' | 'NOTICIA' | 'DEBATE' | 'ANUNCIO'
@@ -57,56 +58,57 @@ export interface Comentario {
 
 export interface Notificacion {
   id: number
-  tipo: 'NUEVO_SEGUIDOR' | 'NUEVA_REACCION_PUBLICACION' | 'NUEVO_COMENTARIO' | 'NUEVO_MENSAJE'
-  contenido: string
+  tipo:
+    | 'NUEVO_SEGUIDOR'
+    | 'NUEVA_REACCION_PUBLICACION'
+    | 'NUEVO_COMENTARIO'
+    | 'NUEVA_REACCION_COMENTARIO'
+    | 'NUEVO_MENSAJE'
+    | 'NUEVA_SOLICITUD_SEGUIMIENTO'
   leida: boolean
   fechaCreacion: string
   emisorId?: number
-  emisorNombre?: string
-  emisorFoto?: string
-  referenciaId?: number
+  emisorUsername?: string
+  emisorFotoPerfil?: string
+  entidadId?: number
 }
 
-export interface Conversacion {
-  id: number
-  esGrupo: boolean
-  nombre?: string
-  participantes: Usuario[]
-  ultimoMensaje?: Mensaje
-  noLeidos: number
-}
-
-export interface Mensaje {
-  id: number
-  contenido: string
-  emisorId: number
-  emisorNombre: string
-  emisorFoto?: string
-  conversacionId: number
-  fechaEnvio: string
-  leido: boolean
-}
-
-export interface Comunidad {
-  id: number
-  nombre: string
-  descripcion?: string
-  imagenUrl?: string
-  portadaUrl?: string
-  totalMiembros: number
-  esPublica: boolean
-  miRol?: 'ADMIN' | 'MODERADOR' | 'MIEMBRO'
-  esMiembro: boolean
-  silenciada?: boolean
-}
-
-export interface MiembroComunidad {
-  usuarioId: number
-  nombreCompleto: string
+export interface SolicitudSeguimiento {
+  seguidorId: number
   nombreUsuario: string
+  nombreCompleto: string
   fotoPerfil?: string
-  rol: 'ADMIN' | 'MODERADOR' | 'MIEMBRO'
-  estado: 'ACTIVO' | 'PENDIENTE' | 'BANEADO'
+  fecha: string
+}
+
+export interface ParticipanteConversacion{
+  id: number;
+  username: string;
+  fotoPerfil?: string;
+
+}
+
+export interface Conversacion{
+  id: number;
+  nombre?: string;
+  foto?: string;
+  esGrupal: boolean;
+  ultimoMensaje?: string;
+  ultimoMensajePreview?: string;
+  noLeidos: number;
+  participantes: ParticipanteConversacion[];
+}
+
+export interface Mensaje{
+  id: number;
+  conversacionId: number;
+  autorId: number;
+  autorUsername:string;
+  autorFoto?: string;
+  contenido: string;
+  fechaEnvia: string;
+  pendiente?: boolean;
+  error?: boolean;
 }
 
 export type TipoReaccion = 'ME_GUSTA' | 'ME_ENCANTA' | 'DIVERTIDO' | 'SORPRENDIDO' | 'TRISTE' | 'ENOJADO'
@@ -123,3 +125,36 @@ export interface Page<T> {
   number: number
   last: boolean
 }
+
+export type RolComunidad = 'ADMIN' | 'MOD' | 'MIEMBRO'
+
+export interface AutorResumen {
+  id: number
+  nombreCompleto: string
+  nombreUsuario: string
+  fotoPerfil?: string
+}
+
+export interface Comunidad {
+  id: number
+  nombre: string
+  descripcion?: string
+  reglas?: string
+  foto?: string
+  esPublica: boolean
+  creador?: AutorResumen
+  categoria?: string
+  totalMiembros: number
+  esMiembro: boolean
+  esCreador: boolean
+  miRol?: RolComunidad
+}
+
+export interface MiembroComunidad {
+  usuarioId: number
+  nombreUsuario: string
+  fotoPerfil?: string
+  rol: RolComunidad
+  fechaUnion: string
+}
+

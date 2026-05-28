@@ -185,7 +185,11 @@ public class ComunidadService {
         long totalMiembros = comunidadRepository.countMiembros(c.getId());
         boolean esMiembro = viewerId != null && miembroComunidadRepository.existsByComunidadIdAndUsuarioId(c.getId(), viewerId);
         boolean esCreador = viewerId != null && c.getCreador().getId().equals(viewerId);
-        return comunidadMapper.toDTO(c, creador, categoria, totalMiembros, esMiembro, esCreador);
+        RolComunidad miRol = viewerId == null ? null
+            : miembroComunidadRepository.findByComunidadIdAndUsuarioId(c.getId(), viewerId)
+                .map(MiembroComunidad::getRol)
+                .orElse(null);
+        return comunidadMapper.toDTO(c, creador, categoria, totalMiembros, esMiembro, esCreador, miRol);
     }
     
     private MiembroDTO toMiembroDTO(MiembroComunidad m) {

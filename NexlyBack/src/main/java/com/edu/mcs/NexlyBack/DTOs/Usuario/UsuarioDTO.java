@@ -12,8 +12,10 @@ public class UsuarioDTO {
     private long seguidores;
     private long seguidos;
     private long publicaciones;
-
+    private String rol;
+    private boolean activo;
     private boolean onboardingCompletado;
+    private boolean perfilPrivado;
 
     // Estado relacional respecto al usuario autenticado
     private boolean teSigue;
@@ -152,4 +154,33 @@ public class UsuarioDTO {
     public void setOnboardingCompletado(boolean onboardingCompletado) {
         this.onboardingCompletado = onboardingCompletado;
     }
+
+
+    public String getRol() {
+        return rol;
+    }
+
+
+    public void setRol(String rol) {
+        this.rol = rol;
+    }
+
+
+    public boolean isActivo() {
+        return activo;
+    }
+
+
+    public void setActivo(boolean activo) {
+        this.activo = activo;
+    }
+
+    public boolean isPerfilPrivado() {
+        return perfilPrivado;
+    }
+
+    public void setPerfilPrivado(boolean perfilPrivado) {
+        this.perfilPrivado = perfilPrivado;
+    }
+
 }

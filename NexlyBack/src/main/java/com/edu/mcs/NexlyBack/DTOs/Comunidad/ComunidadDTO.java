@@ -1,6 +1,7 @@
 package com.edu.mcs.NexlyBack.DTOs.Comunidad;
 
 import com.edu.mcs.NexlyBack.DTOs.Publicacion.AutorResumenDTO;
+import com.edu.mcs.NexlyBack.models.Enums.RolComunidad;
 
 public record ComunidadDTO(
     Long id,
@@ -13,5 +14,6 @@ public record ComunidadDTO(
     String categoria,
     Long totalMiembros,
     boolean esMiembro,
-    boolean esCreador
+    boolean esCreador,
+    RolComunidad miRol
 ){}

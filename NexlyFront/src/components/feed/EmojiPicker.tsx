@@ -37,7 +37,7 @@ export default function EmojiPicker({ onSelect, onClose }: Props) {
       className="absolute top-full left-0 mt-2 w-[320px] rounded-3xl overflow-hidden z-50"
       style={{
         background: 'var(--color-surface)',
-        border: '1px solid color-mix(in oklch, var(--color-border), var(--color-brand) 12%)',
+        border: '1px solid color-mix(in oklch, var(--color-border), var(--color-accent-1) 12%)',
         boxShadow: 'var(--shadow-card-hover)',
         animation: 'scaleIn 0.2s cubic-bezier(0.19, 1, 0.22, 1)',
         transformOrigin: 'top left'
@@ -81,8 +81,8 @@ export default function EmojiPicker({ onSelect, onClose }: Props) {
               onClick={() => setTab(cat)}
               className="flex-1 py-2 text-base transition-all rounded-xl mx-0.5"
               style={{
-                background: tab === cat ? 'var(--color-brand-tint)' : 'transparent',
-                color: tab === cat ? 'var(--color-brand)' : 'inherit',
+                background: tab === cat ? 'var(--color-accent-1-tint)' : 'transparent',
+                color: tab === cat ? 'var(--color-accent-1)' : 'inherit',
                 transform: tab === cat ? 'scale(1.05)' : 'scale(1)',
               }}
             >
@@ -97,11 +97,11 @@ export default function EmojiPicker({ onSelect, onClose }: Props) {
         {visible.length > 0 ? visible.map((emoji, i) => (
           <button
             key={i}
-            onClick={() => { onSelect(emoji) }}
+            onClick={() => { onSelect(emoji); onClose() }}
             className="text-2xl p-2 rounded-2xl leading-none transition-all aspect-square flex items-center justify-center"
             style={{ background: 'transparent' }}
             onMouseEnter={(e) => {
-              (e.currentTarget as HTMLElement).style.background = 'var(--color-brand-tint)';
+              (e.currentTarget as HTMLElement).style.background = 'var(--color-accent-1-tint)';
               (e.currentTarget as HTMLElement).style.transform = 'scale(1.15) translateY(-2px)';
             }}
             onMouseLeave={(e) => {

@@ -13,3 +13,9 @@ export const register = (data: {
 }) => client.post<Usuario>('/auth/register', data)
 
 export const logout = () => client.post('/auth/logout')
+
+export const verificarEmail = (token: string) =>
+  client.post<{ mensaje: string }>('/auth/verificar', { token })
+
+export const reenviarVerificacion = (email: string) =>
+  client.post<{ mensaje: string }>('/auth/reenviar-verificacion', { email })

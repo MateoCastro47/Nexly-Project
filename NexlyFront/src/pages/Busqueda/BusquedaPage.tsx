@@ -28,25 +28,21 @@ export default function BusquedaPage() {
   return (
     <div>
       {/* Header */}
-      <div className="sticky top-0 z-10 px-1 py-4"
-        style={{ background: 'var(--color-surface)', borderBottom: '1px solid var(--color-border)' }}>
-        <h1 className="text-xl font-bold mb-3"
+      <div className="page-header -mx-5 -mt-6 px-5 pt-5 pb-3">
+        <p className="text-xs font-semibold uppercase tracking-wide mb-0.5" style={{ color: 'var(--color-muted)' }}>
+          Búsqueda
+        </p>
+        <h1 className="text-xl font-bold mb-3 truncate"
           style={{ fontFamily: 'var(--font-display)', color: 'var(--color-text)' }}>
-          Resultados para "{q}"
+          Resultados para “{q}”
         </h1>
         {/* Tabs */}
         <div className="flex gap-1">
           {(['personas', 'comunidades'] as Tab[]).map((t) => (
             <button key={t} onClick={() => setTab(t)}
-              className="px-4 py-2 rounded-xl text-sm font-semibold capitalize transition-colors"
-              style={tab === t ? {
-                background: 'var(--color-accent-1)',
-                color: 'white',
-              } : {
-                color: 'var(--color-muted)',
-              }}>
+              className={`tab-pill capitalize ${tab === t ? 'tab-pill-active' : ''}`}>
               {t}
-              <span className="ml-1.5 text-xs opacity-70">
+              <span className="text-xs opacity-70">
                 {t === 'personas' ? usuarios.length : comunidades.length}
               </span>
             </button>
@@ -56,7 +52,7 @@ export default function BusquedaPage() {
 
       {/* Resultados */}
       <div className="mt-4 rounded-2xl overflow-hidden"
-        style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+        style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-sm)' }}>
         {loading ? (
           // 6 skeletons
           <div className="flex flex-col gap-3 p-5">
@@ -76,19 +72,20 @@ export default function BusquedaPage() {
               Sin personas para "{q}"
             </p>
           ) : (
-            usuarios.map((u) => (
+            usuarios.map((u, i) => (
               <button key={u.id}
                 onClick={() => navigate(`/perfil/${u.nombreUsuario}`)}
-                className="w-full flex items-center gap-3 px-5 py-4 text-left transition-colors"
-                style={{ borderBottom: '1px solid var(--color-border)' }}
+                className="row-enter w-full flex items-center gap-3 px-5 py-4 text-left transition-colors"
+                style={{ borderBottom: '1px solid var(--color-border)', animationDelay: `${i * 0.04}s` }}
                 onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--color-surface-2)')}
                 onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
               >
                 {u.fotoPerfil ? (
-                  <img src={u.fotoPerfil} className="w-10 h-10 rounded-full object-cover shrink-0" alt="" />
+                  <img src={u.fotoPerfil} className="w-11 h-11 rounded-full object-cover shrink-0"
+                    style={{ boxShadow: 'var(--shadow-xs)' }} alt="" />
                 ) : (
-                  <div className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold shrink-0"
-                    style={{ background: 'var(--color-accent-1-dark)' }}>
+                  <div className="w-11 h-11 rounded-full flex items-center justify-center text-white text-sm font-bold shrink-0"
+                    style={{ background: 'var(--gradient-brand)' }}>
                     {u.nombreCompleto[0].toUpperCase()}
                   </div>
                 )}
@@ -99,7 +96,8 @@ export default function BusquedaPage() {
                     <p className="text-xs mt-0.5 truncate" style={{ color: 'var(--color-muted)' }}>{u.biografia}</p>
                   )}
                 </div>
-                <span className="text-xs shrink-0" style={{ color: 'var(--color-muted)' }}>
+                <span className="text-xs font-semibold shrink-0 px-2.5 py-1 rounded-full"
+                  style={{ color: 'var(--color-text-2)', background: 'var(--color-surface-3)' }}>
                   {u.seguidores} seguidores
                 </span>
               </button>
@@ -111,18 +109,19 @@ export default function BusquedaPage() {
               Sin comunidades para "{q}"
             </p>
           ) : (
-            comunidades.map((c) => (
+            comunidades.map((c, i) => (
               <button key={c.id}
                 onClick={() => navigate(`/comunidades/${c.id}`)}
-                className="w-full flex items-center gap-3 px-5 py-4 text-left transition-colors"
-                style={{ borderBottom: '1px solid var(--color-border)' }}
+                className="row-enter w-full flex items-center gap-3 px-5 py-4 text-left transition-colors"
+                style={{ borderBottom: '1px solid var(--color-border)', animationDelay: `${i * 0.04}s` }}
                 onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--color-surface-2)')}
                 onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
               >
-                {c.imagenUrl ? (
-                  <img src={c.imagenUrl} className="w-10 h-10 rounded-xl object-cover shrink-0" alt="" />
+                {c.foto ? (
+                  <img src={c.foto} className="w-11 h-11 rounded-xl object-cover shrink-0"
+                    style={{ boxShadow: 'var(--shadow-xs)' }} alt="" />
                 ) : (
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm font-bold shrink-0"
+                  <div className="w-11 h-11 rounded-xl flex items-center justify-center text-white text-sm font-bold shrink-0"
                     style={{ background: 'var(--gradient-brand)' }}>
                     {c.nombre[0].toUpperCase()}
                   </div>

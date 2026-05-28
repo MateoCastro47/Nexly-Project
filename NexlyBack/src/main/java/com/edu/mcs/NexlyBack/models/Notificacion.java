@@ -21,7 +21,7 @@ public class Notificacion {
     private Usuario emisor;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, length = 64)
     private TipoNotificacion tipo;
 
     // ID de la entidad relacionada (publicacion, comentario, conversacion...)

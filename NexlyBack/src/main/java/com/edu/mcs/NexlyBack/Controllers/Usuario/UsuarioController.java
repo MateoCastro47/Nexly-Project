@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.edu.mcs.NexlyBack.DTOs.Usuario.ActualizarPerfilRequest;
+import com.edu.mcs.NexlyBack.DTOs.Usuario.SolicitudSeguimientoDTO;
 import com.edu.mcs.NexlyBack.DTOs.Usuario.UsuarioDTO;
 import com.edu.mcs.NexlyBack.Services.Usuario.UsuarioService;
 
@@ -62,7 +63,12 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.getSugerencias(userId(auth), limit));
     }
     
-     @PutMapping("/perfil")
+    @GetMapping("/me/solicitudes-seguimiento")
+    public ResponseEntity<List<SolicitudSeguimientoDTO>> listarSolicitudes(Authentication auth){
+        return ResponseEntity.ok(usuarioService.listarSolicitudesPendientes(userId(auth)));
+    }
+    
+    @PutMapping("/perfil")
     public ResponseEntity<UsuarioDTO> actualizarPerfil(@Valid @RequestBody ActualizarPerfilRequest req,
                                                         Authentication auth) {
         return ResponseEntity.ok(usuarioService.actualizarPerfil(userId(auth), req));
@@ -73,7 +79,18 @@ public class UsuarioController {
         usuarioService.seguir(userId(auth), id);
         return ResponseEntity.noContent().build();
     }
+    
+    @PostMapping("/me/solicitudes-seguimiento/{seguidorId}/aceptar")
+    public ResponseEntity<Void> aceptarSolicitud(@PathVariable Long seguidorId, Authentication auth) {
+        usuarioService.aceptarSolicitud(userId(auth), seguidorId);
+        return ResponseEntity.noContent().build();
+    }
 
+    @DeleteMapping("/me/solicitudes-seguimiento/{seguidorId}")
+    public ResponseEntity<Void> rechazarSolicitud(@PathVariable Long seguidorId, Authentication auth) {
+        usuarioService.rechazarSolicitud(userId(auth), seguidorId);
+        return ResponseEntity.noContent().build();
+    }
     @DeleteMapping("/{id}/seguir")
     public ResponseEntity<Void> dejarDeSeguir(@PathVariable Long id, Authentication auth) {
         usuarioService.dejarDeSeguir(userId(auth), id);

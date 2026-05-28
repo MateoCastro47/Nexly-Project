@@ -27,9 +27,17 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             throw new UsernameNotFoundException("Esta cuenta usa inicio de sesión con Google");
         }
 
+        boolean emailVerificado = Boolean.TRUE.equals(u.getEmailVerificado());
+
+        // enabled = email verificado: si es false, DaoAuthenticationProvider
+        // lanza DisabledException y el login se bloquea hasta confirmar el correo.
         return new User(
             u.getId().toString(),
             u.getContrasenaHash(),
+            emailVerificado,   // enabled
+            true,              // accountNonExpired
+            true,              // credentialsNonExpired
+            true,              // accountNonLocked
             List.of(new SimpleGrantedAuthority("ROLE_" + u.getRol().name()))
         );
     }

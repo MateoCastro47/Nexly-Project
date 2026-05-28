@@ -57,6 +57,10 @@ public class OAuth2UsuarioService extends DefaultOAuth2UserService{
             u.setProveedorOAuth(proveedor);
             u.setOauthId(oauthId);
         }
+        // Google ya garantiza la propiedad del correo: lo damos por verificado.
+        if (!Boolean.TRUE.equals(u.getEmailVerificado())) {
+            u.setEmailVerificado(true);
+        }
         return usuarioRepository.save(u);
     }
 
@@ -69,6 +73,7 @@ public class OAuth2UsuarioService extends DefaultOAuth2UserService{
         u.setFotoPerfil(fotoPerfil);
         u.setProveedorOAuth(proveedor);
         u.setOauthId(oauthId);
+        u.setEmailVerificado(true); // verificado por Google
         return usuarioRepository.save(u);
     }
 
