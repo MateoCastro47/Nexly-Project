@@ -83,13 +83,15 @@ public class NotificacionService {
 
         // push del navegador (asíncrono, no bloquea)
         String nombreEmisor = emisor != null ? emisor.getNombreUsuario() : "Alguien";
+        String nombreDest = destinatario.getNombreUsuario();
         webPushService.enviar(
                 destinatarioId,
                 tituloPara(tipo, nombreEmisor),
                 cuerpoPara(tipo, nombreEmisor),
-                urlPara(tipo, entidadId, nombreEmisor)
+                urlPara(tipo, entidadId, nombreEmisor, nombreDest)
         );
     }
+
 
     private String tituloPara(TipoNotificacion tipo, String emisor) {
         return switch (tipo) {
@@ -98,6 +100,7 @@ public class NotificacionService {
             case NUEVO_COMENTARIO            -> "Nuevo comentario";
             case NUEVA_REACCION_COMENTARIO   -> "Nueva reaccion en tu comentario";
             case NUEVO_MENSAJE               -> "Mensaje de " + emisor;
+            case NUEVA_SOLICITUD_SEGUIMIENTO -> "Nueva solicitud de seguimiento";   // ⬅
         };
     }
 
@@ -108,18 +111,19 @@ public class NotificacionService {
             case NUEVO_COMENTARIO            -> "@" + emisor + " comento tu publicacion";
             case NUEVA_REACCION_COMENTARIO   -> "@" + emisor + " reacciono a tu comentario";
             case NUEVO_MENSAJE               -> "Tienes un mensaje nuevo";
+            case NUEVA_SOLICITUD_SEGUIMIENTO -> "@" + emisor + " quiere seguirte";   // ⬅
         };
     }
 
-    // Rutas reales del front (Router.tsx): no hay página de post individual,
-    // y el chat no recibe id por URL. Caemos en /notificaciones o /chat.
-    private String urlPara(TipoNotificacion tipo, Long entidadId, String emisor) {
+    private String urlPara(TipoNotificacion tipo, Long entidadId, String emisor, String destinatario) {
         return switch (tipo) {
             case NUEVO_SEGUIDOR              -> "/perfil/" + emisor;
             case NUEVA_REACCION_PUBLICACION,
-                 NUEVO_COMENTARIO,
-                 NUEVA_REACCION_COMENTARIO   -> "/notificaciones";
+                NUEVO_COMENTARIO,
+                NUEVA_REACCION_COMENTARIO   -> "/notificaciones";
             case NUEVO_MENSAJE               -> "/chat";
+            case NUEVA_SOLICITUD_SEGUIMIENTO -> "/perfil/" + destinatario + "?tab=solicitudes";   // ⬅
         };
     }
+
 }

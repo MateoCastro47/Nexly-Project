@@ -13,6 +13,7 @@ export interface Usuario {
   activo: boolean
   rol: string
   onboardingCompletado: boolean
+  perfilPrivado?: boolean
 }
 
 export type TipoPost = 'NORMAL' | 'PREGUNTA' | 'NOTICIA' | 'DEBATE' | 'ANUNCIO'
@@ -57,14 +58,27 @@ export interface Comentario {
 
 export interface Notificacion {
   id: number
-  tipo: 'NUEVO_SEGUIDOR' | 'NUEVA_REACCION_PUBLICACION' | 'NUEVO_COMENTARIO' | 'NUEVO_MENSAJE'
-  contenido: string
+  tipo:
+    | 'NUEVO_SEGUIDOR'
+    | 'NUEVA_REACCION_PUBLICACION'
+    | 'NUEVO_COMENTARIO'
+    | 'NUEVA_REACCION_COMENTARIO'
+    | 'NUEVO_MENSAJE'
+    | 'NUEVA_SOLICITUD_SEGUIMIENTO'
   leida: boolean
   fechaCreacion: string
   emisorId?: number
-  emisorNombre?: string
-  emisorFoto?: string
-  referenciaId?: number
+  emisorUsername?: string
+  emisorFotoPerfil?: string
+  entidadId?: number
+}
+
+export interface SolicitudSeguimiento {
+  seguidorId: number
+  nombreUsuario: string
+  nombreCompleto: string
+  fotoPerfil?: string
+  fecha: string
 }
 
 export interface ParticipanteConversacion{

@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.edu.mcs.NexlyBack.DTOs.Auth.RegisterRequest;
 import com.edu.mcs.NexlyBack.DTOs.Usuario.ActualizarPerfilRequest;
+import com.edu.mcs.NexlyBack.DTOs.Usuario.SolicitudSeguimientoDTO;
 import com.edu.mcs.NexlyBack.DTOs.Usuario.UsuarioDTO;
 import com.edu.mcs.NexlyBack.Mappers.UsuarioMapper;
 import com.edu.mcs.NexlyBack.Repositories.Comunidad.ComunidadRepository;
@@ -146,9 +147,10 @@ public class UsuarioService {
 
         if (estado == EstadoSeguimiento.ACEPTADA) {
             notificacionService.emitir(seguidoId, seguidorId, TipoNotificacion.NUEVO_SEGUIDOR, null);
+        }else{
+            notificacionService.emitir(seguidoId, seguidorId, TipoNotificacion.NUEVA_SOLICITUD_SEGUIMIENTO, seguidorId);
         }
     }
-
     @Transactional
     public void dejarDeSeguir(Long seguidorId, Long seguidoId) {
         seguimientoRepository.deleteBySeguidorIdAndSeguidoId(seguidorId, seguidoId);
@@ -218,5 +220,50 @@ public class UsuarioService {
                 !esElMismo && usuarioRepository.bloqueaA(viewerId, targetId),
                 !esElMismo && usuarioRepository.bloqueaA(targetId, viewerId)
         );
+    }
+
+    public List<SolicitudSeguimientoDTO> listarSolicitudesPendientes(Long miId){
+        return seguimientoRepository.findSolicitudesPendientes(miId).stream()
+        .map(s -> {
+            Usuario u = s.getSeguidor();
+            return new SolicitudSeguimientoDTO(
+                u.getId(),
+                u.getNombreUsuario(),
+                u.getNombreCompleto(),
+                u.getFotoPerfil(),
+                s.getFecha()
+            );
+        })
+        .toList();
+    }
+
+    @Transactional
+    public void aceptarSolicitud(Long miId, Long seguidorId){
+        Seguimiento s = seguimientoRepository.findBySeguidorIdAndSeguidoId(seguidorId, miId).orElseThrow(() -> new NoSuchElementException("Solicitud no encontrada"));
+
+        if (!s.getSeguido().getId().equals(miId)) {
+            throw new IllegalArgumentException("No puedes aceptar esta solicitud");
+        }
+        if (s.getEstado() != EstadoSeguimiento.PENDIENTE) {
+            return;
+        }
+
+        s.setEstado(EstadoSeguimiento.ACEPTADA);
+        notificacionService.emitir(seguidorId, miId, TipoNotificacion.NUEVO_SEGUIDOR, null);
+    }
+
+    @Transactional
+    public void rechazarSolicitud(Long miId, Long seguidorId){
+        Seguimiento s = seguimientoRepository.findBySeguidorIdAndSeguidoId(seguidorId, miId).orElse(null);
+        if (s == null) {
+            return;
+        }
+        if (!s.getSeguido().getId().equals(miId)) {
+            throw new IllegalArgumentException("No puedes rechazar esta solicitud");
+        }
+        if (s.getEstado() != EstadoSeguimiento.PENDIENTE) {
+            return;
+        }
+        seguimientoRepository.deleteBySeguidorIdAndSeguidoId(seguidorId, miId);
     }
 }
