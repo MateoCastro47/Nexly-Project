@@ -31,28 +31,41 @@ export default function ComunidadesPage(){
 
     return (
         <div className="flex flex-col gap-5">
-            <div className="sticky top-0 z-10 px-1 py-4 flex flex-col gap-3" style={{ background: 'var(--color-surface)', borderBottom: '1px solid var(--color-border)' }}>
+            <div className="page-header -mx-5 -mt-6 px-5 pt-5 pb-3 flex flex-col gap-3">
                 <div className="flex items-center justify-between gap-3">
                     <h1 className="text-xl font-bold" style={{ fontFamily: 'var(--font-display)', color: 'var(--color-text)' }}>Comunidades</h1>
-                    <button onClick={() => setCreando(true)} className="px-4 py-2 text-sm font-semibold rounded-full text-white" style={{background: 'var(--gradient-brand)' }}>+ Crear</button>
+                    <button
+                        onClick={() => setCreando(true)}
+                        className="flex items-center gap-1.5 px-4 py-2 text-sm font-semibold rounded-full text-white transition-transform active:scale-95"
+                        style={{ background: 'var(--gradient-brand)', boxShadow: 'var(--shadow-glow-1)' }}
+                    >
+                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                            <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                        Crear
+                    </button>
                 </div>
-                <form onSubmit={(e) => { e.preventDefault(); onBuscar() }}>
+                <form onSubmit={(e) => { e.preventDefault(); onBuscar() }} className="relative">
+                    <span className="absolute inset-y-0 left-3 flex items-center pointer-events-none" style={{ color: 'var(--color-muted)' }}>
+                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+                        </svg>
+                    </span>
                     <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar comunidades..."
-                    className="w-full px-4 py-2 rounded-xl text-sm outline-none"
-                    style={{background: 'var(--color-surface-2)', border: '1px solid var(--color-border)', color: 'var(--color-text)' }}/>
+                        className="input w-full rounded-xl pl-10 pr-4 py-2.5 text-sm" />
                 </form>
             </div>
 
             {loadingLista && lista.length === 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     {[...Array(6)].map((_, i) =>(
-                        <div key={i} className="rounded-2xl p-4 animate-pulse" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
-                            <div className="flex items-center gap-3">
-                                <div className="w-12 h-12 rounded-xl shrink-0" style={{ background: 'var(--color-border)' }}/>
-                                <div className="flex-1 flex flex-col gap-2">
-                                    <div className="h-3 rounded-full w-1/2" style={{ background: 'var(--color-border)'}}></div>
-                                    <div className="h-2 rounded-full w-1/2" style={{ background: 'var(--color-border)'}}></div>
-                                </div>
+                        <div key={i} className="rounded-2xl overflow-hidden" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+                            <div className="skeleton h-14 w-full rounded-none" />
+                            <div className="px-4 pb-4">
+                                <div className="skeleton w-14 h-14 rounded-2xl -mt-7 mb-3" style={{ border: '3px solid var(--color-surface)' }} />
+                                <div className="skeleton h-3 rounded-full w-1/2 mb-2" />
+                                <div className="skeleton h-2 rounded-full w-2/3 mb-2" />
+                                <div className="skeleton h-2 rounded-full w-full" />
                             </div>
                         </div>
                     ))}
@@ -73,7 +86,7 @@ export default function ComunidadesPage(){
             ) : (
                 <>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {lista.map((c) => <ComunidadCard key={c.id} comunidad={c} />)}
+                    {lista.map((c, i) => <ComunidadCard key={c.id} comunidad={c} index={i} />)}
                 </div>
                 {hayMas && <div ref={sentinelRef} className="h-4" />}
                 {loadingLista && lista.length > 0 && <p className="text-center text-sm" style={{ color: 'var(--color-muted)' }}>Cargando…</p>}

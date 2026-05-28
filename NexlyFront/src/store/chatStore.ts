@@ -28,7 +28,7 @@ interface ChatStore {
   loadingConversaciones: boolean
 
   cargarConversaciones: () => Promise<void>
-  seleccionar: (id: number) => Promise<void>
+  seleccionar: (id: number | null) => Promise<void>
   cargarMas: (id: number) => Promise<void>
   enviar: (id: number, contenido: string) => Promise<void>
   reintentarEnvio: (msg: Mensaje) => void
@@ -79,8 +79,13 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 
   seleccionar: async (id) => {
     set({ activaId: id })
+    if (id === null) return
     const estado = get().porConversacion[id]
-    if (estado?.cargado) return
+    if (estado?.cargado) {
+       // marcar lectura si ya estaba cargado
+       marcarLeidos(id).catch(console.error)
+       return
+    }
 
     set((s) => ({
       porConversacion: {

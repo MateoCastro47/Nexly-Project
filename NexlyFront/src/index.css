@@ -20,6 +20,13 @@
   --color-accent-2-light: oklch(0.92 0.04 32);
   --color-accent-2-tint:  oklch(0.97 0.015 32);
 
+  /* ── Alias de marca (compat: muchas vistas usan --color-brand) ── */
+  --color-brand:       var(--color-accent-1);
+  --color-brand-dark:  var(--color-accent-1-dark);
+  --color-brand-hover: var(--color-accent-1-hover);
+  --color-brand-light: var(--color-accent-1-light);
+  --color-brand-tint:  var(--color-accent-1-tint);
+
   /* ── Brand gradient ── */
   --gradient-brand:       linear-gradient(135deg, oklch(0.50 0.22 275), oklch(0.64 0.16 32));
   --gradient-brand-soft:  linear-gradient(135deg, oklch(0.90 0.06 275), oklch(0.92 0.04 32));
@@ -503,5 +510,73 @@
     font-weight: 600;
     box-shadow: var(--shadow-md);
     animation: scaleIn 0.15s ease-out;
+  }
+
+  /* ── Cabecera de página: sticky + glass ── */
+  .page-header {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-sticky);
+    background: color-mix(in oklch, var(--color-surface) 82%, transparent);
+    backdrop-filter: blur(14px) saturate(1.5);
+    -webkit-backdrop-filter: blur(14px) saturate(1.5);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  /* ── Tab tipo pill (búsqueda, filtros) ── */
+  .tab-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 16px;
+    border-radius: var(--radius-full);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-muted);
+    background: transparent;
+    transition: background var(--transition-fast), color var(--transition-fast);
+
+    &:hover:not(.tab-pill-active) {
+      background: var(--color-surface-2);
+      color: var(--color-text);
+    }
+
+    &.tab-pill-active {
+      background: var(--color-accent-1);
+      color: white;
+      box-shadow: var(--shadow-glow-1);
+    }
+  }
+
+  /* ── Fila de lista con entrada escalonada ── */
+  .row-enter {
+    animation: fadeInUp 0.4s cubic-bezier(0.19, 1, 0.22, 1) both;
+  }
+
+  /* ── Tab subrayado (perfil, comunidad, chat) ── */
+  .tab-underline {
+    flex: 1;
+    padding: 12px 0;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-muted);
+    position: relative;
+    transition: color var(--transition-fast);
+
+    &:hover { color: var(--color-text); }
+
+    &.tab-underline-active { color: var(--color-accent-1); }
+
+    &.tab-underline-active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      height: 2px;
+      width: 75%;
+      border-radius: var(--radius-full);
+      background: var(--gradient-brand);
+    }
   }
 }

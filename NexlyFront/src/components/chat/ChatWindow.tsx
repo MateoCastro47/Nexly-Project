@@ -50,13 +50,21 @@ export default function ChatWindow() {
 
     if (activaId == null) {
         return (
-            <div className="flex-1 flex flex-col items-center justify-center gap-3" style={{ color: 'var(--color-muted)' }}>
-                <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ background: 'var(--color-surface-2)' }}>
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <div className="hidden lg:flex flex-1 flex-col items-center justify-center gap-3" style={{ color: 'var(--color-muted)' }}>
+                <div
+                    className="w-16 h-16 rounded-2xl flex items-center justify-center"
+                    style={{
+                        background: 'var(--gradient-brand-soft)',
+                        border: '1px solid color-mix(in oklch, var(--color-border), var(--color-accent-1) 18%)',
+                        boxShadow: '0 4px 16px oklch(0.50 0.22 275 / 0.12)',
+                        color: 'var(--color-accent-1)',
+                    }}
+                >
+                    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75">
                         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                     </svg>
                 </div>
-                <p className="text-sm">Selecciona una conversación para comenzar</p>
+                <p className="text-sm font-medium">Selecciona una conversación para comenzar</p>
             </div>
         )
     }
@@ -79,8 +87,16 @@ export default function ChatWindow() {
     )
 
     return (
-        <div className="flex-1 flex flex-col overflow-hidden">
-            <div className="px-5 py-3 flex items-center gap-3 shrink-0" style={{ borderBottom: '1px solid var(--color-border)' }}>
+        <div className={`flex-1 flex flex-col overflow-hidden ${!activaId ? 'hidden lg:flex' : 'flex'}`}>
+            <div className="px-5 py-3 flex items-center gap-3 shrink-0" style={{ borderBottom: '1px solid var(--color-border)', background: 'var(--color-surface)', boxShadow: 'var(--shadow-xs)' }}>
+                <button 
+                  className="lg:hidden p-1 mr-1 rounded-full text-[var(--color-accent-1)] hover:bg-[var(--color-accent-1-tint)]"
+                  onClick={() => useChatStore.getState().seleccionar(null)}
+                >
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M15 18l-6-6 6-6" />
+                  </svg>
+                </button>
                 {otro ? (
                     <Link to={`/perfil/${otro.username}`} className="flex items-center gap-3 hover:opacity-80">
                         {cabecera}

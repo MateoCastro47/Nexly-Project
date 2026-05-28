@@ -46,7 +46,7 @@ export default function EditarPerfilModal({ usuario, onClose }: Props){
         if(!file) return
         setSubiendoPortada(true)
         try{
-            const url = await uploadImagen(file, 'portada')
+            const url = await uploadImagen(file, 'portadas')
             setFotoPortada(url)
         } catch{
             setError('No se pudo subir la portada')

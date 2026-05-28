@@ -21,7 +21,7 @@ export default function ConversacionItem({ conversacion, activa, onClick }: Prop
         <button
             onClick={onClick}
             className="w-full flex items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-(--color-surface-2)"
-            style={activa ? { background: 'var(--color-accent-1-tint)' } : undefined}
+            style={activa ? { background: 'var(--color-accent-1-tint)', boxShadow: 'inset 3px 0 0 var(--color-accent-1)' } : undefined}
         >
             <div className="relative shrink-0">
                 {foto ? (

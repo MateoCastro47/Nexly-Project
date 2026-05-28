@@ -41,10 +41,10 @@ export default function MensajeBurbuja({ mensaje, esMio }: Props) {
                     </Link>
                 )}
                 <div
-                    className="px-3 py-2 rounded-2xl text-sm wrap-break-word"
+                    className="px-3.5 py-2 rounded-2xl text-sm wrap-break-word"
                     style={esMio
-                        ? { background: 'var(--color-accent-1)', color: '#fff', borderTopRightRadius: 4, opacity: mensaje.pendiente ? 0.6 : 1 }
-                        : { background: 'var(--color-surface-2)', color: 'var(--color-text)', border: '1px solid var(--color-border)', borderTopLeftRadius: 4 }}
+                        ? { background: 'var(--gradient-brand)', color: '#fff', borderTopRightRadius: 4, opacity: mensaje.pendiente ? 0.6 : 1, boxShadow: 'var(--shadow-sm)' }
+                        : { background: 'var(--color-surface)', color: 'var(--color-text)', border: '1px solid var(--color-border)', borderTopLeftRadius: 4, boxShadow: 'var(--shadow-xs)' }}
                 >
                     {mensaje.contenido}
                 </div>

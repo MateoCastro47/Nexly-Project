@@ -20,11 +20,11 @@ export default function AppLayout() {
   }, [])
 
   return (
-    <div className="flex min-h-screen app-bg">
+    <div className="flex flex-col lg:flex-row min-h-screen app-bg pb-16 lg:pb-0">
       <Sidebar />
 
       {/* Columna central */}
-      <main className={`flex-1 mx-auto px-5 py-6 ${esChat ? '' : 'max-w-180'}`}>
+      <main className={`flex-1 mx-auto px-5 py-6 ${esChat ? '' : 'max-w-180'} mb-auto`}>
         <Outlet />
       </main>
 

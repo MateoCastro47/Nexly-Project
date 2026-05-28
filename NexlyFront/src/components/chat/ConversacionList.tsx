@@ -11,9 +11,9 @@ export default function ConversacionList() {
     const [modal, setModal] = useState(false)
 
     return (
-        <div className="w-80 shrink-0 flex flex-col" style={{ borderRight: '1px solid var(--color-border)' }}>
-            <div className="px-4 py-3 flex items-center justify-between" style={{ borderBottom: '1px solid var(--color-border)' }}>
-                <h2 className="font-bold text-lg">Mensajes</h2>
+        <div className={`w-full lg:w-80 shrink-0 flex flex-col ${activaId ? 'hidden lg:flex' : 'flex'}`} style={{ borderRight: '1px solid var(--color-border)', background: 'var(--color-surface)' }}>
+            <div className="px-4 py-3.5 flex items-center justify-between" style={{ borderBottom: '1px solid var(--color-border)' }}>
+                <h2 className="font-bold text-lg" style={{ fontFamily: 'var(--font-display)' }}>Mensajes</h2>
                 <button
                     onClick={() => setModal(true)}
                     title="Nuevo mensaje"

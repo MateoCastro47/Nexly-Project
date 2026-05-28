@@ -19,7 +19,7 @@ public class ImagenService {
         this.cloudinary = cloudinary;
     }
 
-    private static final Set<String> CARPETAS_PERMITIDAS = Set.of("publicaciones", "perfiles", "portadas");
+    private static final Set<String> CARPETAS_PERMITIDAS = Set.of("publicaciones", "perfiles", "portadas", "comunidades");
 
     public String subir(MultipartFile archivo, String carpeta){
         String contentType = archivo.getContentType();

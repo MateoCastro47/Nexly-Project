@@ -123,17 +123,12 @@ export default function ComunidadDetallePage() {
       <ComunidadHeader comunidad={actual} onToggleMembresia={toggleMembresia} />
 
       <div className="flex" style={{ borderBottom: '1px solid var(--color-border)' }}>
-        {tabs.map(({ key, label }) => {
-          const isActive = tab === key
-          return (
-            <button key={key} onClick={() => setTab(key)}
-              className="flex-1 py-3 text-sm font-semibold transition-colors relative"
-              style={{ color: isActive ? 'var(--color-accent-1)' : 'var(--color-muted)' }}>
-              {label}
-              {isActive && <span className="absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 w-3/4 rounded-full" style={{ background: 'var(--gradient-brand)' }} />}
-            </button>
-          )
-        })}
+        {tabs.map(({ key, label }) => (
+          <button key={key} onClick={() => setTab(key)}
+            className={`tab-underline ${tab === key ? 'tab-underline-active' : ''}`}>
+            {label}
+          </button>
+        ))}
       </div>
 
       {tab === 'feed' && (

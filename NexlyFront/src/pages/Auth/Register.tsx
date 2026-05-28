@@ -68,26 +68,34 @@ export default function Register() {
           className="hidden lg:flex lg:w-5/12 flex-col items-center justify-center p-14 relative overflow-hidden shrink-0"
           style={{ background: 'var(--gradient-brand)' }}
         >
-          <div className="absolute -top-24 -left-24 w-80 h-80 rounded-full opacity-[0.15]" style={{ background: 'white' }} />
-          <div className="absolute -bottom-36 -right-20 w-105 h-105 rounded-full opacity-[0.08]" style={{ background: 'white' }} />
+          <div className="absolute -top-24 -left-24 w-80 h-80 rounded-full opacity-[0.15]" style={{ background: 'white', animation: 'float 9s ease-in-out infinite' }} />
+          <div className="absolute -bottom-36 -right-20 w-105 h-105 rounded-full opacity-[0.08]" style={{ background: 'white', animation: 'float 11s ease-in-out infinite' }} />
           <div className="relative z-10 text-center text-white select-none">
-            <p className="text-6xl font-bold tracking-tight mb-6">Nexly</p>
+            <p className="text-6xl font-bold tracking-tight mb-6" style={{ fontFamily: 'var(--font-display)' }}>Nexly</p>
             <p className="text-xl font-medium opacity-90">Ya casi estás dentro</p>
           </div>
         </div>
 
         <div className="flex-1 flex items-center justify-center p-6 overflow-y-auto" style={{ background: 'var(--color-bg)' }}>
-          <div className="w-full max-w-sm rounded-2xl p-8 shadow-md text-center" style={{ background: 'var(--color-surface)' }}>
+          <div
+            className="w-full max-w-sm rounded-2xl p-8 text-center"
+            style={{
+              background: 'var(--color-surface)',
+              border: '1px solid var(--color-border)',
+              boxShadow: 'var(--shadow-lg)',
+              animation: 'fadeInUp 0.5s cubic-bezier(0.19, 1, 0.22, 1) both',
+            }}
+          >
             <div
               className="mx-auto mb-5 w-14 h-14 rounded-full flex items-center justify-center"
-              style={{ background: 'var(--color-brand)' }}
+              style={{ background: 'var(--gradient-brand)', boxShadow: 'var(--shadow-glow-1)', animation: 'bounceIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both' }}
             >
               <svg className="w-7 h-7 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
                 <polyline points="22,6 12,13 2,6" />
               </svg>
             </div>
-            <h2 className="text-2xl font-bold mb-2" style={{ color: 'var(--color-text)' }}>Revisa tu correo</h2>
+            <h2 className="text-2xl font-bold mb-2" style={{ color: 'var(--color-text)', fontFamily: 'var(--font-display)' }}>Revisa tu correo</h2>
             <p className="text-sm mb-6" style={{ color: 'var(--color-muted)' }}>
               Te hemos enviado un enlace de verificación a{' '}
               <span className="font-semibold" style={{ color: 'var(--color-text)' }}>{form.email}</span>.
@@ -121,12 +129,12 @@ export default function Register() {
         className="hidden lg:flex lg:w-5/12 flex-col items-center justify-center p-14 relative overflow-hidden shrink-0"
         style={{ background: 'var(--gradient-brand)' }}
       >
-        <div className="absolute -top-24 -left-24 w-80 h-80 rounded-full opacity-[0.15]" style={{ background: 'white' }} />
-        <div className="absolute -bottom-36 -right-20 w-105 h-105 rounded-full opacity-[0.08]" style={{ background: 'white' }} />
-        <div className="absolute top-1/3 right-8 w-40 h-40 rounded-full opacity-[0.10]" style={{ background: 'white' }} />
+        <div className="absolute -top-24 -left-24 w-80 h-80 rounded-full opacity-[0.15]" style={{ background: 'white', animation: 'float 9s ease-in-out infinite' }} />
+        <div className="absolute -bottom-36 -right-20 w-105 h-105 rounded-full opacity-[0.08]" style={{ background: 'white', animation: 'float 11s ease-in-out infinite' }} />
+        <div className="absolute top-1/3 right-8 w-40 h-40 rounded-full opacity-[0.10]" style={{ background: 'white', animation: 'float 7s ease-in-out infinite' }} />
 
         <div className="relative z-10 text-center text-white select-none">
-          <p className="text-6xl font-bold tracking-tight mb-6">Nexly</p>
+          <p className="text-6xl font-bold tracking-tight mb-6" style={{ fontFamily: 'var(--font-display)' }}>Nexly</p>
           <p className="text-xl font-medium opacity-90 mb-4">Tu espacio, tu comunidad.</p>
           <p className="text-sm opacity-90 max-w-65 leading-relaxed mx-auto">
             Crea tu cuenta y empieza a compartir lo que te importa.
@@ -140,14 +148,28 @@ export default function Register() {
         style={{ background: 'var(--color-bg)' }}
       >
         <div
-          className="w-full max-w-sm rounded-2xl p-8 shadow-md"
-          style={{ background: 'var(--color-surface)' }}
+          className="w-full max-w-sm rounded-2xl p-8"
+          style={{
+            background: 'var(--color-surface)',
+            border: '1px solid var(--color-border)',
+            boxShadow: 'var(--shadow-lg)',
+            animation: 'fadeInUp 0.5s cubic-bezier(0.19, 1, 0.22, 1) both',
+          }}
         >
-          <p className="lg:hidden text-center text-3xl font-bold mb-6" style={{ color: 'var(--color-brand)' }}>
+          <p
+            className="lg:hidden text-center text-3xl font-bold mb-6"
+            style={{
+              fontFamily: 'var(--font-display)',
+              background: 'var(--gradient-brand)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}
+          >
             Nexly
           </p>
 
-          <h2 className="text-2xl font-bold mb-1" style={{ color: 'var(--color-text)' }}>
+          <h2 className="text-2xl font-bold mb-1" style={{ color: 'var(--color-text)', fontFamily: 'var(--font-display)' }}>
             Crea tu cuenta
           </h2>
           <p className="text-sm mb-7" style={{ color: 'var(--color-muted)' }}>

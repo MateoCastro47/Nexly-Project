@@ -51,12 +51,12 @@ export default function Login() {
         className="hidden lg:flex lg:w-5/12 flex-col items-center justify-center p-14 relative overflow-hidden shrink-0"
         style={{ background: 'var(--gradient-brand)' }}
       >
-        <div className="absolute -top-24 -left-24 w-80 h-80 rounded-full opacity-[0.15]" style={{ background: 'white' }} />
-        <div className="absolute -bottom-36 -right-20 w-105 h-105 rounded-full opacity-[0.08]" style={{ background: 'white' }} />
-        <div className="absolute top-1/3 right-8 w-40 h-40 rounded-full opacity-[0.10]" style={{ background: 'white' }} />
+        <div className="absolute -top-24 -left-24 w-80 h-80 rounded-full opacity-[0.15]" style={{ background: 'white', animation: 'float 9s ease-in-out infinite' }} />
+        <div className="absolute -bottom-36 -right-20 w-105 h-105 rounded-full opacity-[0.08]" style={{ background: 'white', animation: 'float 11s ease-in-out infinite' }} />
+        <div className="absolute top-1/3 right-8 w-40 h-40 rounded-full opacity-[0.10]" style={{ background: 'white', animation: 'float 7s ease-in-out infinite' }} />
 
         <div className="relative z-10 text-center text-white select-none">
-          <p className="text-6xl font-bold tracking-tight mb-6">Nexly</p>
+          <p className="text-6xl font-bold tracking-tight mb-6" style={{ fontFamily: 'var(--font-display)' }}>Nexly</p>
           <p className="text-xl font-medium opacity-90 mb-4">Conecta. Comparte. Crece.</p>
           <p className="text-sm opacity-90 max-w-65 leading-relaxed mx-auto">
             Únete a miles de personas que ya comparten sus ideas y momentos.
@@ -71,15 +71,29 @@ export default function Login() {
       >
         {/* Card */}
         <div
-          className="w-full max-w-sm rounded-2xl p-8 shadow-md"
-          style={{ background: 'var(--color-surface)' }}
+          className="w-full max-w-sm rounded-2xl p-8"
+          style={{
+            background: 'var(--color-surface)',
+            border: '1px solid var(--color-border)',
+            boxShadow: 'var(--shadow-lg)',
+            animation: 'fadeInUp 0.5s cubic-bezier(0.19, 1, 0.22, 1) both',
+          }}
         >
           {/* Logo solo en mobile */}
-          <p className="lg:hidden text-center text-3xl font-bold mb-6" style={{ color: 'var(--color-brand)' }}>
+          <p
+            className="lg:hidden text-center text-3xl font-bold mb-6"
+            style={{
+              fontFamily: 'var(--font-display)',
+              background: 'var(--gradient-brand)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}
+          >
             Nexly
           </p>
 
-          <h2 className="text-2xl font-bold mb-1" style={{ color: 'var(--color-text)' }}>
+          <h2 className="text-2xl font-bold mb-1" style={{ color: 'var(--color-text)', fontFamily: 'var(--font-display)' }}>
             Bienvenido de vuelta
           </h2>
           <p className="text-sm mb-7" style={{ color: 'var(--color-muted)' }}>
@@ -160,9 +174,11 @@ export default function Login() {
             </button>
 
             {/* Separador */}
-            <p className="text-center text-xs my-1" style={{ color: 'var(--color-muted)' }}>
-              o continúa con
-            </p>
+            <div className="flex items-center gap-3 my-1">
+              <div className="flex-1 h-px" style={{ background: 'var(--color-border)' }} />
+              <span className="text-xs" style={{ color: 'var(--color-muted)' }}>o continúa con</span>
+              <div className="flex-1 h-px" style={{ background: 'var(--color-border)' }} />
+            </div>
 
             {/* Google */}
             <a
