@@ -24,7 +24,7 @@ export default function AppLayout() {
       <Sidebar />
 
       {/* Columna central */}
-      <main className={`flex-1 mx-auto px-5 py-6 ${esChat ? '' : 'max-w-180'} mb-auto`}>
+      <main className={`flex-1 w-full mx-auto px-3 sm:px-5 py-4 sm:py-6 ${esChat ? '' : 'max-w-180'} mb-auto min-w-0`}>
         <Outlet />
       </main>
 

@@ -329,12 +329,12 @@ export default function ProfilePage() {
             )}
 
             {/* Tabs */}
-            <div className="mt-5 flex" style={{ borderBottom: '1px solid var(--color-border)' }}>
+            <div className="mt-5 flex overflow-x-auto no-scrollbar" style={{ borderBottom: '1px solid var(--color-border)' }}>
               {tabs.map(({ key, label, badge }) => (
                 <button
                   key={key}
                   onClick={() => setActiveTab(key)}
-                  className={`tab-underline ${activeTab === key ? 'tab-underline-active' : ''}`}
+                  className={`tab-underline whitespace-nowrap px-3 ${activeTab === key ? 'tab-underline-active' : ''}`}
                 >
                   {label}
                   {badge != null && badge > 0 && (
@@ -417,7 +417,7 @@ export default function ProfilePage() {
             </div>
           ) : (
             solicitudes.map((s, i) => (
-              <div key={s.seguidorId} className="row-enter flex items-center gap-3 px-5 py-4"
+              <div key={s.seguidorId} className="row-enter flex flex-wrap items-center gap-3 px-4 sm:px-5 py-4"
                 style={{ borderBottom: '1px solid var(--color-border)', animationDelay: `${i * 0.04}s` }}>
                 <Link to={`/perfil/${s.nombreUsuario}`} className="shrink-0">
                   {s.fotoPerfil ? (
@@ -429,24 +429,26 @@ export default function ProfilePage() {
                     </div>
                   )}
                 </Link>
-                <Link to={`/perfil/${s.nombreUsuario}`} className="flex-1 min-w-0">
+                <Link to={`/perfil/${s.nombreUsuario}`} className="flex-1 min-w-0 basis-[60%] sm:basis-auto">
                   <p className="text-sm font-semibold truncate" style={{ color: 'var(--color-text)' }}>{s.nombreCompleto}</p>
                   <p className="text-xs truncate" style={{ color: 'var(--color-muted)' }}>@{s.nombreUsuario}</p>
                 </Link>
-                <button
-                  onClick={() => onAceptarSolic(s.seguidorId)}
-                  className="px-4 py-1.5 text-xs font-semibold rounded-full text-white transition-transform active:scale-95"
-                  style={{ background: 'var(--gradient-brand)' }}
-                >
-                  Aceptar
-                </button>
-                <button
-                  onClick={() => onRechazarSolic(s.seguidorId)}
-                  className="px-4 py-1.5 text-xs font-semibold rounded-full transition-colors"
-                  style={{ border: '1.5px solid var(--color-border)', color: 'var(--color-text-2)', background: 'transparent' }}
-                >
-                  Rechazar
-                </button>
+                <div className="flex gap-2 w-full sm:w-auto">
+                  <button
+                    onClick={() => onAceptarSolic(s.seguidorId)}
+                    className="flex-1 sm:flex-none px-4 py-1.5 text-xs font-semibold rounded-full text-white transition-transform active:scale-95"
+                    style={{ background: 'var(--gradient-brand)' }}
+                  >
+                    Aceptar
+                  </button>
+                  <button
+                    onClick={() => onRechazarSolic(s.seguidorId)}
+                    className="flex-1 sm:flex-none px-4 py-1.5 text-xs font-semibold rounded-full transition-colors"
+                    style={{ border: '1.5px solid var(--color-border)', color: 'var(--color-text-2)', background: 'transparent' }}
+                  >
+                    Rechazar
+                  </button>
+                </div>
               </div>
             ))
           )}

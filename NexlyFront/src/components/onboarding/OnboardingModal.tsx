@@ -96,7 +96,7 @@ export default function OnboardingModal() {
       style={{ background: 'var(--color-overlay)', zIndex: 'var(--z-modal)' }}
     >
       <div
-        className="card w-full max-w-lg flex flex-col gap-6 p-8"
+        className="card w-full max-w-lg flex flex-col gap-5 sm:gap-6 p-5 sm:p-8 max-h-[95vh] overflow-y-auto"
         style={{ animation: 'scaleIn 0.22s cubic-bezier(0.34,1.56,0.64,1)' }}
       >
         {/* Cabecera */}

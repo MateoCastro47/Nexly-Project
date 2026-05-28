@@ -28,7 +28,7 @@ export default function BusquedaPage() {
   return (
     <div>
       {/* Header */}
-      <div className="page-header -mx-5 -mt-6 px-5 pt-5 pb-3">
+      <div className="page-header -mx-3 sm:-mx-5 -mt-4 sm:-mt-6 px-4 sm:px-5 pt-4 sm:pt-5 pb-3">
         <p className="text-xs font-semibold uppercase tracking-wide mb-0.5" style={{ color: 'var(--color-muted)' }}>
           Búsqueda
         </p>

@@ -11,7 +11,7 @@ import type { Publicacion, TipoPost } from '../../types'
 
 
 type Visibilidad  = 'PUBLICA' | 'SEGUIDORES' | 'PRIVADA'
-type ActivePanel  = null | 'emoji' | 'poll'
+type ActivePanel  = null | 'emoji'
 
 const VISIBILIDAD_OPTS: SelectOption[] = [
   { value: 'PUBLICA',    label: 'Todos',      icon: '🌍', color: 'oklch(0.50 0.18 150)',  bg: 'oklch(0.50 0.18 150 / 0.12)' },
@@ -140,93 +140,6 @@ function ImagenGrid({ imagenes, onRemove }: { imagenes: ImagenPreview[]; onRemov
   )
 }
 
-// ── Creador de encuesta ──────────────────────────────────────────────────────
-
-function PollCreator({
-  opts,
-  onChange,
-  onClose,
-}: {
-  opts: string[]
-  onChange: (opts: string[]) => void
-  onClose: () => void
-}) {
-  const update = (i: number, val: string) => {
-    const next = [...opts]
-    next[i] = val
-    onChange(next)
-  }
-
-  const remove = (i: number) => onChange(opts.filter((_, idx) => idx !== i))
-  const add    = () => { if (opts.length < 4) onChange([...opts, '']) }
-
-  return (
-    <div
-      className="flex flex-col gap-2.5 p-4 rounded-2xl"
-      style={{
-        background: 'var(--color-surface-3)',
-        border: '1px solid color-mix(in oklch, var(--color-border), var(--color-accent-1) 10%)',
-      }}
-    >
-      <div className="flex items-center justify-between mb-1">
-        <span className="text-xs font-bold flex items-center gap-1.5" style={{ color: 'var(--color-accent-1)' }}>
-          📊 Encuesta
-        </span>
-        <button onClick={onClose} className="text-xs font-semibold transition-colors" style={{ color: 'var(--color-muted)' }}
-          onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--color-error)')}
-          onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--color-muted)')}
-        >
-          Quitar
-        </button>
-      </div>
-
-      {opts.map((opt, i) => (
-        <div key={i} className="flex items-center gap-2">
-          <input
-            type="text"
-            value={opt}
-            onChange={(e) => update(i, e.target.value)}
-            placeholder={`Opción ${i + 1}`}
-            maxLength={80}
-            className="input flex-1 px-3 py-2 text-sm rounded-xl"
-          />
-          {opts.length > 2 && (
-            <button
-              onClick={() => remove(i)}
-              className="shrink-0 p-1.5 rounded-full transition-all"
-              style={{ color: 'var(--color-muted)' }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.color = 'var(--color-error)';
-                (e.currentTarget as HTMLElement).style.background = 'oklch(0.62 0.24 28 / 0.08)';
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.color = 'var(--color-muted)';
-                (e.currentTarget as HTMLElement).style.background = 'transparent';
-              }}
-            >
-              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
-            </button>
-          )}
-        </div>
-      ))}
-
-      {opts.length < 4 && (
-        <button
-          onClick={add}
-          className="text-xs font-bold text-left px-1 transition-colors"
-          style={{ color: 'var(--color-accent-1)' }}
-          onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--color-accent-1-dark)')}
-          onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--color-accent-1)')}
-        >
-          + Agregar opción
-        </button>
-      )}
-    </div>
-  )
-}
-
 // ── CreatePost ───────────────────────────────────────────────────────────────
 interface CreatePostProps {
   comunidadId?: number
@@ -249,8 +162,6 @@ export default function CreatePost({comunidadId, comunidadNombre, onCreated }: C
   const [loading,      setLoading]      = useState(false)
   const [focused,      setFocused]      = useState(false)
   const [imagenes,     setImagenes]     = useState<ImagenPreview[]>([])
-  const [pollOpts,     setPollOpts]     = useState<string[]>(['', ''])
-  const [showPoll,     setShowPoll]     = useState(false)
   const [activePanel,  setActivePanel]  = useState<ActivePanel>(null)
 
   const taRef       = useRef<HTMLTextAreaElement>(null)
@@ -258,17 +169,15 @@ export default function CreatePost({comunidadId, comunidadNombre, onCreated }: C
 
   if (!usuario) return null
 
-  const expanded   = focused || contenido.length > 0 || imagenes.length > 0 || showPoll || !!citaActiva || tipoPost !== 'NORMAL'
+  const expanded   = focused || contenido.length > 0 || imagenes.length > 0 || !!citaActiva || tipoPost !== 'NORMAL'
   const uploading  = imagenes.some((i) => i.uploading)
   const hasError   = imagenes.some((i) => i.error)
 
-  const pollValidas = showPoll ? pollOpts.filter((o) => o.trim().length > 0) : []
   const canSubmit  = contenido.trim().length > 0
     && contenido.length <= MAX_CHARS
     && !loading
     && !uploading
     && !hasError
-    && (!showPoll || pollValidas.length >= 2)
 
   // ── Insertar emoji en cursor ─────────────────────────────────────────────
 
@@ -337,12 +246,7 @@ export default function CreatePost({comunidadId, comunidadNombre, onCreated }: C
     if (!canSubmit) return
     setLoading(true)
 
-    let textoFinal = contenido.trim()
-    if (showPoll && pollValidas.length >= 2) {
-      textoFinal += '\n\n📊 Encuesta\n' + pollValidas.map((o) => `• ${o}`).join('\n')
-    }
-
-    
+    const textoFinal = contenido.trim()
     const imagenesUrls = imagenes.map((i) => i.uploadedUrl).filter(Boolean)
     const tipoFinal = tipoPost !== 'NORMAL' ? tipoPost : undefined
 
@@ -368,8 +272,6 @@ export default function CreatePost({comunidadId, comunidadNombre, onCreated }: C
       }
       setContenido('')
       setImagenes([])
-      setPollOpts(['', ''])
-      setShowPoll(false)
       setFocused(false)
       setActivePanel(null)
       setTipoPost('NORMAL')
@@ -382,7 +284,7 @@ export default function CreatePost({comunidadId, comunidadNombre, onCreated }: C
 
   return (
     <div
-      className="px-5 pt-5 pb-3 flex flex-col gap-0 cursor-text rounded-3xl relative"
+      className="px-4 sm:px-5 pt-4 sm:pt-5 pb-3 flex flex-col gap-0 cursor-text rounded-3xl relative"
       style={{
         background: 'linear-gradient(180deg, var(--color-surface), var(--color-surface-2))',
         border: '1px solid color-mix(in oklch, var(--color-border), var(--color-brand) 12%)',
@@ -397,7 +299,7 @@ export default function CreatePost({comunidadId, comunidadNombre, onCreated }: C
       onClick={() => taRef.current?.focus()}
       onBlur={(e) => {
         if (e.currentTarget.contains(e.relatedTarget as Node)) return
-        if (!contenido && imagenes.length === 0 && !showPoll && !citaActiva && tipoPost === 'NORMAL') setFocused(false)
+        if (!contenido && imagenes.length === 0 && !citaActiva && tipoPost === 'NORMAL') setFocused(false)
       }}
     >
       {/* Fila principal */}
@@ -473,30 +375,22 @@ export default function CreatePost({comunidadId, comunidadNombre, onCreated }: C
             </div>
           )}
 
-          {/* Encuesta */}
-          {showPoll && (
-            <PollCreator
-              opts={pollOpts}
-              onChange={setPollOpts}
-              onClose={() => { setShowPoll(false); setPollOpts(['', '']) }}
-            />
-          )}
         </div>
       </div>
 
       {/* Divisor */}
-      <div className="divider-brand mt-3 mb-2 -mx-5" />
+      <div className="divider-brand mt-3 mb-2 -mx-4 sm:-mx-5" />
 
       {/* Toolbar */}
-      <div className="flex items-center justify-between" onClick={(e) => e.stopPropagation()}>
+      <div className="flex items-center justify-between gap-2 flex-wrap" onClick={(e) => e.stopPropagation()}>
         {/* Iconos de acción */}
-        <div className="flex items-center gap-1 -ml-1">
+        <div className="flex items-center gap-0.5 sm:gap-1 -ml-1 flex-wrap">
 
           {/* Imagen */}
           <div className="relative">
             <button
               type="button"
-              className="action-btn p-2.5 rounded-xl"
+              className="action-btn p-2 sm:p-2.5 rounded-xl"
               title="Imagen o vídeo"
               disabled={imagenes.length >= 4}
               onClick={() => fileInputRef.current?.click()}
@@ -518,33 +412,11 @@ export default function CreatePost({comunidadId, comunidadNombre, onCreated }: C
             />
           </div>
 
-          {/* Encuesta */}
-          <button
-            type="button"
-            className="action-btn p-2.5 rounded-xl"
-            title="Encuesta"
-            onClick={() => { setShowPoll((v) => !v); setActivePanel(null) }}
-            style={{
-              border: 'none',
-              boxShadow: 'none',
-              ...(showPoll ? {
-                background: 'var(--color-accent-1-tint)',
-                color: 'var(--color-accent-1)',
-              } : {}),
-            }}
-          >
-            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round">
-              <line x1="18" y1="20" x2="18" y2="10" />
-              <line x1="12" y1="20" x2="12" y2="4"  />
-              <line x1="6"  y1="20" x2="6"  y2="14" />
-            </svg>
-          </button>
-
           {/* Emoji */}
           <div className="relative">
             <button
               type="button"
-              className="action-btn p-2.5 rounded-xl"
+              className="action-btn p-2 sm:p-2.5 rounded-xl"
               title="Emoji"
               onClick={() => togglePanel('emoji')}
               style={{
@@ -569,7 +441,7 @@ export default function CreatePost({comunidadId, comunidadNombre, onCreated }: C
           </div>
 
           {/* Separador */}
-          <div className="w-px h-5 mx-1.5 shrink-0" style={{ background: 'var(--color-border)' }} />
+          <div className="hidden sm:block w-px h-5 mx-1.5 shrink-0" style={{ background: 'var(--color-border)' }} />
 
           {/* Visibilidad */}
           {!enComunidad && ( <SelectPill
@@ -600,7 +472,7 @@ export default function CreatePost({comunidadId, comunidadNombre, onCreated }: C
           <button
             onClick={handleSubmit}
             disabled={!canSubmit}
-            className="btn-primary px-6 py-2 rounded-full text-sm"
+            className="btn-primary px-4 sm:px-6 py-2 rounded-full text-sm"
           >
             {loading ? 'Publicando…' : uploading ? 'Subiendo…' : 'Publicar'}
           </button>

@@ -43,15 +43,15 @@ export default function AdminUsuarios() {
           value={q}
           onChange={(e) => { setPage(0); setQ(e.target.value) }}
           placeholder="Buscar por nombre, usuario o email…"
-          className="input rounded-full px-4 py-2 text-sm w-72"
+          className="input rounded-full px-4 py-2 text-sm w-full sm:w-72"
         />
       </div>
 
       <div
-        className="rounded-2xl overflow-hidden"
+        className="rounded-2xl overflow-x-auto"
         style={{ border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-sm)' }}
       >
-        <table className="w-full text-sm" style={{ color: 'var(--color-text)' }}>
+        <table className="w-full min-w-190 text-sm" style={{ color: 'var(--color-text)' }}>
           <thead>
             <tr
               className="text-left text-[0.7rem] uppercase tracking-wide"

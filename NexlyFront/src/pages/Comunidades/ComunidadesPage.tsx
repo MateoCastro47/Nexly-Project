@@ -31,7 +31,7 @@ export default function ComunidadesPage(){
 
     return (
         <div className="flex flex-col gap-5">
-            <div className="page-header -mx-5 -mt-6 px-5 pt-5 pb-3 flex flex-col gap-3">
+            <div className="page-header -mx-3 sm:-mx-5 -mt-4 sm:-mt-6 px-4 sm:px-5 pt-4 sm:pt-5 pb-3 flex flex-col gap-3">
                 <div className="flex items-center justify-between gap-3">
                     <h1 className="text-xl font-bold" style={{ fontFamily: 'var(--font-display)', color: 'var(--color-text)' }}>Comunidades</h1>
                     <button

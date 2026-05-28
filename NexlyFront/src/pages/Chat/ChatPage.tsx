@@ -4,7 +4,7 @@ import ChatWindow from "../../components/chat/ChatWindow";
 export default function ChatPage(){
 
     return(
-        <div className="flex -my-6 -mx-5 h-[calc(100vh-4rem)] lg:h-screen overflow-hidden" style={{borderLeft: '1px solid var(--color-border)', borderRight: '1px solid var(--color-border)'}}>
+        <div className="flex -my-4 sm:-my-6 -mx-3 sm:-mx-5 h-[calc(100vh-4rem)] lg:h-screen overflow-hidden" style={{borderLeft: '1px solid var(--color-border)', borderRight: '1px solid var(--color-border)'}}>
             <ConversacionList />
             <ChatWindow />
         </div>

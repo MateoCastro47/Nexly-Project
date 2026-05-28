@@ -15,12 +15,12 @@ export default function PostActions({ publicacionId, miReaccion, onCitar, onCome
   const liked = !!miReaccion
 
   return (
-    <div className="flex gap-2 w-full">
+    <div className="flex gap-1.5 sm:gap-2 w-full">
 
       {/* Me gusta */}
       <button
         onClick={() => toggleReaccion(publicacionId, 'ME_GUSTA')}
-        className={`action-btn flex items-center justify-center gap-2 flex-1 px-4 py-2.5 text-sm font-semibold ${liked ? 'action-btn-active' : ''}`}
+        className={`action-btn flex items-center justify-center gap-2 flex-1 px-2 sm:px-4 py-2.5 text-sm font-semibold ${liked ? 'action-btn-active' : ''}`}
         style={liked ? { color: '#e17055', borderColor: '#e1705530' } : undefined}
       >
         <svg
@@ -38,25 +38,26 @@ export default function PostActions({ publicacionId, miReaccion, onCitar, onCome
         >
           <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
         </svg>
-        <span>{liked ? 'Me gusta' : 'Me gusta'}</span>
+        <span className="hidden sm:inline">Me gusta</span>
       </button>
 
       {/* Comentar */}
       <button
         onClick={onComentar}
-        className="action-btn flex items-center justify-center gap-2 flex-1 px-4 py-2.5 text-sm font-semibold"
+        className="action-btn flex items-center justify-center gap-2 flex-1 px-2 sm:px-4 py-2.5 text-sm font-semibold"
       >
         <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
         </svg>
-        Comentar
+        <span className="hidden sm:inline">Comentar</span>
       </button>
 
       {/* Citar */}
       <button
         onClick={onCitar}
-        className="action-btn flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold"
+        className="action-btn flex items-center justify-center gap-2 flex-1 sm:flex-none px-2 sm:px-4 py-2.5 text-sm font-semibold"
         title="Citar publicación"
+        aria-label="Citar publicación"
       >
         <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M17 1l4 4-4 4" />

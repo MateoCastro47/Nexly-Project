@@ -49,7 +49,7 @@ export default function CrearComunidadModal({ onClose }: { onClose: () => void }
       <form
         onSubmit={(e) => { e.preventDefault(); handleSubmit() }}
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-lg rounded-3xl p-6 flex flex-col gap-4 max-h-[90vh] overflow-y-auto"
+        className="w-full max-w-lg rounded-3xl p-5 sm:p-6 flex flex-col gap-4 max-h-[90vh] overflow-y-auto"
         style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
       >
         <div className="flex items-center justify-between">

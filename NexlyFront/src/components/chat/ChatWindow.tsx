@@ -88,7 +88,7 @@ export default function ChatWindow() {
 
     return (
         <div className={`flex-1 flex flex-col overflow-hidden ${!activaId ? 'hidden lg:flex' : 'flex'}`}>
-            <div className="px-5 py-3 flex items-center gap-3 shrink-0" style={{ borderBottom: '1px solid var(--color-border)', background: 'var(--color-surface)', boxShadow: 'var(--shadow-xs)' }}>
+            <div className="px-3 sm:px-5 py-3 flex items-center gap-3 shrink-0" style={{ borderBottom: '1px solid var(--color-border)', background: 'var(--color-surface)', boxShadow: 'var(--shadow-xs)' }}>
                 <button 
                   className="lg:hidden p-1 mr-1 rounded-full text-[var(--color-accent-1)] hover:bg-[var(--color-accent-1-tint)]"
                   onClick={() => useChatStore.getState().seleccionar(null)}
@@ -108,7 +108,7 @@ export default function ChatWindow() {
 
             <div
                 ref={scrollRef}
-                className="flex-1 overflow-y-auto px-5 py-4 flex flex-col gap-3"
+                className="flex-1 overflow-y-auto px-3 sm:px-5 py-3 sm:py-4 flex flex-col gap-3"
                 onScroll={(e) => {
                     const el = e.currentTarget
                     prev.current.top = el.scrollTop

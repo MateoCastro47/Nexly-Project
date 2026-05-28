@@ -166,6 +166,14 @@
   ::-webkit-scrollbar-thumb:hover {
     background: oklch(0.72 0.02 65);
   }
+
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 /* ══════════════════════════════════════════════════════════════════════════════

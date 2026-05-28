@@ -24,32 +24,33 @@ export default function AdminLayout() {
           borderColor: 'var(--color-border)',
         }}
       >
-        <div className="max-w-6xl mx-auto flex items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-2.5">
+        <div className="max-w-6xl mx-auto flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 gap-3">
+          <div className="flex items-center gap-2.5 min-w-0">
             <div
-              className="w-9 h-9 rounded-2xl flex items-center justify-center text-white font-bold"
+              className="w-9 h-9 rounded-2xl flex items-center justify-center text-white font-bold shrink-0"
               style={{ background: 'var(--gradient-brand)', boxShadow: '0 4px 16px oklch(0.62 0.26 285 / 0.25)' }}
             >
               N
             </div>
-            <div>
-              <h1 className="text-base font-bold leading-tight" style={{ fontFamily: 'var(--font-display)', color: 'var(--color-text)' }}>
+            <div className="min-w-0">
+              <h1 className="text-sm sm:text-base font-bold leading-tight truncate" style={{ fontFamily: 'var(--font-display)', color: 'var(--color-text)' }}>
                 Administración
               </h1>
-              <p className="text-[0.7rem]" style={{ color: 'var(--color-muted)' }}>Panel de control de Nexly</p>
+              <p className="hidden sm:block text-[0.7rem]" style={{ color: 'var(--color-muted)' }}>Panel de control de Nexly</p>
             </div>
           </div>
           <Link
             to="/"
-            className="text-sm font-semibold px-4 py-2 rounded-full transition-all"
+            className="text-xs sm:text-sm font-semibold px-3 sm:px-4 py-1.5 sm:py-2 rounded-full transition-all shrink-0"
             style={{ color: 'var(--color-text)', border: '1.5px solid var(--color-border)' }}
           >
-            ← Volver a Nexly
+            <span className="sm:hidden">← Volver</span>
+            <span className="hidden sm:inline">← Volver a Nexly</span>
           </Link>
         </div>
 
         {/* Pestañas */}
-        <nav className="max-w-6xl mx-auto flex gap-1.5 px-6 pb-3 overflow-x-auto">
+        <nav className="max-w-6xl mx-auto flex gap-1.5 px-4 sm:px-6 pb-3 overflow-x-auto no-scrollbar">
           {TABS.map((t) => (
             <NavLink
               key={t.to}
@@ -70,7 +71,7 @@ export default function AdminLayout() {
         </nav>
       </header>
 
-      <main className="p-6 max-w-6xl mx-auto">
+      <main className="p-4 sm:p-6 max-w-6xl mx-auto">
         <Outlet />
       </main>
     </div>

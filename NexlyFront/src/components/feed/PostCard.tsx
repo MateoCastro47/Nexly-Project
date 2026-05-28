@@ -73,7 +73,7 @@ export default function PostCard({ publicacion, variant = 'normal', onEliminar, 
 
   return (
     <article
-      className={`card card-feed flex flex-col gap-4 ${isHero ? 'card-hero p-6' : 'p-5'}`}
+      className={`card card-feed flex flex-col gap-4 ${isHero ? 'card-hero p-4 sm:p-6' : 'p-4 sm:p-5'}`}
       style={isHero ? { animationDelay: '0.1s' } : undefined}
     >
       {publicacion.fijada && (

@@ -28,10 +28,10 @@ export default function AdminComunidades() {
         Comunidades
       </h2>
       <div
-        className="rounded-2xl overflow-hidden"
+        className="rounded-2xl overflow-x-auto"
         style={{ border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-sm)' }}
       >
-        <table className="w-full text-sm" style={{ color: 'var(--color-text)' }}>
+        <table className="w-full min-w-170 text-sm" style={{ color: 'var(--color-text)' }}>
           <thead>
             <tr
               className="text-left text-[0.7rem] uppercase tracking-wide"

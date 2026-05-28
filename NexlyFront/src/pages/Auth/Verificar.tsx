@@ -48,11 +48,11 @@ export default function Verificar() {
 
       {/* ── Panel derecho ── */}
       <div
-        className="flex-1 flex items-center justify-center p-6 overflow-y-auto"
+        className="flex-1 flex items-center justify-center p-4 sm:p-6 overflow-y-auto"
         style={{ background: 'var(--color-bg)' }}
       >
         <div
-          className="w-full max-w-sm rounded-2xl p-8 text-center"
+          className="w-full max-w-sm rounded-2xl p-6 sm:p-8 text-center"
           style={{
             background: 'var(--color-surface)',
             border: '1px solid var(--color-border)',
